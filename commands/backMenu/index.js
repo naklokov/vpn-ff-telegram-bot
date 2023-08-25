@@ -1,3 +1,4 @@
-const { mainMenu } = require("../../components/buttons");
+const { mainMenuButtons } = require("../../components/buttons");
 
-module.exports = (ctx) => ctx.reply("Вы находитесь в меню", { ...mainMenu });
+module.exports = (ctx) =>
+  ctx.reply("Вы находитесь в меню", { ...mainMenuButtons });

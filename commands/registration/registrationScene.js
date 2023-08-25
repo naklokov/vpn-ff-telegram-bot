@@ -1,7 +1,14 @@
 const { Scenes } = require("telegraf");
-const { SCENE_IDS, EMAIL_REGEXP, PHONE_REGEXP } = require("../../constants");
+const {
+  SCENE_IDS,
+  EMAIL_REGEXP,
+  PHONE_REGEXP,
+  CMD_TEXT,
+} = require("../../constants");
 const instructionsCommand = require("../instructions");
 const { random } = require("../../utils");
+const { backMenuButtons } = require("../../components/buttons");
+const backMenu = require("../backMenu");
 
 const registrationScene = new Scenes.WizardScene(
   SCENE_IDS.REGISTRATION,
@@ -15,7 +22,9 @@ const registrationScene = new Scenes.WizardScene(
     ctx.wizard.state.user.name = name;
     ctx.wizard.state.user.id = id;
 
-    ctx.reply("Введите ваш телефон в формате 79998887766");
+    ctx.reply("Введите ваш телефон в формате 79998887766", {
+      ...backMenuButtons,
+    });
     return ctx.wizard.next();
   },
   (ctx) => {
@@ -42,8 +51,15 @@ const registrationScene = new Scenes.WizardScene(
       }`
     );
     instructionsCommand(ctx);
-    return ctx.scene.leave();
+
+    ctx.scene.leave();
+    return backMenu(ctx);
   }
 );
+
+registrationScene.hears(CMD_TEXT.menu, (ctx) => {
+  ctx.scene.leave();
+  return backMenu(ctx);
+});
 
 module.exports = { registrationScene };
