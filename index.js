@@ -1,7 +1,7 @@
 require("dotenv").config();
 
 const mongoose = require("mongoose");
-const vpnBot = require("./vpn-ff-bot");
+const vpnBot = require("./vpn-bot");
 
 (async function () {
   try {
