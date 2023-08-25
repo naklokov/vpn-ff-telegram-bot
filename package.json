@@ -14,12 +14,14 @@
   "author": "naklokov",
   "license": "ISC",
   "dependencies": {
+    "@notionhq/client": "^2.2.11",
     "dotenv": "^16.3.1",
     "mongoose": "^7.4.4",
     "telegraf": "^4.12.2",
     "telegraf-session-mongodb": "^2.0.2"
   },
   "devDependencies": {
-    "nodemon": "^3.0.1"
+    "nodemon": "^3.0.1",
+    "notion-to-md": "^3.1.1"
   }
 }
