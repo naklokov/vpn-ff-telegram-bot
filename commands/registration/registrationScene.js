@@ -7,7 +7,10 @@ const {
 } = require("../../constants");
 const instructionsCommand = require("../instructions");
 const { random } = require("../../utils");
-const { backMenuButtons } = require("../../components/buttons");
+const {
+  backMenuButtons,
+  mainMenuButtons,
+} = require("../../components/buttons");
 const backMenu = require("../backMenu");
 
 const registrationScene = new Scenes.WizardScene(
@@ -44,16 +47,16 @@ const registrationScene = new Scenes.WizardScene(
     }
     ctx.wizard.state.user.email = ctx.message.text;
 
-    ctx.reply("Вы успешно зарегистрированы!");
     ctx.reply(
-      `Ваш пароль: ${
-        "" + random(0, 20) + ctx.message.chat.id + random(50, 100)
-      }`
+      `
+Вы успешно зарегистрированы!
+
+логин: ${ctx.wizard.state.user.phone}
+пароль: ${"" + random(0, 20) + ctx.message.chat.id + random(50, 100)}`,
+      { ...mainMenuButtons }
     );
     instructionsCommand(ctx);
-
     ctx.scene.leave();
-    return backMenu(ctx);
   }
 );
 
