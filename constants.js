@@ -1,8 +1,8 @@
 const CMD_TEXT = {
   registration: "Регистрация",
-  info: "Информация",
+  info: "Условия и тарифы",
   instructions: "Инструкции",
-  help: "Помогите",
+  help: "Помощь",
   menu: "В меню",
 };
 
@@ -24,6 +24,12 @@ const EMAIL_REGEXP =
 
 const PHONE_REGEXP = /^7[0-9]{10}$/i;
 
+const FREE_PERIOD_MONTH = 1;
+
+const SECRET_ROW_REGEXP = /^(.+) : EAP "(.+)"$/i;
+
+const VPN_DB_CONNECTION = process.env.MONGO_URL + "vpn";
+
 module.exports = {
   CMD_TEXT,
   NOTION_PAGE_ID_MAP,
@@ -32,4 +38,7 @@ module.exports = {
   ANDROID_INSTRUCTIONS_LINK,
   EMAIL_REGEXP,
   PHONE_REGEXP,
+  FREE_PERIOD_MONTH,
+  VPN_DB_CONNECTION,
+  SECRET_ROW_REGEXP,
 };

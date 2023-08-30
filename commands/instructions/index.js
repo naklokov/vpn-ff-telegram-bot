@@ -3,7 +3,7 @@ const {
   ANDROID_INSTRUCTIONS_LINK,
 } = require("../../constants");
 
-module.exports = (ctx) => {
+module.exports = async (ctx) => {
   var options = {
     reply_markup: JSON.stringify({
       inline_keyboard: [
@@ -13,5 +13,5 @@ module.exports = (ctx) => {
     }),
   };
 
-  ctx.reply("Инструкции по подключению VPN", options);
+  await ctx.reply("Инструкции по подключению VPN", options);
 };

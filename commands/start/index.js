@@ -1,5 +1,5 @@
 const { mainMenuButtons } = require("../../components/buttons");
-const { getMarkdownContentSync } = require("../../utils");
+const { getMarkdownContentSync } = require("../../utils/common");
 const path = require("path");
 
 module.exports = (ctx) => {
