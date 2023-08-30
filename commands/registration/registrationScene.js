@@ -23,7 +23,6 @@ const registrationScene = new Scenes.WizardScene(
   async (ctx) => {
     const { name, id } = getUserPersonalDataFromContext(ctx);
     const existedUser = await usersConnector.getUserByChatId(id);
-    console.log(existedUser);
     if (existedUser) {
       ctx.reply("Данный пользователь уже зарегистрирован");
       return;

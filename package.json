@@ -4,7 +4,8 @@
   "description": "project for vpn-ff telegram client",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "cross-env WITHOUT_CLI=true nodemon index.js",
+    "run:production": "nodemon index.js"
   },
   "keywords": [
     "client",
@@ -22,6 +23,7 @@
     "telegraf-session-mongodb": "^2.0.2"
   },
   "devDependencies": {
+    "cross-env": "^7.0.3",
     "nodemon": "^3.0.1",
     "notion-to-md": "^3.1.1"
   }

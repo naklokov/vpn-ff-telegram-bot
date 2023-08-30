@@ -5,15 +5,6 @@ const { restartService } = require("./cli-commands");
 const { SECRETS_FILE_PATH } = process.env;
 
 const FIRST_REQUIRED_ROW = 'v1538375.hosted-by-vdsina.ru : RSA "privkey.pem"\n';
-const USERS_MOCK = [
-  { login: "nklokov", password: "363618" },
-  { login: "79109054647", password: "906692" },
-  { login: "79109008855", password: "besttescha" },
-  { login: "79206368880", password: "kmedvedkova" },
-  { login: "79251164838", password: "kvoronina" },
-  { login: "79109033318", password: "nignatenko" },
-  { login: "79209873261", password: "olgash" },
-];
 
 const secretsFileToUsers = async () => {
   const data = await fs.readFile(SECRETS_FILE_PATH, {
@@ -36,7 +27,6 @@ const usersToSecretsFile = async (users) => {
     (acc, cur) => acc + `${cur.login} : EAP "${cur.password}"\n`,
     ""
   );
-  console.log(FIRST_REQUIRED_ROW + usersSecretsRow);
   await fs.writeFile(SECRETS_FILE_PATH, FIRST_REQUIRED_ROW + usersSecretsRow);
 };
 
