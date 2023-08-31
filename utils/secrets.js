@@ -1,6 +1,6 @@
 const fs = require("fs/promises");
 const { SECRET_ROW_REGEXP } = require("../constants");
-const { restartService } = require("./cli-commands");
+const { restartService } = require("../scripts/restart-service");
 
 const { SECRETS_FILE_PATH } = process.env;
 

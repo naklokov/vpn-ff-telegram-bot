@@ -9,7 +9,8 @@ const execSudo = (command) => {
 
 const restartService = () => {
   if (!WITHOUT_CLI) {
-    execSudo("ipsec secrets");
+    const sudoCommand = `echo ${SUDO_PASSWORD} | sudo -S ipsec secrets`;
+    execSync(sudoCommand);
   }
 };
 

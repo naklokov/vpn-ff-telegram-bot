@@ -23,10 +23,11 @@ const registrationScene = new Scenes.WizardScene(
   async (ctx) => {
     const { name, id } = getUserPersonalDataFromContext(ctx);
     const existedUser = await usersConnector.getUserByChatId(id);
-    if (existedUser) {
-      ctx.reply("Данный пользователь уже зарегистрирован");
-      return;
-    }
+    // if (existedUser) {
+    //   await ctx.reply("Данный пользователь уже зарегистрирован");
+    //   ctx.scene.leave();
+    //   return;
+    // }
     // инициализация формы пользователя
     ctx.wizard.state.user = {};
 
@@ -46,10 +47,11 @@ const registrationScene = new Scenes.WizardScene(
     }
     const existedPhone = await usersConnector.getUserByPhone(ctx.message.text);
     if (existedPhone) {
-      ctx.reply(
+      await ctx.reply(
         "Пользователь с указаным номером уже зарегистрирован в системе"
       );
-      return;
+      ctx.scene.leave();
+      return backMenu(ctx);
     }
     ctx.wizard.state.user.phone = ctx.message.text;
 
