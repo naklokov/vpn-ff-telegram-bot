@@ -6,6 +6,13 @@ const CMD_TEXT = {
   menu: "В меню",
 };
 
+const CMD = {
+  start: "start",
+  registration: "registration",
+  info: "info",
+  help: "help",
+};
+
 const NOTION_PAGE_ID_MAP = {
   IOS_INSTRUCTIONS: "0f60ca2d-58af-4834-9eba-abbbb4ecb503",
 };
@@ -31,6 +38,7 @@ const SECRET_ROW_REGEXP = /^(.+) : EAP "(.+)"$/i;
 const VPN_DB_CONNECTION = process.env.MONGO_URL + "vpn";
 
 module.exports = {
+  CMD,
   CMD_TEXT,
   NOTION_PAGE_ID_MAP,
   SCENE_IDS,

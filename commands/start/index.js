@@ -1,4 +1,3 @@
-const { mainMenuButtons } = require("../../components/buttons");
 const { getMarkdownContentSync } = require("../../utils/common");
 const path = require("path");
 
@@ -7,5 +6,5 @@ module.exports = (ctx) => {
     path.dirname(__filename) + "/content.md"
   );
 
-  ctx.reply(startReplyContent, { ...mainMenuButtons });
+  ctx.reply(startReplyContent);
 };
