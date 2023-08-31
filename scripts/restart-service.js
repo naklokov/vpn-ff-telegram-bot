@@ -1,3 +1,4 @@
+require("dotenv").config();
 const { execSync } = require("child_process");
 
 const { SUDO_PASSWORD, WITHOUT_CLI } = process.env;

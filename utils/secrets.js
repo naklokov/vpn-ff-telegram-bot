@@ -62,4 +62,5 @@ const removeUserFromSecrets = async (login) => {
 module.exports = {
   addUserToSecrets,
   removeUserFromSecrets,
+  secretsFileToUsers,
 };

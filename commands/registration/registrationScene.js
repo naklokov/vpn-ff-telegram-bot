@@ -3,6 +3,7 @@ const {
   SCENE_IDS,
   EMAIL_REGEXP,
   PHONE_REGEXP,
+  ADMIN_CHAT_ID,
   CMD_TEXT,
 } = require("../../constants");
 const instructionsCommand = require("../instructions");
@@ -17,13 +18,7 @@ const registrationScene = new Scenes.WizardScene(
   SCENE_IDS.REGISTRATION,
   async (ctx) => {
     const { name, id } = getUserPersonalDataFromContext(ctx);
-    const existedUser = await usersConnector.getUserByChatId(id);
-    if (existedUser && id !== 332529322) {
-      await ctx.reply("Данный пользователь уже зарегистрирован");
-      await ctx.reply("Регистрация прервана");
-      ctx.scene.leave();
-      return;
-    }
+
     // инициализация формы пользователя
     ctx.wizard.state.user = {};
 
@@ -41,15 +36,7 @@ const registrationScene = new Scenes.WizardScene(
       );
       return;
     }
-    const existedPhone = await usersConnector.getUserByPhone(ctx.message.text);
-    if (existedPhone) {
-      await ctx.reply(
-        "Пользователь с указаным номером уже зарегистрирован в системе"
-      );
-      await ctx.reply("Регистрация прервана");
-      ctx.scene.leave();
-      return;
-    }
+
     ctx.wizard.state.user.phone = ctx.message.text;
 
     ctx.reply("Введите вашу электронную почту в формате: test@mail.ru");
@@ -61,6 +48,35 @@ const registrationScene = new Scenes.WizardScene(
       return;
     }
     ctx.wizard.state.user.email = ctx.message.text;
+
+    const existedUserByPhone = await usersConnector.getUserByPhone(
+      ctx.wizard.state.user.phone
+    );
+    const existedUserByChatId = await usersConnector.getUserByChatId(
+      ctx.wizard.state.user.chatId
+    );
+
+    // если пользователь старый то нужно обновить его данные в системе
+    if (existedUserByPhone && !existedUserByChatId) {
+      await usersConnector.updateUserByPhone(
+        ctx.wizard.state.user.phone,
+        ctx.wizard.state.user
+      );
+      await ctx.reply("Ваши данные регистрации обновлены");
+      await ctx.reply(CMD_TEXT.registrationExit);
+      return;
+    }
+
+    // валидация наличия пользователя в БД
+    if (
+      existedUserByChatId &&
+      existedUserByPhone &&
+      ctx.wizard.state.user.chatId !== ADMIN_CHAT_ID
+    ) {
+      await ctx.reply("Данный пользователь уже зарегистрирован");
+      await ctx.reply(CMD_TEXT.registrationExit);
+      return;
+    }
 
     const login = ctx.wizard.state.user.phone;
     const password = generatePassword();
@@ -86,9 +102,13 @@ const registrationScene = new Scenes.WizardScene(
         error
       );
     } finally {
-      ctx.scene.leave();
+      await ctx.reply(CMD_TEXT.registrationExit);
     }
   }
 );
+
+registrationScene.hears(CMD_TEXT.registrationExit, (ctx) => {
+  ctx.scene.leave();
+});
 
 module.exports = { registrationScene };

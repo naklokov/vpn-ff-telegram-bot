@@ -35,8 +35,6 @@ const addUser = async (user) => {
       error
     );
     throw error;
-  } finally {
-    await mongoose.disconnect();
   }
 };
 
@@ -83,7 +81,7 @@ const deleteUser = async (userId) => {
   }
 };
 
-const updateUser = async (userId, user) => {
+const updateUserById = async (userId, user) => {
   try {
     await mongoose.connect(VPN_DB_CONNECTION);
     await User.updateOne({ id: userId }, { ...user });
@@ -93,10 +91,21 @@ const updateUser = async (userId, user) => {
   }
 };
 
+const updateUserByPhone = async (phone, user) => {
+  try {
+    await mongoose.connect(VPN_DB_CONNECTION);
+    await User.updateOne({ phone }, { ...user });
+  } catch (error) {
+    console.log("Произошла ошибка при удалении пользователя " + phone, error);
+    throw error;
+  }
+};
+
 module.exports = {
   addUser,
   deleteUser,
-  updateUser,
+  updateUserById,
+  updateUserByPhone,
   getUsers,
   getUserByChatId,
   getUserByPhone,

@@ -6,7 +6,8 @@
   "scripts": {
     "start": "cross-env WITHOUT_CLI=true nodemon index.js",
     "prod": "nodemon index.js",
-    "publish": "node scripts/publish.js"
+    "publish": "node scripts/publish.js",
+    "migration": "node scripts/migration.js"
   },
   "keywords": [
     "client",

@@ -1,9 +1,5 @@
 const CMD_TEXT = {
-  registration: "Регистрация",
-  info: "Условия и тарифы",
-  instructions: "Инструкции",
-  help: "Помощь",
-  menu: "В меню",
+  registrationExit: "Выход из регистрации",
 };
 
 const CMD = {
@@ -16,6 +12,8 @@ const CMD = {
 const NOTION_PAGE_ID_MAP = {
   IOS_INSTRUCTIONS: "0f60ca2d-58af-4834-9eba-abbbb4ecb503",
 };
+
+const ADMIN_CHAT_ID = 332529322;
 
 const SCENE_IDS = {
   REGISTRATION: "REGISTRATION_SCENE_ID",
@@ -49,4 +47,5 @@ module.exports = {
   FREE_PERIOD_MONTH,
   VPN_DB_CONNECTION,
   SECRET_ROW_REGEXP,
+  ADMIN_CHAT_ID,
 };
