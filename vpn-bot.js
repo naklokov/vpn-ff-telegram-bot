@@ -1,12 +1,14 @@
 const { Telegraf, Scenes, session } = require("telegraf");
+const cron = require("node-cron");
 
 const startCommand = require("./commands/start");
 const registrationCommand = require("./commands/registration");
 const infoCommand = require("./commands/info");
-const { CMD } = require("./constants");
+const { CMD, ADMIN_CHAT_ID } = require("./constants");
 const {
   registrationScene,
 } = require("./commands/registration/registrationScene");
+const { expiredNotificationSheduler } = require("./utils/check-expired");
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
@@ -15,6 +17,10 @@ const setupBot = () => {
     console.log(ctx);
     return next();
   });
+
+  // cron.schedule("* * * * *", () => {
+  //   expiredNotificationSheduler(bot);
+  // });
 
   const stage = new Scenes.Stage([registrationScene]);
   bot.use(session());

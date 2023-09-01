@@ -1,4 +1,4 @@
-const { Scenes } = require("telegraf");
+const { Scenes, Markup } = require("telegraf");
 const {
   SCENE_IDS,
   EMAIL_REGEXP,
@@ -7,6 +7,8 @@ const {
   CMD_TEXT,
 } = require("../../constants");
 const instructionsCommand = require("../instructions");
+const { registrationExitCommand } = require("../../commands/registrationExit");
+const { registrationExitButton } = require("../../components/buttons");
 const {
   getUserPersonalDataFromContext,
   generatePassword,
@@ -26,25 +28,32 @@ const registrationScene = new Scenes.WizardScene(
     ctx.wizard.state.user.name = name;
     ctx.wizard.state.user.chatId = id;
 
-    ctx.reply("Введите ваш номер телефон в формате 79998887766");
+    ctx.reply("Введите ваш номер телефон в формате 79998887766", {
+      ...registrationExitButton,
+    });
     return ctx.wizard.next();
   },
   async (ctx) => {
     if (!PHONE_REGEXP.test(ctx.message.text)) {
       ctx.reply(
-        "Номер введён некорректно. Введите номер в формате 79998887766"
+        "Номер введён некорректно. Введите номер в формате 79998887766",
+        { ...registrationExitButton }
       );
       return;
     }
 
     ctx.wizard.state.user.phone = ctx.message.text;
 
-    ctx.reply("Введите вашу электронную почту в формате: test@mail.ru");
+    ctx.reply("Введите вашу электронную почту в формате: test@mail.ru", {
+      ...registrationExitButton,
+    });
     return ctx.wizard.next();
   },
   async (ctx) => {
     if (!EMAIL_REGEXP.test(ctx.message.text)) {
-      ctx.reply("Введите корректную почту в формате: test@mail.ru");
+      ctx.reply("Введите корректную почту в формате: test@mail.ru", {
+        ...registrationExitButton,
+      });
       return;
     }
     ctx.wizard.state.user.email = ctx.message.text;
@@ -63,7 +72,7 @@ const registrationScene = new Scenes.WizardScene(
         ctx.wizard.state.user
       );
       await ctx.reply("Ваши данные регистрации обновлены");
-      await ctx.reply(CMD_TEXT.registrationExit);
+      registrationExitCommand(ctx);
       return;
     }
 
@@ -74,7 +83,7 @@ const registrationScene = new Scenes.WizardScene(
       ctx.wizard.state.user.chatId !== ADMIN_CHAT_ID
     ) {
       await ctx.reply("Данный пользователь уже зарегистрирован");
-      await ctx.reply(CMD_TEXT.registrationExit);
+      registrationExitCommand(ctx);
       return;
     }
 
@@ -102,12 +111,13 @@ const registrationScene = new Scenes.WizardScene(
         error
       );
     } finally {
-      await ctx.reply(CMD_TEXT.registrationExit);
+      return registrationExitCommand(ctx);
     }
   }
 );
 
 registrationScene.hears(CMD_TEXT.registrationExit, (ctx) => {
+  ctx.reply("Вы на главной странице", Markup.removeKeyboard(true));
   ctx.scene.leave();
 });
 

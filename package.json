@@ -18,9 +18,11 @@
   "license": "ISC",
   "dependencies": {
     "@notionhq/client": "^2.2.11",
+    "dayjs": "^1.11.9",
     "dotenv": "^16.3.1",
     "mongodb": "^5.8.1",
     "mongoose": "^7.4.5",
+    "node-cron": "^3.0.2",
     "telegraf": "^4.12.2",
     "telegraf-session-mongodb": "^2.0.2"
   },
