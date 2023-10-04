@@ -63,4 +63,5 @@ module.exports = {
   addUserToSecrets,
   removeUserFromSecrets,
   secretsFileToUsers,
+  usersToSecretsFile,
 };

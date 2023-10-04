@@ -1,5 +1,6 @@
 const CMD_TEXT = {
   registrationExit: "Выход из регистрации",
+  exit: "Выход",
 };
 
 const CMD = {
@@ -7,6 +8,7 @@ const CMD = {
   registration: "registration",
   info: "info",
   help: "help",
+  extend: "extend",
 };
 
 const NOTION_PAGE_ID_MAP = {
@@ -15,8 +17,11 @@ const NOTION_PAGE_ID_MAP = {
 
 const ADMIN_CHAT_ID = 332529322;
 
+const MONTH_COST = 100;
+
 const SCENE_IDS = {
   REGISTRATION: "REGISTRATION_SCENE_ID",
+  EXTEND: "EXTEND",
 };
 
 const IOS_INSTRUCTIONS_LINK =
@@ -48,4 +53,5 @@ module.exports = {
   VPN_DB_CONNECTION,
   SECRET_ROW_REGEXP,
   ADMIN_CHAT_ID,
+  MONTH_COST,
 };

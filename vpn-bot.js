@@ -1,14 +1,23 @@
 const { Telegraf, Scenes, session } = require("telegraf");
-const cron = require("node-cron");
 
 const startCommand = require("./commands/start");
 const registrationCommand = require("./commands/registration");
+const extendCommand = require("./commands/extend");
 const infoCommand = require("./commands/info");
-const { CMD, ADMIN_CHAT_ID } = require("./constants");
+const { CMD } = require("./constants");
 const {
   registrationScene,
 } = require("./commands/registration/registrationScene");
-const { expiredNotificationSheduler } = require("./utils/check-expired");
+const { extendScene } = require("./commands/extend/extendScene");
+const {
+  runSyncActiveUserSheduler,
+} = require("./utils/shedulers/synsActiveUser");
+const {
+  runPaymentNotificationSheduler,
+} = require("./utils/shedulers/paymentNotification");
+const {
+  runToogleUserStatusSheduler,
+} = require("./utils/shedulers/toogleUserStatus");
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
@@ -18,16 +27,17 @@ const setupBot = () => {
     return next();
   });
 
-  // cron.schedule("* * * * *", () => {
-  //   expiredNotificationSheduler(bot);
-  // });
+  runPaymentNotificationSheduler(bot);
+  runToogleUserStatusSheduler();
+  runSyncActiveUserSheduler();
 
-  const stage = new Scenes.Stage([registrationScene]);
+  const stage = new Scenes.Stage([registrationScene, extendScene]);
   bot.use(session());
   bot.use(stage.middleware());
 
   bot.start(startCommand);
   bot.command(CMD.info, infoCommand);
+  bot.command(CMD.extend, extendCommand);
   bot.command(CMD.registration, registrationCommand);
   bot.command(CMD.help, (ctx) =>
     ctx.reply("Если у вас возникли вопросы, пишите разработчику @naklokov")

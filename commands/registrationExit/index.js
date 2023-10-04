@@ -6,4 +6,10 @@ module.exports = {
       reply_markup: { remove_keyboard: true },
     });
   },
+
+  exitCommand: (ctx) => {
+    ctx.reply(CMD_TEXT.exit, {
+      reply_markup: { remove_keyboard: true },
+    });
+  },
 };

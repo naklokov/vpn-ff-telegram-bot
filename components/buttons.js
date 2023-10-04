@@ -5,4 +5,6 @@ const registrationExitButton = Markup.keyboard([
   [CMD_TEXT.registrationExit],
 ]).resize();
 
-module.exports = { registrationExitButton };
+const exitButton = Markup.keyboard([[CMD_TEXT.exit]]).resize();
+
+module.exports = { registrationExitButton, exitButton };

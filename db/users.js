@@ -96,7 +96,7 @@ const updateUserByPhone = async (phone, user) => {
     await mongoose.connect(VPN_DB_CONNECTION);
     await User.updateOne({ phone }, { ...user });
   } catch (error) {
-    console.log("Произошла ошибка при удалении пользователя " + phone, error);
+    console.log("Произошла ошибка при обновлении пользователя " + phone, error);
     throw error;
   }
 };

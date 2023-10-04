@@ -27,7 +27,7 @@ const generatePassword = (length = 6) => {
 };
 
 const getUserPersonalDataFromContext = (ctx) => {
-  const { username, first_name, last_name, id } = ctx.message.chat;
+  const { username, first_name = "", last_name = "", id } = ctx.message.chat;
   const name = username || `${first_name} ${last_name}`;
 
   return { name, id };
