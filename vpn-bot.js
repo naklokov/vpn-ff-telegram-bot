@@ -5,6 +5,7 @@ const registrationCommand = require("./commands/registration");
 const ruporCommand = require("./commands/rupor");
 const extendCommand = require("./commands/extend");
 const infoCommand = require("./commands/info");
+const statusCommand = require("./commands/status");
 const { CMD } = require("./constants");
 const {
   registrationScene,
@@ -34,6 +35,7 @@ const setupBot = () => {
 
   bot.start(startCommand);
   bot.command(CMD.info, infoCommand);
+  bot.command(CMD.status, statusCommand);
   bot.command(CMD.extend, extendCommand);
   bot.command(CMD.registration, registrationCommand);
   bot.command(CMD.rupor, ruporCommand);

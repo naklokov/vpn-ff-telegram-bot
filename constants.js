@@ -7,6 +7,7 @@ const CMD = {
   start: "start",
   registration: "registration",
   info: "info",
+  status: "status",
   help: "help",
   extend: "extend",
   rupor: "rupor",
