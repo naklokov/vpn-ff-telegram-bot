@@ -22,7 +22,6 @@ const syncActiveUserSheduler = async () => {
   }
 };
 const runSyncActiveUserSheduler = (interval = "0/15 * * * *") =>
-  // каждый час
   cron.schedule(interval, () => {
     syncActiveUserSheduler();
   });
