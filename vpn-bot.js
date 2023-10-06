@@ -2,6 +2,7 @@ const { Telegraf, Scenes, session } = require("telegraf");
 
 const startCommand = require("./commands/start");
 const registrationCommand = require("./commands/registration");
+const ruporCommand = require("./commands/rupor");
 const extendCommand = require("./commands/extend");
 const infoCommand = require("./commands/info");
 const { CMD } = require("./constants");
@@ -9,6 +10,7 @@ const {
   registrationScene,
 } = require("./commands/registration/registrationScene");
 const { extendScene } = require("./commands/extend/extendScene");
+const { ruporScene } = require("./commands/rupor/ruporScene");
 const {
   runSyncActiveUserSheduler,
 } = require("./utils/shedulers/synsActiveUser");
@@ -22,16 +24,11 @@ const {
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
 const setupBot = () => {
-  bot.use((ctx, next) => {
-    console.log(ctx);
-    return next();
-  });
-
   runPaymentNotificationSheduler(bot);
   runToogleUserStatusSheduler();
   runSyncActiveUserSheduler();
 
-  const stage = new Scenes.Stage([registrationScene, extendScene]);
+  const stage = new Scenes.Stage([registrationScene, extendScene, ruporScene]);
   bot.use(session());
   bot.use(stage.middleware());
 
@@ -39,6 +36,7 @@ const setupBot = () => {
   bot.command(CMD.info, infoCommand);
   bot.command(CMD.extend, extendCommand);
   bot.command(CMD.registration, registrationCommand);
+  bot.command(CMD.rupor, ruporCommand);
   bot.command(CMD.help, (ctx) =>
     ctx.reply("Если у вас возникли вопросы, пишите разработчику @naklokov")
   );

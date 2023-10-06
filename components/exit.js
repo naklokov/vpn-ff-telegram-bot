@@ -1,4 +1,4 @@
-const { CMD_TEXT } = require("../../constants");
+const { CMD_TEXT } = require("../constants");
 
 module.exports = {
   registrationExitCommand: (ctx) => {

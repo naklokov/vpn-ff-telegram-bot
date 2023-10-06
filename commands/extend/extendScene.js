@@ -6,8 +6,8 @@ const {
   ADMIN_CHAT_ID,
   CMD_TEXT,
 } = require("../../constants");
-const { exitCommand } = require("../registrationExit");
 const { exitButton } = require("../../components/buttons");
+const { exitCommand } = require("../../components/exit");
 const { usersConnector } = require("../../db");
 
 const extendScene = new Scenes.WizardScene(
@@ -62,15 +62,15 @@ const extendScene = new Scenes.WizardScene(
     } catch (error) {
       ctx.reply("Произошла ошибка при продлении периода");
     } finally {
-      exitCommand(ctx);
+      await exitCommand(ctx);
       ctx.scene.leave();
+      return;
     }
   }
 );
 
-extendScene.hears(CMD_TEXT.exit, (ctx) => {
-  ctx.reply("Вы на главной странице", Markup.removeKeyboard(true));
-  ctx.scene.leave();
+extendScene.hears(CMD_TEXT.exit, async (ctx) => {
+  await ctx.reply("Вы на главной странице", Markup.removeKeyboard(true));
 });
 
 module.exports = { extendScene };

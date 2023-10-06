@@ -7,8 +7,8 @@ const {
   CMD_TEXT,
 } = require("../../constants");
 const instructionsCommand = require("../instructions");
-const { registrationExitCommand } = require("../../commands/registrationExit");
 const { registrationExitButton } = require("../../components/buttons");
+const { registrationExitCommand } = require("../../components/exit");
 const {
   getUserPersonalDataFromContext,
   generatePassword,

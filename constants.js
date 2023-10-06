@@ -1,6 +1,6 @@
 const CMD_TEXT = {
   registrationExit: "Выход из регистрации",
-  exit: "Выход",
+  exit: "Выход на главную",
 };
 
 const CMD = {
@@ -9,6 +9,7 @@ const CMD = {
   info: "info",
   help: "help",
   extend: "extend",
+  rupor: "rupor",
 };
 
 const NOTION_PAGE_ID_MAP = {
@@ -22,6 +23,7 @@ const MONTH_COST = 100;
 const SCENE_IDS = {
   REGISTRATION: "REGISTRATION_SCENE_ID",
   EXTEND: "EXTEND",
+  RUPOR: "RUPOR",
 };
 
 const IOS_INSTRUCTIONS_LINK =
