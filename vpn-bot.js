@@ -40,7 +40,9 @@ const setupBot = () => {
   bot.command(CMD.registration, registrationCommand);
   bot.command(CMD.rupor, ruporCommand);
   bot.command(CMD.help, (ctx) =>
-    ctx.reply("Если у вас возникли вопросы, пишите разработчику @naklokov")
+    ctx.reply(
+      `Если у вас возникли вопросы, пишите разработчику ${process.env.DEVELOPER_CONTACT}`
+    )
   );
 
   return bot;

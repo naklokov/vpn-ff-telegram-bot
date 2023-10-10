@@ -22,7 +22,9 @@ const getNotificationMessage = (expiredDate, phone, chatId) => `
 Николай К
 Тинькофф, Альфа, Сбер 
 
-‼️ После оплаты необходимо отправить в личные сообщения @naklokov:
+‼️ После оплаты необходимо отправить в личные сообщения ${
+  process.env.DEVELOPER_CONTACT
+}:
 - ваш логин (${phone})
 - чек/скрин об оплате
 
