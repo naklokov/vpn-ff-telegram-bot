@@ -97,7 +97,7 @@ const registrationScene = new Scenes.WizardScene(
       // добавление в файл секретов
       await addUserToSecrets(login, password);
 
-      await ctx.reply(
+      ctx.reply(
         `Вы успешно зарегистрированы!\n
 логин: ${login}
 пароль: ${password}`
@@ -111,7 +111,8 @@ const registrationScene = new Scenes.WizardScene(
         error
       );
     } finally {
-      return registrationExitCommand(ctx);
+      registrationExitCommand(ctx);
+      ctx.scene.leave();
     }
   }
 );

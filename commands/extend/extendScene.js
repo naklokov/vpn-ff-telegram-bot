@@ -26,39 +26,52 @@ const extendScene = new Scenes.WizardScene(
     return ctx.wizard.next();
   },
   async (ctx) => {
-    if (!PHONE_REGEXP.test(ctx.message.text)) {
+    const userPhone = ctx.message.text;
+    if (!PHONE_REGEXP.test(userPhone)) {
       ctx.reply("Логин введён некорректно", { ...exitButton });
       return;
     }
 
-    ctx.wizard.state.extend.login = ctx.message.text;
-
+    ctx.wizard.state.extend.login = userPhone;
     ctx.reply("Введите количество месяцев для продления", {
       ...exitButton,
     });
     return ctx.wizard.next();
   },
   async (ctx) => {
-    if (!typeof +ctx.message.text === "number") {
+    const payedMonths = ctx.message.text;
+    if (!typeof +payedMonths === "number") {
       ctx.reply("Количество месяцев введено некорректно", { ...exitButton });
       return;
     }
-    ctx.wizard.state.extend.months = ctx.message.text;
+    ctx.wizard.state.extend.months = payedMonths;
     try {
-      const updatedExpiredDateJs = dayjs().add(
-        +ctx.wizard.state.extend.months,
-        "months"
+      const user = await usersConnector.getUserByPhone(
+        ctx.wizard.state.extend.login
       );
+      const updatedExpiredDateJs = dayjs(
+        user?.isActive ? user?.expiredDate : undefined
+      ).add(+payedMonths, "months");
 
       await usersConnector.updateUserByPhone(ctx.wizard.state.extend.login, {
         expiredDate: updatedExpiredDateJs.toISOString(),
       });
 
-      await ctx.reply(
+      ctx.reply(
         `Пользователь ${ctx.wizard.state.extend.login} успешно продлён на ${
           ctx.wizard.state.extend.months
         } мес до ${updatedExpiredDateJs.format("DD.MM.YYYY")}`
       );
+      if (user?.chatId) {
+        ctx.telegram.sendMessage(
+          user.chatId,
+          `Ваш доступ успешно продлён на ${
+            ctx.wizard.state.extend.months
+          } мес до ${updatedExpiredDateJs.format(
+            "DD.MM.YYYY"
+          )}. Оплата может проходить до 20 минут. Приятного пользования!`
+        );
+      }
     } catch (error) {
       ctx.reply("Произошла ошибка при продлении периода");
     } finally {

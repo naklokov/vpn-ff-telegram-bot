@@ -9,12 +9,12 @@ const userScheme = new mongoose.Schema({
   email: String,
   registrationDate: {
     type: String,
-    default: getRegistrationDate(),
+    default: getRegistrationDate,
     required: true,
   },
   expiredDate: {
     type: String,
-    default: getExpiredDate(),
+    default: getExpiredDate,
   },
   password: { type: String, required: true },
   isActive: { type: Boolean, default: true },
