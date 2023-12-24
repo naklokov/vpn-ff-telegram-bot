@@ -55,7 +55,7 @@ const paymentNotificationSheduler = async (bot) => {
   });
 };
 
-const runPaymentNotificationSheduler = (bot, interval = "0 0 * * *") => {
+const runPaymentNotificationSheduler = (bot, interval = "0 12 * * *") => {
   // каждый день в полдень
   cron.schedule(interval, () => {
     paymentNotificationSheduler(bot);

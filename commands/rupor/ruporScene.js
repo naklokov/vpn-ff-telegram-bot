@@ -31,13 +31,13 @@ const ruporScene = new Scenes.WizardScene(
     } finally {
       await exitCommand(ctx);
       ctx.scene.leave();
-      return;
     }
   }
 );
 
 ruporScene.hears(CMD_TEXT.exit, async (ctx) => {
-  await ctx.reply("Вы на главной странице", Markup.removeKeyboard(true));
+  ctx.reply("Вы на главной странице", Markup.removeKeyboard(true));
+  ctx.scene.leave();
 });
 
 module.exports = { ruporScene };
