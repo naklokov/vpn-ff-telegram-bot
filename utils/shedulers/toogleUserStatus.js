@@ -25,7 +25,7 @@ const toogleUserStatusSheduler = async () => {
   });
 };
 
-const runToogleUserStatusSheduler = (interval = "0/15 * * * *") =>
+const runToogleUserStatusSheduler = (interval = "0/5 * * * *") =>
   cron.schedule(interval, () => {
     toogleUserStatusSheduler();
   });
