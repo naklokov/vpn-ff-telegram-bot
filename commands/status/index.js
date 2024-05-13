@@ -21,8 +21,8 @@ module.exports = async (ctx) => {
 
   ctx.replyWithMarkdown(`
 *Данные для входа*
-- Ваш логин: ${user.phone}
-- Ваш пароль: ${user.password}
+- Ваш логин: \`${user.phone}\`
+- Ваш пароль: \`${user.password}\`
 
 *Состояние подключения*
 - ${statusText}

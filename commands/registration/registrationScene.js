@@ -1,20 +1,20 @@
-const { Scenes, Markup } = require("telegraf");
+const { Scenes, Markup } = require('telegraf');
 const {
   SCENE_IDS,
   EMAIL_REGEXP,
   PHONE_REGEXP,
   ADMIN_CHAT_ID,
   CMD_TEXT,
-} = require("../../constants");
-const instructionsCommand = require("../instructions");
-const { registrationExitButton } = require("../../components/buttons");
-const { registrationExitCommand } = require("../../components/exit");
+} = require('../../constants');
+const instructionsCommand = require('../instructions');
+const { registrationExitButton } = require('../../components/buttons');
+const { registrationExitCommand } = require('../../components/exit');
 const {
   getUserPersonalDataFromContext,
   generatePassword,
-} = require("../../utils/common");
-const { addUserToSecrets } = require("../../utils/secrets");
-const { usersConnector } = require("../../db");
+} = require('../../utils/common');
+const { addUserToSecrets } = require('../../utils/secrets');
+const { usersConnector } = require('../../db');
 
 const registrationScene = new Scenes.WizardScene(
   SCENE_IDS.REGISTRATION,
@@ -28,7 +28,7 @@ const registrationScene = new Scenes.WizardScene(
     ctx.wizard.state.user.name = name;
     ctx.wizard.state.user.chatId = id;
 
-    ctx.reply("Введите ваш номер телефон в формате 79998887766", {
+    ctx.reply('Введите ваш номер телефон в формате 79998887766', {
       ...registrationExitButton,
     });
     return ctx.wizard.next();
@@ -36,7 +36,7 @@ const registrationScene = new Scenes.WizardScene(
   async (ctx) => {
     if (!PHONE_REGEXP.test(ctx.message.text)) {
       ctx.reply(
-        "Номер введён некорректно. Введите номер в формате 79998887766",
+        'Номер введён некорректно. Введите номер в формате 79998887766',
         { ...registrationExitButton }
       );
       return;
@@ -44,14 +44,14 @@ const registrationScene = new Scenes.WizardScene(
 
     ctx.wizard.state.user.phone = ctx.message.text;
 
-    ctx.reply("Введите вашу электронную почту в формате: test@mail.ru", {
+    ctx.reply('Введите вашу электронную почту в формате: test@mail.ru', {
       ...registrationExitButton,
     });
     return ctx.wizard.next();
   },
   async (ctx) => {
     if (!EMAIL_REGEXP.test(ctx.message.text)) {
-      ctx.reply("Введите корректную почту в формате: test@mail.ru", {
+      ctx.reply('Введите корректную почту в формате: test@mail.ru', {
         ...registrationExitButton,
       });
       return;
@@ -71,7 +71,7 @@ const registrationScene = new Scenes.WizardScene(
         ctx.wizard.state.user.phone,
         ctx.wizard.state.user
       );
-      await ctx.reply("Ваши данные регистрации обновлены");
+      await ctx.reply('Ваши данные регистрации обновлены');
       registrationExitCommand(ctx);
       return;
     }
@@ -82,9 +82,15 @@ const registrationScene = new Scenes.WizardScene(
       existedUserByPhone &&
       ctx.wizard.state.user.chatId !== ADMIN_CHAT_ID
     ) {
-      await ctx.reply("Данный пользователь уже зарегистрирован");
+      await ctx.reply('Данный пользователь уже зарегистрирован');
       registrationExitCommand(ctx);
       return;
+    }
+
+    // проверяем наличие реферральной ссылки у пользователя
+    const referralUserLogin = ctx.session.referralUserLogin;
+    if (referralUserLogin) {
+      ctx.wizard.state.user.referralUserLogin = referralUserLogin;
     }
 
     const login = ctx.wizard.state.user.phone;
@@ -97,17 +103,19 @@ const registrationScene = new Scenes.WizardScene(
       // добавление в файл секретов
       await addUserToSecrets(login, password);
 
-      ctx.reply(
-        `Вы успешно зарегистрированы!\n
-логин: ${login}
-пароль: ${password}`
+      ctx.replyWithMarkdown(
+        `Вы успешно зарегистрированы!\\n
+логин: \`${login}\`
+пароль: \`${password}\``,
+        { parse_mode: 'Markdown' }
       );
       await instructionsCommand(ctx);
     } catch (error) {
       await usersConnector.deleteUser(ctx.wizard.state.user.chatId);
-      ctx.reply("Произошла ошибка при регистрации, обратитесь к разработчку");
+      ctx.reply('Произошла ошибка при регистрации, обратитесь к разработчку');
       console.log(
-        "Произошла ошибка при регистрации пользователя " + user.login,
+        'Произошла ошибка при регистрации пользователя ' +
+          ctx.wizard.state.user.login,
         error
       );
     } finally {
@@ -118,7 +126,7 @@ const registrationScene = new Scenes.WizardScene(
 );
 
 registrationScene.hears(CMD_TEXT.registrationExit, (ctx) => {
-  ctx.reply("Вы на главной странице", Markup.removeKeyboard(true));
+  ctx.reply('Вы на главной странице', Markup.removeKeyboard(true));
   ctx.scene.leave();
 });
 

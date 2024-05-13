@@ -1,8 +1,8 @@
-const { Scenes, Markup } = require("telegraf");
-const { SCENE_IDS, CMD_TEXT, ADMIN_CHAT_ID } = require("../../constants");
-const { exitCommand } = require("../../components/exit");
-const { exitButton } = require("../../components/buttons");
-const { usersConnector } = require("../../db");
+const { Scenes, Markup } = require('telegraf');
+const { SCENE_IDS, CMD_TEXT, ADMIN_CHAT_ID } = require('../../constants');
+const { exitCommand } = require('../../components/exit');
+const { exitButton } = require('../../components/buttons');
+const { usersConnector } = require('../../db');
 
 const ruporScene = new Scenes.WizardScene(
   SCENE_IDS.RUPOR,
@@ -12,7 +12,7 @@ const ruporScene = new Scenes.WizardScene(
       return;
     }
 
-    await ctx.reply("Введите текст сообщения всем пользователям", {
+    await ctx.reply('Введите текст сообщения всем пользователям', {
       ...exitButton,
     });
     return ctx.wizard.next();
@@ -27,16 +27,17 @@ const ruporScene = new Scenes.WizardScene(
         }
       });
     } catch (error) {
-      await ctx.reply("Произошла ошибка при отправке сообщения");
+      ctx.reply('Произошла ошибка при отправке сообщения');
+      console.error(error);
     } finally {
-      await exitCommand(ctx);
+      exitCommand(ctx);
       ctx.scene.leave();
     }
   }
 );
 
 ruporScene.hears(CMD_TEXT.exit, async (ctx) => {
-  ctx.reply("Вы на главной странице", Markup.removeKeyboard(true));
+  ctx.reply('Вы на главной странице', Markup.removeKeyboard(true));
   ctx.scene.leave();
 });
 

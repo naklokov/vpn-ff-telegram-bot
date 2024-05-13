@@ -1,0 +1,25 @@
+module.exports = {
+    arrowParens: 'always',
+    bracketSpacing: true,
+    endOfLine: 'auto',
+    htmlWhitespaceSensitivity: 'css',
+    insertPragma: false,
+    bracketSameLine: false,
+    jsxSingleQuote: false,
+    printWidth: 80,
+    proseWrap: 'preserve',
+    quoteProps: 'as-needed',
+    requirePragma: false,
+    singleQuote: true,
+    tabWidth: 2,
+    trailingComma: 'es5',
+    useTabs: false,
+    vueIndentScriptAndStyle: false,
+    parser: 'typescript',
+    overrides: [
+        {
+            files: '*.json',
+            options: { parser: 'json' },
+        },
+    ],
+};
