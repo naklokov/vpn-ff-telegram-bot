@@ -103,11 +103,13 @@ const registrationScene = new Scenes.WizardScene(
       // добавление в файл секретов
       await addUserToSecrets(login, password);
 
-      ctx.replyWithMarkdown(
-        `Вы успешно зарегистрированы!\\n
+      ctx.reply(
+        `Вы успешно зарегистрированы\\!
+_Логин и пароль ниже копируются по клику_
+
 логин: \`${login}\`
 пароль: \`${password}\``,
-        { parse_mode: 'Markdown' }
+        { parse_mode: 'MarkdownV2' }
       );
       await instructionsCommand(ctx);
     } catch (error) {

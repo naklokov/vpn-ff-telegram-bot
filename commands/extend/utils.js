@@ -8,7 +8,7 @@ const updateReferralUser = async (ctx) => {
 
   if (extendedUser?.referralUserLogin) {
     const isFirstPayment = dayjs(extendedUser.registrationDate).isSame(
-      dayjs(extendedUser.expiredDate).subtract(1, 'month')
+      dayjs(extendedUser.expiredDate).subtract(2, 'month')
     );
 
     if (isFirstPayment) {
