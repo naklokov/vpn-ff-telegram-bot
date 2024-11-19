@@ -103,14 +103,7 @@ const registrationScene = new Scenes.WizardScene(
       // добавление в файл секретов
       await addUserToSecrets(login, password);
 
-      ctx.reply(
-        `Вы успешно зарегистрированы\\!
-_Логин и пароль ниже копируются по клику_
-
-логин: \`${login}\`
-пароль: \`${password}\``,
-        { parse_mode: 'MarkdownV2' }
-      );
+      ctx.reply('Вы успешно зарегистрированы');
       await instructionsCommand(ctx);
     } catch (error) {
       await usersConnector.deleteUser(ctx.wizard.state.user.chatId);

@@ -5,6 +5,7 @@ const registrationCommand = require('./commands/registration');
 const ruporCommand = require('./commands/rupor');
 const extendCommand = require('./commands/extend');
 const infoCommand = require('./commands/info');
+const instructionsCommand = require('./commands/instructions');
 const referralCommand = require('./commands/referral');
 const statusCommand = require('./commands/status');
 const { CMD } = require('./constants');
@@ -39,6 +40,7 @@ const setupBot = () => {
   bot.command(CMD.referral, referralCommand);
   bot.command(CMD.status, statusCommand);
   bot.command(CMD.extend, extendCommand);
+  bot.command(CMD.instructions, instructionsCommand);
   bot.command(CMD.registration, registrationCommand);
   bot.command(CMD.rupor, ruporCommand);
   bot.command(CMD.help, (ctx) =>

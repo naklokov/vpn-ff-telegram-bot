@@ -10,6 +10,7 @@ const CMD = {
   referral: 'referral',
   status: 'status',
   help: 'help',
+  instructions: 'instructions',
   extend: 'extend',
   rupor: 'rupor',
 };
