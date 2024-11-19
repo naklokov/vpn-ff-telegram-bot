@@ -7,22 +7,25 @@ const updateReferralUser = async (ctx) => {
   );
 
   if (extendedUser?.referralUserLogin) {
-    const isFirstPayment = dayjs(extendedUser.registrationDate).isSame(
-      dayjs(extendedUser.expiredDate).subtract(2, 'month')
+    const isNeedBonus = dayjs(extendedUser.registrationDate).isAfter(
+      dayjs(extendedUser.expiredDate).subtract(1, 'month').subtract(2, 'days')
     );
 
-    if (isFirstPayment) {
+    // если продления больше чем дата регистрации на 1 месяц и два дня, то даём бонус
+    if (isNeedBonus) {
       const referralUser = await usersConnector.getUserByPhone(
         extendedUser?.referralUserLogin
       );
+
       const bonusExpiredDate = dayjs(referralUser?.expiredDate).add(
-        1,
+        2,
         'months'
       );
       await usersConnector.updateUserByPhone(referralUser?.phone, {
         expiredDate: bonusExpiredDate.toISOString(),
       });
-      ctx.reply(
+      await ctx.telegram.sendMessage(
+        referralUser?.chatId,
         `Ваш период использования продлён за счёт реферальной программы до ${bonusExpiredDate.format('DD.MM.YYYY')}
   
 Спасибо, что рекомендуете наш ВПН ❤️`
