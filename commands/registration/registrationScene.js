@@ -87,6 +87,9 @@ const registrationScene = new Scenes.WizardScene(
       return;
     }
 
+    // Миграция на новый ВПН
+    // ctx.wizard.state.user.isVless = true;
+
     // проверяем наличие реферральной ссылки у пользователя
     const referralUserLogin = ctx.session.referralUserLogin;
     if (referralUserLogin) {

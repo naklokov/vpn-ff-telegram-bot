@@ -1,13 +1,13 @@
-const cron = require("node-cron");
-const { usersConnector } = require("../../db");
-const dayjs = require("dayjs");
+const cron = require('node-cron');
+const { usersConnector } = require('../../db');
+const dayjs = require('dayjs');
 
 const toogleUserStatusSheduler = async () => {
   const users = await usersConnector.getUsers();
   const currentDateJs = dayjs();
 
   users.forEach(async ({ isActive, expiredDate, phone }) => {
-    const expiredDateJs = dayjs(expiredDate).endOf("day");
+    const expiredDateJs = dayjs(expiredDate).endOf('day');
 
     const isExpired = currentDateJs.isAfter(expiredDateJs);
 
@@ -25,7 +25,7 @@ const toogleUserStatusSheduler = async () => {
   });
 };
 
-const runToogleUserStatusSheduler = (interval = "0/5 * * * *") =>
+const runToogleUserStatusSheduler = (interval = '* * * * *') =>
   cron.schedule(interval, () => {
     toogleUserStatusSheduler();
   });
