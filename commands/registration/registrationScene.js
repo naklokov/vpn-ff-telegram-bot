@@ -88,7 +88,7 @@ const registrationScene = new Scenes.WizardScene(
     }
 
     // Миграция на новый ВПН
-    // ctx.wizard.state.user.isVless = true;
+    ctx.wizard.state.user.isVless = true;
 
     // проверяем наличие реферральной ссылки у пользователя
     const referralUserLogin = ctx.session.referralUserLogin;
@@ -104,10 +104,13 @@ const registrationScene = new Scenes.WizardScene(
       // добавление в БД
       await usersConnector.addUser(ctx.wizard.state.user);
       // добавление в файл секретов
-      await addUserToSecrets(login, password);
+      // await addUserToSecrets(login, password);
 
-      ctx.reply('Вы успешно зарегистрированы');
-      await instructionsCommand(ctx);
+      await ctx.reply('Вы успешно зарегистрированы!');
+      await ctx.reply(
+        'Для получения инструкций по подключению напишите @naklokov'
+      );
+      // await instructionsCommand(ctx);
     } catch (error) {
       await usersConnector.deleteUser(ctx.wizard.state.user.chatId);
       ctx.reply('Произошла ошибка при регистрации, обратитесь к разработчку');
