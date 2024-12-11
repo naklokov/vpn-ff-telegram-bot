@@ -76,9 +76,17 @@ const registrationScene = new Scenes.WizardScene(
     }
 
     // валидация наличия пользователя в БД
-    if (existedUserByChatId && existedUserByPhone && chatId !== ADMIN_CHAT_ID) {
+    if (existedUserByChatId) {
       await ctx.reply("Данный пользователь уже зарегистрирован");
-      registrationExitCommand(ctx);
+      await registrationExitCommand(ctx);
+      await ctx.scene.leave();
+      return;
+    }
+
+    if (existedUserByPhone) {
+      await ctx.reply(`Пользователь с номером ${phone} уже зарегистрирован`);
+      await registrationExitCommand(ctx);
+      await ctx.scene.leave();
       return;
     }
 
