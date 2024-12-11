@@ -12,9 +12,8 @@ const apiClient = new ApiClient(BASE_URL);
 async function getInbounds() {
   try {
     await apiClient.login(VPN_USERNAME, VPN_PASSWORD);
-    const response = await apiClient.get("/panel/inbound/list");
-    console.log("Inbounds:", response.data);
-    return response.data;
+    const response = await apiClient.get("/panel/api/inbounds/list");
+    return response.obj;
   } catch (error) {
     console.error(
       "Error fetching inbounds:",
@@ -32,11 +31,12 @@ async function addClientToInbound(
   try {
     await apiClient.login(VPN_USERNAME, VPN_PASSWORD);
     const newClient = getVlessFullClient({ chatId, email, expiryTime, id });
+    console.log(newClient);
     const response = await apiClient.post("/panel/api/inbounds/addClient", {
       id: inboundId,
       settings: JSON.stringify(newClient),
     });
-    console.log("Client added successfully:", response.data);
+    console.log("Client added successfully", id);
     return response.data;
   } catch (error) {
     console.error(
@@ -59,7 +59,7 @@ async function updateClient(inboundId, { id, chatId, email, expiryTime }) {
         settings: JSON.stringify(updatedClient),
       },
     );
-    console.log("Client updated successfully:", response.data);
+    console.log("Client updated successfully", id);
     return response.data;
   } catch (error) {
     console.error(

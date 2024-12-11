@@ -15,6 +15,12 @@ const CMD = {
   rupor: "rupor",
 };
 
+const CALLBACK_QUERY_DATA = {
+  instructionsIos: "instructions_ios",
+  instructionsAndroid: "instructions_android",
+  instructionsWindows: "instructions_windows",
+};
+
 const NOTION_PAGE_ID_MAP = {
   IOS_INSTRUCTIONS: "0f60ca2d-58af-4834-9eba-abbbb4ecb503",
 };
@@ -35,6 +41,7 @@ const ANDROID_INSTRUCTIONS_LINK =
   "https://www.notion.so/naklokov/android-b694609f436f4cb086fd620801bd5540";
 
 const EMAIL_REGEXP =
+  // eslint-disable-next-line no-useless-escape
   /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
 
 const PHONE_REGEXP = /^7[0-9]{10}$/i;
@@ -44,8 +51,6 @@ const FREE_PERIOD_MONTH = 1;
 const SECRET_ROW_REGEXP = /^(.+) : EAP "(.+)"$/i;
 
 const VPN_DB_CONNECTION = process.env.MONGO_URL + "vpn";
-
-const VLESS_INBOUND_ID = 2;
 
 module.exports = {
   CMD,
@@ -61,5 +66,5 @@ module.exports = {
   SECRET_ROW_REGEXP,
   ADMIN_CHAT_ID,
   MONTH_COST,
-  VLESS_INBOUND_ID,
+  CALLBACK_QUERY_DATA,
 };

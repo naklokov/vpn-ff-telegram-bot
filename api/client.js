@@ -28,7 +28,7 @@ class ApiClient {
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
       });
 
-      console.log("Login successful:", response.data);
+      console.log("Login successful", username);
 
       // Обновление cookie из заголовков ответа
       const setCookie = response.headers["set-cookie"];
@@ -51,7 +51,6 @@ class ApiClient {
   async get(endpoint, params = {}) {
     try {
       const response = await this.client.get(endpoint, { params });
-      console.log(`GET ${endpoint} successful:`, response.data);
       return response.data;
     } catch (error) {
       console.error(
@@ -66,7 +65,6 @@ class ApiClient {
   async post(endpoint, data = {}) {
     try {
       const response = await this.client.post(endpoint, data);
-      console.log(`POST ${endpoint} successful:`, response.data);
       return response.data;
     } catch (error) {
       console.error(

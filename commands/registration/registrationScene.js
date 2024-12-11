@@ -5,19 +5,18 @@ const {
   PHONE_REGEXP,
   ADMIN_CHAT_ID,
   CMD_TEXT,
-  VLESS_INBOUND_ID,
 } = require("../../constants");
 const instructionsCommand = require("../instructions");
 const { registrationExitButton } = require("../../components/buttons");
 const { registrationExitCommand } = require("../../components/exit");
+const { getSuccessReply } = require("./constants");
 const {
   getUserPersonalDataFromContext,
   generatePassword,
-  getExpiredDate,
 } = require("../../utils/common");
+const { addVlessUser } = require("../../utils/vless");
 // const { addUserToSecrets } = require('../../utils/secrets');
 const { usersConnector } = require("../../db");
-const { addClientToInbound } = require("../../api/vless");
 
 const registrationScene = new Scenes.WizardScene(
   SCENE_IDS.REGISTRATION,
@@ -60,7 +59,7 @@ const registrationScene = new Scenes.WizardScene(
       return;
     }
     ctx.wizard.state.user.email = ctx.message.text;
-    const { chatId, email, phone } = ctx.wizard.state.user;
+    const { chatId, phone } = ctx.wizard.state.user;
 
     // Миграция на новый ВПН
     ctx.wizard.state.user.isVless = true;
@@ -95,20 +94,13 @@ const registrationScene = new Scenes.WizardScene(
     try {
       // добавление в БД
       await usersConnector.addUser(ctx.wizard.state.user);
+      // добавление пользователя в консоль VPN
+      await addVlessUser({ chatId, phone });
 
-      const expiryTime = Math.floor(getExpiredDate().getTime());
-      await addClientToInbound(VLESS_INBOUND_ID, {
-        chatId,
-        email,
-        id: phone,
-        expiryTime,
+      await ctx.reply(getSuccessReply(), {
+        parse_mode: "MarkdownV2",
       });
-
-      await ctx.reply("Вы успешно зарегистрированы!");
-      await ctx.reply(
-        "Для получения инструкций по подключению напишите @naklokov",
-      );
-      // await instructionsCommand(ctx);
+      await instructionsCommand(ctx);
     } catch (error) {
       await usersConnector.deleteUser(ctx.wizard.state.user.chatId);
       ctx.reply("Произошла ошибка при регистрации, обратитесь к разработчку");

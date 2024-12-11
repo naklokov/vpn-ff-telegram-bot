@@ -5,6 +5,7 @@ const getVlessFullClient = ({ id, chatId, email, expiryTime }) => {
         id,
         flow: "",
         email,
+        reset: 0,
         limitIp: 0,
         totalGB: 0,
         expiryTime,
