@@ -1,13 +1,13 @@
-const { Scenes, Markup } = require('telegraf');
+const { Scenes, Markup } = require("telegraf");
 const {
   SCENE_IDS,
   PHONE_REGEXP,
   ADMIN_CHAT_ID,
   CMD_TEXT,
-} = require('../../constants');
-const { exitButton } = require('../../components/buttons');
-const { exitCommand } = require('../../components/exit');
-const { updateReferralUser, updateUserExpiredDate } = require('./utils');
+} = require("../../constants");
+const { exitButton } = require("../../components/buttons");
+const { exitCommand } = require("../../components/exit");
+const { updateReferralUser, updateUserExpiredDate } = require("./utils");
 
 const extendScene = new Scenes.WizardScene(
   SCENE_IDS.EXTEND,
@@ -19,7 +19,7 @@ const extendScene = new Scenes.WizardScene(
     // инициализация формы пользователя
     ctx.wizard.state.extend = {};
 
-    ctx.reply('Введите логин пользователя', {
+    ctx.reply("Введите логин пользователя", {
       ...exitButton,
     });
     return ctx.wizard.next();
@@ -27,20 +27,20 @@ const extendScene = new Scenes.WizardScene(
   async (ctx) => {
     const userPhone = ctx.message.text;
     if (!PHONE_REGEXP.test(userPhone)) {
-      ctx.reply('Логин введён некорректно', { ...exitButton });
+      ctx.reply("Логин введён некорректно", { ...exitButton });
       return;
     }
 
     ctx.wizard.state.extend.login = userPhone;
-    ctx.reply('Введите количество месяцев для продления', {
+    ctx.reply("Введите количество месяцев для продления", {
       ...exitButton,
     });
     return ctx.wizard.next();
   },
   async (ctx) => {
     const payedMonths = ctx.message.text;
-    if (!typeof +payedMonths === 'number') {
-      ctx.reply('Количество месяцев введено некорректно', { ...exitButton });
+    if (!typeof +payedMonths === "number") {
+      ctx.reply("Количество месяцев введено некорректно", { ...exitButton });
       return;
     }
     ctx.wizard.state.extend.months = payedMonths;
@@ -52,17 +52,17 @@ const extendScene = new Scenes.WizardScene(
       // обновляем expiredDate пользователя и высылаем ему уведомление
       await updateUserExpiredDate(ctx);
     } catch (error) {
-      ctx.reply('Произошла ошибка при продлении периода');
+      ctx.reply("Произошла ошибка при продлении периода");
       console.error(error);
     } finally {
       exitCommand(ctx);
       ctx.scene.leave();
     }
-  }
+  },
 );
 
 extendScene.hears(CMD_TEXT.exit, async (ctx) => {
-  ctx.reply('Вы на главной странице', Markup.removeKeyboard(true));
+  ctx.reply("Вы на главной странице", Markup.removeKeyboard(true));
   ctx.scene.leave();
 });
 

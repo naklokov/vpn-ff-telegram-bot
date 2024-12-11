@@ -48,7 +48,7 @@ const paymentNotificationSheduler = async (bot) => {
         console.log(`Пользователь ${phone} уведомлён об необходимости оплаты`);
         bot.telegram.sendMessage(
           sendedChatId,
-          getNotificationMessage(expiredDate, phone, chatId)
+          getNotificationMessage(expiredDate, phone, chatId),
         );
       }
     }

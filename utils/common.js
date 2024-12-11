@@ -1,20 +1,7 @@
 const { readFileSync } = require("fs");
-const { Client } = require("@notionhq/client");
-const { NotionToMarkdown } = require("notion-to-md");
 const { FREE_PERIOD_MONTH } = require("../constants");
 
 const getMarkdownContentSync = (filename) => readFileSync(filename, "utf-8");
-
-const getNotionPage = async (pageId) => {
-  const notion = new Client({
-    auth: process.env.NOTION_TOKEN,
-  });
-  const n2m = new NotionToMarkdown({ notionClient: notion });
-  const mdblocks = await n2m.pageToMarkdown(pageId);
-  const mdString = n2m.toMarkdownString(mdblocks);
-
-  return mdString;
-};
 
 const generatePassword = (length = 6) => {
   const charset = "abcdefghijklmnopqrstuvwxyz0123456789";
@@ -36,14 +23,21 @@ const getRegistrationDate = () => new Date().toISOString();
 
 const getExpiredDate = () => {
   const curDate = new Date();
-  return new Date(
-    curDate.setMonth(curDate.getMonth() + FREE_PERIOD_MONTH)
-  ).toISOString();
+  return new Date(curDate.setMonth(curDate.getMonth() + FREE_PERIOD_MONTH));
+};
+
+const generateUuidv4 = () => {
+  return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, (c) =>
+    (
+      +c ^
+      (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (+c / 4)))
+    ).toString(16),
+  );
 };
 
 module.exports = {
+  generateUuidv4,
   getMarkdownContentSync,
-  getNotionPage,
   generatePassword,
   getUserPersonalDataFromContext,
   getExpiredDate,

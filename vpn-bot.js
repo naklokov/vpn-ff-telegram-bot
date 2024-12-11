@@ -1,28 +1,28 @@
-const { Telegraf, Scenes, session } = require('telegraf');
+const { Telegraf, Scenes, session } = require("telegraf");
 
-const startCommand = require('./commands/start');
-const registrationCommand = require('./commands/registration');
-const ruporCommand = require('./commands/rupor');
-const extendCommand = require('./commands/extend');
-const infoCommand = require('./commands/info');
-const instructionsCommand = require('./commands/instructions');
-const referralCommand = require('./commands/referral');
-const statusCommand = require('./commands/status');
-const { CMD } = require('./constants');
+const startCommand = require("./commands/start");
+const registrationCommand = require("./commands/registration");
+const ruporCommand = require("./commands/rupor");
+const extendCommand = require("./commands/extend");
+const infoCommand = require("./commands/info");
+const instructionsCommand = require("./commands/instructions");
+const referralCommand = require("./commands/referral");
+const statusCommand = require("./commands/status");
+const { CMD } = require("./constants");
 const {
   registrationScene,
-} = require('./commands/registration/registrationScene');
-const { extendScene } = require('./commands/extend/extendScene');
-const { ruporScene } = require('./commands/rupor/ruporScene');
+} = require("./commands/registration/registrationScene");
+const { extendScene } = require("./commands/extend/extendScene");
+const { ruporScene } = require("./commands/rupor/ruporScene");
 const {
   runSyncActiveUserSheduler,
-} = require('./utils/shedulers/synsActiveUser');
+} = require("./utils/shedulers/synsActiveUser");
 const {
   runPaymentNotificationSheduler,
-} = require('./utils/shedulers/paymentNotification');
+} = require("./utils/shedulers/paymentNotification");
 const {
   runToogleUserStatusSheduler,
-} = require('./utils/shedulers/toogleUserStatus');
+} = require("./utils/shedulers/toogleUserStatus");
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
@@ -45,15 +45,15 @@ const setupBot = () => {
   bot.command(CMD.rupor, ruporCommand);
   bot.command(CMD.help, (ctx) =>
     ctx.reply(
-      `Если у вас возникли вопросы, пишите разработчику ${process.env.DEVELOPER_CONTACT}`
-    )
+      `Если у вас возникли вопросы, пишите разработчику ${process.env.DEVELOPER_CONTACT}`,
+    ),
   );
 
   return bot;
 };
 
 // Enable graceful stop
-process.once('SIGINT', () => bot.stop('SIGINT'));
-process.once('SIGTERM', () => bot.stop('SIGTERM'));
+process.once("SIGINT", () => bot.stop("SIGINT"));
+process.once("SIGTERM", () => bot.stop("SIGTERM"));
 
 module.exports = setupBot;

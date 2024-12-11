@@ -1,22 +1,22 @@
 const CMD_TEXT = {
-  registrationExit: 'Выход из регистрации',
-  exit: 'Выход на главную',
+  registrationExit: "Выход из регистрации",
+  exit: "Выход на главную",
 };
 
 const CMD = {
-  start: 'start',
-  registration: 'registration',
-  info: 'info',
-  referral: 'referral',
-  status: 'status',
-  help: 'help',
-  instructions: 'instructions',
-  extend: 'extend',
-  rupor: 'rupor',
+  start: "start",
+  registration: "registration",
+  info: "info",
+  referral: "referral",
+  status: "status",
+  help: "help",
+  instructions: "instructions",
+  extend: "extend",
+  rupor: "rupor",
 };
 
 const NOTION_PAGE_ID_MAP = {
-  IOS_INSTRUCTIONS: '0f60ca2d-58af-4834-9eba-abbbb4ecb503',
+  IOS_INSTRUCTIONS: "0f60ca2d-58af-4834-9eba-abbbb4ecb503",
 };
 
 const ADMIN_CHAT_ID = 332529322;
@@ -24,15 +24,15 @@ const ADMIN_CHAT_ID = 332529322;
 const MONTH_COST = 100;
 
 const SCENE_IDS = {
-  REGISTRATION: 'REGISTRATION_SCENE_ID',
-  EXTEND: 'EXTEND',
-  RUPOR: 'RUPOR',
+  REGISTRATION: "REGISTRATION_SCENE_ID",
+  EXTEND: "EXTEND",
+  RUPOR: "RUPOR",
 };
 
 const IOS_INSTRUCTIONS_LINK =
-  'https://www.notion.so/naklokov/iOS-0f60ca2d58af48349ebaabbbb4ecb503';
+  "https://www.notion.so/naklokov/iOS-0f60ca2d58af48349ebaabbbb4ecb503";
 const ANDROID_INSTRUCTIONS_LINK =
-  'https://www.notion.so/naklokov/android-b694609f436f4cb086fd620801bd5540';
+  "https://www.notion.so/naklokov/android-b694609f436f4cb086fd620801bd5540";
 
 const EMAIL_REGEXP =
   /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
@@ -43,7 +43,9 @@ const FREE_PERIOD_MONTH = 1;
 
 const SECRET_ROW_REGEXP = /^(.+) : EAP "(.+)"$/i;
 
-const VPN_DB_CONNECTION = process.env.MONGO_URL + 'vpn';
+const VPN_DB_CONNECTION = process.env.MONGO_URL + "vpn";
+
+const VLESS_INBOUND_ID = 2;
 
 module.exports = {
   CMD,
@@ -59,4 +61,5 @@ module.exports = {
   SECRET_ROW_REGEXP,
   ADMIN_CHAT_ID,
   MONTH_COST,
+  VLESS_INBOUND_ID,
 };

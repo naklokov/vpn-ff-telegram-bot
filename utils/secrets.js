@@ -25,7 +25,7 @@ const secretsFileToUsers = async () => {
 const usersToSecretsFile = async (users) => {
   const usersSecretsRow = users.reduce(
     (acc, cur) => acc + `${cur.login} : EAP "${cur.password}"\n`,
-    ""
+    "",
   );
   await fs.writeFile(SECRETS_FILE_PATH, FIRST_REQUIRED_ROW + usersSecretsRow);
 };
@@ -38,7 +38,7 @@ const addUserToSecrets = async (login, password) => {
   } catch (error) {
     console.log(
       "Произошла ошибка при добавлении пользователя в файл секретов " + login,
-      error
+      error,
     );
     throw error;
   }
@@ -53,7 +53,7 @@ const removeUserFromSecrets = async (login) => {
   } catch (error) {
     console.log(
       "Произошла ошибка при удалении из файла секретов " + login,
-      error
+      error,
     );
     throw error;
   }

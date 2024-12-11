@@ -1,7 +1,7 @@
-const dayjs = require('dayjs');
-const { usersConnector } = require('../../db');
-const { getUserPersonalDataFromContext } = require('../../utils/common');
-const { CMD } = require('../../constants');
+const dayjs = require("dayjs");
+const { usersConnector } = require("../../db");
+const { getUserPersonalDataFromContext } = require("../../utils/common");
+const { CMD } = require("../../constants");
 
 module.exports = async (ctx) => {
   const { id: chatId } = getUserPersonalDataFromContext(ctx);
@@ -9,15 +9,15 @@ module.exports = async (ctx) => {
 
   if (!user?.chatId) {
     ctx.reply(
-      `Вы пока что не зарегистрированы в системе, пройдите регистрацию 👉 /${CMD.registration}`
+      `Вы пока что не зарегистрированы в системе, пройдите регистрацию 👉 /${CMD.registration}`,
     );
     return;
   }
 
-  const statusText = user.isActive ? '🟢 Активен' : '🔴 Не активен';
+  const statusText = user.isActive ? "🟢 Активен" : "🔴 Не активен";
   const expiredDateText = `Дата окончания оплаченного периода: ${dayjs(
-    user.expiredDate
-  ).format('DD.MM.YYYY')}`;
+    user.expiredDate,
+  ).format("DD.MM.YYYY")}`;
 
   ctx.replyWithMarkdown(`
 *Данные для входа* (_копируются по клику_)
