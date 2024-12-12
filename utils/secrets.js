@@ -2,6 +2,8 @@ const fs = require("fs/promises");
 const { SECRET_ROW_REGEXP } = require("../constants");
 const { restartService } = require("../scripts/restart-service");
 
+const logger = require("../utils/logger");
+
 const { SECRETS_FILE_PATH } = process.env;
 
 const FIRST_REQUIRED_ROW = 'v1538375.hosted-by-vdsina.ru : RSA "privkey.pem"\n';
@@ -36,9 +38,8 @@ const addUserToSecrets = async (login, password) => {
     await usersToSecretsFile([...users, { login, password }]);
     restartService();
   } catch (error) {
-    console.log(
-      "Произошла ошибка при добавлении пользователя в файл секретов " + login,
-      error,
+    logger.error(
+      `Произошла ошибка при добавлении пользователя в файл секретов логина ${login} : ${error}`,
     );
     throw error;
   }
@@ -51,9 +52,8 @@ const removeUserFromSecrets = async (login) => {
     await usersToSecretsFile(filtered);
     restartService();
   } catch (error) {
-    console.log(
-      "Произошла ошибка при удалении из файла секретов " + login,
-      error,
+    logger.error(
+      `Произошла ошибка при удалении из файла секретов логина ${login} : ${error}`,
     );
     throw error;
   }

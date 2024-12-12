@@ -3,6 +3,8 @@ const dayjs = require("dayjs");
 const { usersConnector } = require("../../db");
 const { MONTH_COST, ADMIN_CHAT_ID } = require("../../constants");
 
+const logger = require("../logger");
+
 const getNotificationMessage = (expiredDate, phone, chatId) => `
 Доброго времени суток! 👋  
 
@@ -39,13 +41,13 @@ const paymentNotificationSheduler = async (bot) => {
   const users = await usersConnector.getUsers();
   const currentDate = dayjs();
 
-  users.forEach(({ expiredDate, chatId, phone, isActive, name }) => {
+  users.forEach(({ expiredDate, chatId, phone, isActive }) => {
     if (isActive) {
       if (
         dayjs(expiredDate).subtract(2, "day").isBefore(currentDate.endOf("day"))
       ) {
         const sendedChatId = chatId ? chatId : ADMIN_CHAT_ID;
-        console.log(`Пользователь ${phone} уведомлён об необходимости оплаты`);
+        logger.info(`Пользователь ${phone} уведомлён об необходимости оплаты`);
         bot.telegram.sendMessage(
           sendedChatId,
           getNotificationMessage(expiredDate, phone, chatId),

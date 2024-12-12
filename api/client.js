@@ -1,5 +1,6 @@
 const axios = require("axios");
 const https = require("https");
+const logger = require("../utils/logger");
 
 class ApiClient {
   constructor(baseURL) {
@@ -28,7 +29,7 @@ class ApiClient {
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
       });
 
-      console.log("Login successful", username);
+      logger.info(`LOGIN success: ${username}`);
 
       // Обновление cookie из заголовков ответа
       const setCookie = response.headers["set-cookie"];
@@ -39,9 +40,8 @@ class ApiClient {
 
       return response.data;
     } catch (error) {
-      console.error(
-        "Login failed:",
-        error.response ? error.response.data : error.message,
+      logger.error(
+        `LOGIN failed: ${error.response ? error.response.data : error.message}`,
       );
       throw error;
     }
@@ -53,9 +53,8 @@ class ApiClient {
       const response = await this.client.get(endpoint, { params });
       return response.data;
     } catch (error) {
-      console.error(
-        `GET ${endpoint} failed:`,
-        error.response ? error.response.data : error.message,
+      logger.error(
+        `GET failed: ${error.response ? error.response.data : error.message}`,
       );
       throw error;
     }
@@ -67,9 +66,8 @@ class ApiClient {
       const response = await this.client.post(endpoint, data);
       return response.data;
     } catch (error) {
-      console.error(
-        `POST ${endpoint} failed:`,
-        error.response ? error.response.data : error.message,
+      logger.error(
+        `POST failed: ${error.response ? error.response.data : error.message}`,
       );
       throw error;
     }

@@ -5,7 +5,7 @@ const { secretsFileToUsers } = require("../utils/secrets");
 const migrateFromSecretsFileToDb = async () => {
   const users = await secretsFileToUsers();
 
-  console.log(users);
+  console.log("Пользователи для миграции", users);
 
   users.forEach(async ({ login, password }) => {
     await usersConnector.addUser({ phone: login, password });

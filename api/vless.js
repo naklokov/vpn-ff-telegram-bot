@@ -3,6 +3,7 @@ const {
 } = require("process");
 const { ApiClient } = require("./client");
 const { getVlessFullClient } = require("./utils");
+const logger = require("../utils/logger");
 
 const BASE_URL = `https://${VPN_HOST}:${VPN_PORT}${VPN_WEBBASEPATH}`;
 // Установите базовый URL для API
@@ -15,9 +16,8 @@ async function getInbounds() {
     const response = await apiClient.get("/panel/api/inbounds/list");
     return response.obj;
   } catch (error) {
-    console.error(
-      "Error fetching inbounds:",
-      error.response ? error.response.data : error.message,
+    logger.error(
+      `Error fetching inbounds: ${error.response ? error.response.data : error.message}`,
     );
     throw error;
   }
@@ -36,12 +36,11 @@ async function addClientToInbound(
       id: inboundId,
       settings: JSON.stringify(newClient),
     });
-    console.log("Client added successfully", id);
+    logger.info(`Client added successfully ${id}`);
     return response.data;
   } catch (error) {
-    console.error(
-      "Error adding client to inbound:",
-      error.response ? error.response.data : error.message,
+    logger.error(
+      `Error adding client: ${error.response ? error.response.data : error.message}`,
     );
     throw error;
   }
@@ -59,12 +58,11 @@ async function updateClient(inboundId, { id, chatId, email, expiryTime }) {
         settings: JSON.stringify(updatedClient),
       },
     );
-    console.log("Client updated successfully", id);
+    logger.info(`Client updated successfully ${id}`);
     return response.data;
   } catch (error) {
-    console.error(
-      "Error updating client:",
-      error.response ? error.response.data : error.message,
+    logger.info(
+      `Error updating client: ${error.response ? error.response.data : error.message}`,
     );
     throw error;
   }

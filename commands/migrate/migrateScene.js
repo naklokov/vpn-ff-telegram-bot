@@ -36,10 +36,17 @@ const migrateScene = new Scenes.WizardScene(
     try {
       const dbUser = await usersConnector.getUserByPhone(phone);
 
+      if (!dbUser) {
+        ctx.reply(`Пользователь с номером ${phone} отсутствует в БД`);
+        await exitCommand(ctx);
+        await ctx.scene.leave();
+        return;
+      }
+
       // изменение типа пользователя в БД (мигрирован / не мигрирован)
       await usersConnector.updateUserByPhone(phone, { isVless: true });
       // добавление пользователя в консоль VPN
-      const expiryTime = convertToUnixDate(new Date(dbUser.expiredDate));
+      const expiryTime = convertToUnixDate(new Date(dbUser?.expiredDate));
       await addVlessUser({
         chatId: dbUser.chatId,
         phone: dbUser.phone,

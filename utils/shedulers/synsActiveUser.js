@@ -2,6 +2,7 @@ const cron = require("node-cron");
 const { usersConnector } = require("../../db");
 const { usersToSecretsFile } = require("../secrets");
 const { restartService } = require("../../scripts/restart-service");
+const logger = require("../logger");
 
 const syncActiveUserSheduler = async () => {
   const users = await usersConnector.getUsers();
@@ -15,11 +16,10 @@ const syncActiveUserSheduler = async () => {
   try {
     await usersToSecretsFile(activeUsers);
     restartService();
-    console.log("Синхронизация активных пользователей прошла успешно");
+    logger.debug("Синхронизация активных пользователей прошла успешно");
   } catch (error) {
-    console.error(
-      "Произошла ошибка при синхронизации активных пользователей ",
-      error,
+    logger.error(
+      `Произошла ошибка при синхронизации активных пользователей : ${error}`,
     );
   }
 };

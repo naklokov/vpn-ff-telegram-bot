@@ -2,6 +2,8 @@ const cron = require("node-cron");
 const { usersConnector } = require("../../db");
 const dayjs = require("dayjs");
 
+const logger = require("../logger");
+
 const toogleUserStatusSheduler = async () => {
   const users = await usersConnector.getUsers();
   const currentDateJs = dayjs();
@@ -12,13 +14,13 @@ const toogleUserStatusSheduler = async () => {
     const isExpired = currentDateJs.isAfter(expiredDateJs);
 
     if (isActive && isExpired) {
-      console.log(`Пользователь ${phone} деактивирован`);
+      logger.debug(`Пользователь ${phone} деактивирован`);
       await usersConnector.updateUserByPhone(phone, { isActive: false });
       return;
     }
 
     if (!isActive && !isExpired) {
-      console.log(`Пользователь ${phone} активирован`);
+      logger.debug(`Пользователь ${phone} активирован`);
       await usersConnector.updateUserByPhone(phone, { isActive: true });
       return;
     }

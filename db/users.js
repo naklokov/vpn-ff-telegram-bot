@@ -2,6 +2,8 @@ const mongoose = require("mongoose");
 const { getRegistrationDate, getExpiredDate } = require("../utils/common");
 const { VPN_DB_CONNECTION } = require("../constants");
 
+const logger = require("../utils/logger");
+
 const userScheme = new mongoose.Schema({
   chatId: { type: Number },
   name: String,
@@ -29,12 +31,10 @@ const addUser = async (user) => {
   try {
     await mongoose.connect(VPN_DB_CONNECTION);
     await newUser.save();
-    console.log("Пользователь добавлен");
+    logger.info(`Пользователь добавлен в БД ${user.phone}`);
   } catch (error) {
-    console.log(
-      "Произошла ошибка при добавлении пользователя в БД",
-      user.phone,
-      error,
+    logger.info(
+      `Произошла ошибка при добавлении пользователя в БД ${user.phone}: ${error}`,
     );
     throw error;
   }
@@ -46,7 +46,9 @@ const getUsers = async () => {
     const users = User.find({});
     return users;
   } catch (error) {
-    console.log("Произошла ошибка при получении пользователей", error);
+    logger.error(
+      `Произошла ошибка при получении пользователей из БД: ${error}`,
+    );
     throw error;
   }
 };
@@ -57,7 +59,9 @@ const getUserByChatId = async (chatId) => {
     const user = User.findOne({ chatId });
     return user;
   } catch (error) {
-    console.log("Произошла ошибка при получении пользователя", error);
+    logger.error(
+      `Произошла ошибка при получении пользователя по chatId ${chatId}: ${error}`,
+    );
     throw error;
   }
 };
@@ -68,7 +72,9 @@ const getUserByPhone = async (phone) => {
     const user = User.findOne({ phone });
     return user;
   } catch (error) {
-    console.log("Произошла ошибка при получении пользователя", error);
+    logger.error(
+      `Произошла ошибка при получении пользователя по телефону ${phone}: ${error}`,
+    );
     throw error;
   }
 };
@@ -78,7 +84,9 @@ const deleteUser = async (userId) => {
     await mongoose.connect(VPN_DB_CONNECTION);
     await User.deleteOne({ id: userId });
   } catch (error) {
-    console.log("Произошла ошибка при удалении пользователя " + userId, error);
+    logger.error(
+      `Произошла ошибка при удалении пользователя по телефону ${userId}: ${error}`,
+    );
     throw error;
   }
 };
@@ -88,7 +96,9 @@ const updateUserById = async (userId, user) => {
     await mongoose.connect(VPN_DB_CONNECTION);
     await User.updateOne({ id: userId }, { ...user });
   } catch (error) {
-    console.log("Произошла ошибка при удалении пользователя " + userId, error);
+    logger.error(
+      `Произошла ошибка при обновлении пользователя по id ${userId}: ${error}`,
+    );
     throw error;
   }
 };
@@ -98,7 +108,9 @@ const updateUserByPhone = async (phone, user) => {
     await mongoose.connect(VPN_DB_CONNECTION);
     await User.updateOne({ phone }, { ...user });
   } catch (error) {
-    console.log("Произошла ошибка при обновлении пользователя " + phone, error);
+    logger.error(
+      `Произошла ошибка при обновлении пользователя по телефону ${phone}: ${error}`,
+    );
     throw error;
   }
 };
