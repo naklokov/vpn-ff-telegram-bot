@@ -3,7 +3,6 @@ const {
   SCENE_IDS,
   EMAIL_REGEXP,
   PHONE_REGEXP,
-  ADMIN_CHAT_ID,
   CMD_TEXT,
 } = require("../../constants");
 const instructionsCommand = require("../instructions");

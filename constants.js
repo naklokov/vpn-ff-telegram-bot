@@ -12,6 +12,7 @@ const CMD = {
   help: "help",
   instructions: "instructions",
   extend: "extend",
+  migrate: "migrate",
   rupor: "rupor",
 };
 
@@ -32,6 +33,7 @@ const MONTH_COST = 100;
 const SCENE_IDS = {
   REGISTRATION: "REGISTRATION_SCENE_ID",
   EXTEND: "EXTEND",
+  MIGRATE: "MIGRATE",
   RUPOR: "RUPOR",
 };
 

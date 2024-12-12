@@ -26,6 +26,8 @@ const getExpiredDate = () => {
   return new Date(curDate.setMonth(curDate.getMonth() + FREE_PERIOD_MONTH));
 };
 
+const convertToUnixDate = (date) => Math.floor(date.getTime());
+
 const generateUuidv4 = () => {
   return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, (c) =>
     (
@@ -40,6 +42,7 @@ module.exports = {
   getMarkdownContentSync,
   generatePassword,
   getUserPersonalDataFromContext,
+  convertToUnixDate,
   getExpiredDate,
   getRegistrationDate,
 };

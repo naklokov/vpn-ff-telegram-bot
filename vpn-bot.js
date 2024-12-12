@@ -5,6 +5,7 @@ const startCommand = require("./commands/start");
 const registrationCommand = require("./commands/registration");
 const ruporCommand = require("./commands/rupor");
 const extendCommand = require("./commands/extend");
+const migrateCommand = require("./commands/migrate");
 const infoCommand = require("./commands/info");
 const instructionsCommand = require("./commands/instructions");
 const referralCommand = require("./commands/referral");
@@ -15,6 +16,7 @@ const {
 } = require("./commands/registration/registrationScene");
 const { extendScene } = require("./commands/extend/extendScene");
 const { ruporScene } = require("./commands/rupor/ruporScene");
+const { migrateScene } = require("./commands/migrate/migrateScene");
 const {
   runSyncActiveUserSheduler,
 } = require("./utils/shedulers/synsActiveUser");
@@ -33,7 +35,12 @@ const setupBot = () => {
   runToogleUserStatusSheduler();
   runSyncActiveUserSheduler();
 
-  const stage = new Scenes.Stage([registrationScene, extendScene, ruporScene]);
+  const stage = new Scenes.Stage([
+    registrationScene,
+    extendScene,
+    ruporScene,
+    migrateScene,
+  ]);
   bot.use(session());
   bot.use(stage.middleware());
 
@@ -42,6 +49,7 @@ const setupBot = () => {
   bot.command(CMD.referral, referralCommand);
   bot.command(CMD.status, statusCommand);
   bot.command(CMD.extend, extendCommand);
+  bot.command(CMD.migrate, migrateCommand);
   bot.command(CMD.instructions, instructionsCommand);
   bot.command(CMD.registration, registrationCommand);
   bot.command(CMD.rupor, ruporCommand);

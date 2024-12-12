@@ -1,5 +1,5 @@
 const { getInbounds, addClientToInbound } = require("../api/vless");
-const { getExpiredDate } = require("./common");
+const { getExpiredDate, convertToUnixDate } = require("./common");
 
 const { VPN_HOST } = process.env;
 
@@ -19,15 +19,19 @@ const generateVlessConnectionString = ({
 }) =>
   `${serverProtocol}://${userId}@${host}:${port}?type=${serverNetwork}&security=${serverSecurity}&pbk=${serverPublicId}&fp=${serverFingerprint}&sni=${serverName}&sid=${serverShortId}&spx=%2F#${serverDescription}-${userEmail}`;
 
-const addVlessUser = async ({ phone, chatId }) => {
+const addVlessUser = async ({ phone, chatId, expiryTime: inputExpiryTime }) => {
+  const expiryTime = inputExpiryTime
+    ? new Date(inputExpiryTime)
+    : getExpiredDate();
+  const expiryTimeUnix = convertToUnixDate(expiryTime);
   const inbounds = await getInbounds();
   const { id } = inbounds?.[0] ?? {};
-  const expiryTime = Math.floor(getExpiredDate().getTime());
+
   await addClientToInbound(id, {
     chatId,
     email: phone,
     id: phone,
-    expiryTime,
+    expiryTime: expiryTimeUnix,
   });
 };
 

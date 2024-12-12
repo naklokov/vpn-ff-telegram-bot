@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { getExpiredDate, getRegistrationDate } = require("../utils/common");
+const { getRegistrationDate, getExpiredDate } = require("../utils/common");
 const { VPN_DB_CONNECTION } = require("../constants");
 
 const userScheme = new mongoose.Schema({

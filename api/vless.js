@@ -31,7 +31,7 @@ async function addClientToInbound(
   try {
     await apiClient.login(VPN_USERNAME, VPN_PASSWORD);
     const newClient = getVlessFullClient({ chatId, email, expiryTime, id });
-    console.log(newClient);
+
     const response = await apiClient.post("/panel/api/inbounds/addClient", {
       id: inboundId,
       settings: JSON.stringify(newClient),
