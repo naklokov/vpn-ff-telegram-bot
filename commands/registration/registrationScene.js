@@ -36,7 +36,7 @@ const registrationScene = new Scenes.WizardScene(
     return ctx.wizard.next();
   },
   async (ctx) => {
-    if (!PHONE_REGEXP.test(ctx.message.text)) {
+    if (!PHONE_REGEXP.test(ctx?.message?.text)) {
       ctx.reply(
         "Номер введён некорректно. Введите номер в формате 79998887766",
         { ...registrationExitButton },
@@ -44,7 +44,7 @@ const registrationScene = new Scenes.WizardScene(
       return;
     }
 
-    ctx.wizard.state.user.phone = ctx.message.text;
+    ctx.wizard.state.user.phone = ctx.message?.text;
 
     ctx.reply("Введите вашу электронную почту в формате: test@mail.ru", {
       ...registrationExitButton,
@@ -52,13 +52,13 @@ const registrationScene = new Scenes.WizardScene(
     return ctx.wizard.next();
   },
   async (ctx) => {
-    if (!EMAIL_REGEXP.test(ctx.message.text)) {
+    if (!EMAIL_REGEXP.test(ctx?.message?.text)) {
       ctx.reply("Введите корректную почту в формате: test@mail.ru", {
         ...registrationExitButton,
       });
       return;
     }
-    ctx.wizard.state.user.email = ctx.message.text;
+    ctx.wizard.state.user.email = ctx.message?.text;
     const { chatId, phone } = ctx.wizard.state.user;
 
     // Миграция на новый ВПН
