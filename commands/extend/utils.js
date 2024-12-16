@@ -1,5 +1,6 @@
 const { usersConnector } = require("../../db");
 const dayjs = require("dayjs");
+const { updateVlessUser } = require("../../utils/vless");
 
 const updateReferralUser = async (ctx) => {
   const extendedUser = await usersConnector.getUserByPhone(
@@ -35,32 +36,43 @@ const updateReferralUser = async (ctx) => {
 };
 
 const updateUserExpiredDate = async (ctx) => {
-  const user = await usersConnector.getUserByPhone(
+  const dbUser = await usersConnector.getUserByPhone(
     ctx.wizard.state.extend.login,
   );
 
   const payedMonths = ctx.wizard.state.extend.months;
   const updatedExpiredDateJs = dayjs(
-    user?.isActive ? user?.expiredDate : undefined,
+    dbUser?.isActive ? dbUser?.expiredDate : undefined,
   ).add(+payedMonths, "months");
-
   await usersConnector.updateUserByPhone(ctx.wizard.state.extend.login, {
     expiredDate: updatedExpiredDateJs.toISOString(),
+    isVless: true,
   });
 
-  ctx.reply(
+  await updateVlessUser({
+    phone: dbUser.phone,
+    chatId: dbUser.chatId,
+    expiryTime: updatedExpiredDateJs.toDate(),
+  });
+
+  await ctx.reply(
     `Пользователь ${ctx.wizard.state.extend.login} успешно продлён на ${
       ctx.wizard.state.extend.months
     } мес до ${updatedExpiredDateJs.format("DD.MM.YYYY")}`,
   );
-  if (user?.chatId) {
-    ctx.telegram.sendMessage(
-      user.chatId,
+  if (dbUser?.chatId) {
+    await ctx.telegram.sendMessage(
+      dbUser.chatId,
       `Ваш доступ успешно продлён на ${
         ctx.wizard.state.extend.months
       } мес до ${updatedExpiredDateJs.format("DD.MM.YYYY")}
-Оплата может проходить до 20 минут
 Приятного пользования!`,
+    );
+  }
+
+  if (!dbUser.isVless) {
+    await ctx.reply(
+      `Инструкции по подключению нового ВПН вы можете найти по команде /instructions`,
     );
   }
 };

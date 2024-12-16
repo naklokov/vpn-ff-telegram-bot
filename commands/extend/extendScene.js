@@ -38,8 +38,8 @@ const extendScene = new Scenes.WizardScene(
     return ctx.wizard.next();
   },
   async (ctx) => {
-    const payedMonths = ctx.message.text;
-    if (!typeof +payedMonths === "number") {
+    const payedMonths = parseInt(ctx.message.text, 10);
+    if (isNaN(payedMonths)) {
       ctx.reply("Количество месяцев введено некорректно", { ...exitButton });
       return;
     }

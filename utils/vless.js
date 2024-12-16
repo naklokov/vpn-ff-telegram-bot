@@ -1,4 +1,8 @@
-const { getInbounds, addClientToInbound } = require("../api/vless");
+const {
+  getInbounds,
+  addClientToInbound,
+  updateClient,
+} = require("../api/vless");
 const { getExpiredDate, convertToUnixDate } = require("./common");
 
 const { VPN_HOST } = process.env;
@@ -23,11 +27,24 @@ const addVlessUser = async ({ phone, chatId, expiryTime: inputExpiryTime }) => {
   const expiryTime = inputExpiryTime
     ? new Date(inputExpiryTime)
     : getExpiredDate();
-  const expiryTimeUnix = convertToUnixDate(expiryTime);
+  const expiryTimeUnix = convertToUnixDate(new Date(expiryTime));
   const inbounds = await getInbounds();
   const { id } = inbounds?.[0] ?? {};
 
   await addClientToInbound(id, {
+    chatId,
+    email: phone,
+    id: phone,
+    expiryTime: expiryTimeUnix,
+  });
+};
+
+const updateVlessUser = async ({ phone, chatId, expiryTime }) => {
+  const expiryTimeUnix = convertToUnixDate(new Date(expiryTime));
+  const inbounds = await getInbounds();
+  const { id } = inbounds?.[0] ?? {};
+
+  await updateClient(id, {
     chatId,
     email: phone,
     id: phone,
@@ -58,8 +75,21 @@ const getVlessConnectionString = async (phone) => {
   return connectionString;
 };
 
+const getVlessClient = async (id) => {
+  const inbounds = await getInbounds();
+
+  const { clients } = JSON.parse(inbounds?.[0]?.settings ?? {});
+
+  return clients?.find((client) => client.id === id);
+};
+
+const isVlessUserExist = async (id) => await !getVlessClient(id);
+
 module.exports = {
   addVlessUser,
+  updateVlessUser,
   generateVlessConnectionString,
   getVlessConnectionString,
+  getVlessClient,
+  isVlessUserExist,
 };
