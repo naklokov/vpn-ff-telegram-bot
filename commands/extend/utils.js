@@ -1,6 +1,10 @@
 const { usersConnector } = require("../../db");
 const dayjs = require("dayjs");
-const { updateVlessUser } = require("../../utils/vless");
+const {
+  updateVlessUser,
+  isVlessUserExist,
+  addVlessUser,
+} = require("../../utils/vless");
 
 const updateReferralUser = async (ctx) => {
   const extendedUser = await usersConnector.getUserByPhone(
@@ -49,17 +53,28 @@ const updateUserExpiredDate = async (ctx) => {
     isVless: true,
   });
 
-  await updateVlessUser({
-    phone: dbUser.phone,
-    chatId: dbUser.chatId,
-    expiryTime: updatedExpiredDateJs.toDate(),
-  });
+  const isUserExist = await isVlessUserExist(dbUser.phone);
+
+  if (isUserExist) {
+    await updateVlessUser({
+      phone: dbUser.phone,
+      chatId: dbUser.chatId,
+      expiryTime: updatedExpiredDateJs.toDate(),
+    });
+  } else {
+    await addVlessUser({
+      phone: dbUser.phone,
+      chatId: dbUser.chatId,
+      expiryTime: updatedExpiredDateJs.toDate(),
+    });
+  }
 
   await ctx.reply(
     `Пользователь ${ctx.wizard.state.extend.login} успешно продлён на ${
       ctx.wizard.state.extend.months
     } мес до ${updatedExpiredDateJs.format("DD.MM.YYYY")}`,
   );
+
   if (dbUser?.chatId) {
     await ctx.telegram.sendMessage(
       dbUser.chatId,
@@ -71,8 +86,9 @@ const updateUserExpiredDate = async (ctx) => {
   }
 
   if (!dbUser.isVless) {
-    await ctx.reply(
-      `Инструкции по подключению нового ВПН вы можете найти по команде /instructions`,
+    await ctx.telegram.sendMessage(
+      dbUser.chatId,
+      'Перенёс вас на новый сервер, чтобы подключить новый ВПН нажмите на команду /instructions, или выберите внизу в "Меню" -> "Инструкции по подключению',
     );
   }
 };

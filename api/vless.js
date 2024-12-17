@@ -34,7 +34,7 @@ async function addClientToInbound(
 
     const response = await apiClient.post("/panel/api/inbounds/addClient", {
       id: inboundId,
-      settings: JSON.stringify(newClient),
+      settings: JSON.stringify({ clients: [newClient] }),
     });
     logger.info(`Client added successfully ${id}`);
     return response.data;
@@ -55,7 +55,7 @@ async function updateClient(inboundId, { id, chatId, email, expiryTime }) {
       `/panel/api/inbounds/updateClient/${id}`,
       {
         id: inboundId,
-        settings: JSON.stringify(updatedClient),
+        settings: JSON.stringify({ clients: [updatedClient] }),
       },
     );
     logger.info(`Client updated successfully ${id}`);
@@ -68,4 +68,8 @@ async function updateClient(inboundId, { id, chatId, email, expiryTime }) {
   }
 }
 
-module.exports = { addClientToInbound, updateClient, getInbounds };
+module.exports = {
+  addClientToInbound,
+  updateClient,
+  getInbounds,
+};

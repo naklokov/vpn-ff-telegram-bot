@@ -1,6 +1,8 @@
 const { Scenes, Markup } = require("telegraf");
 const logger = require("../../utils/logger");
 
+const { NODE_ENV } = process.env;
+
 const {
   SCENE_IDS,
   EMAIL_REGEXP,
@@ -18,6 +20,8 @@ const {
 const { addVlessUser } = require("../../utils/vless");
 // const { addUserToSecrets } = require('../../utils/secrets');
 const { usersConnector } = require("../../db");
+
+const isDev = NODE_ENV === "development";
 
 const registrationScene = new Scenes.WizardScene(
   SCENE_IDS.REGISTRATION,
@@ -77,14 +81,14 @@ const registrationScene = new Scenes.WizardScene(
     }
 
     // валидация наличия пользователя в БД
-    if (existedUserByChatId) {
+    if (existedUserByChatId && !isDev) {
       await ctx.reply("Данный пользователь уже зарегистрирован");
       await registrationExitCommand(ctx);
       await ctx.scene.leave();
       return;
     }
 
-    if (existedUserByPhone) {
+    if (existedUserByPhone && !isDev) {
       await ctx.reply(`Пользователь с номером ${phone} уже зарегистрирован`);
       await registrationExitCommand(ctx);
       await ctx.scene.leave();

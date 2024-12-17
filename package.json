@@ -4,7 +4,7 @@
   "description": "project for vpn-ff telegram client",
   "main": "index.js",
   "scripts": {
-    "start": "cross-env WITHOUT_CLI=true nodemon index.js",
+    "start": "cross-env NODE_ENV=development WITHOUT_CLI=true nodemon index.js",
     "prod": "nodemon index.js",
     "publish": "node scripts/publish.js",
     "migration": "node scripts/migration.js"

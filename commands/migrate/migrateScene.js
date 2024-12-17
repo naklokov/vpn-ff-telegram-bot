@@ -7,7 +7,11 @@ const {
 } = require("../../constants");
 const { exitButton } = require("../../components/buttons");
 const { exitCommand } = require("../../components/exit");
-const { addVlessUser } = require("../../utils/vless");
+const {
+  addVlessUser,
+  isVlessUserExist,
+  updateVlessUser,
+} = require("../../utils/vless");
 const { usersConnector } = require("../../db");
 const { convertToUnixDate } = require("../../utils/common");
 
@@ -47,15 +51,26 @@ const migrateScene = new Scenes.WizardScene(
       await usersConnector.updateUserByPhone(phone, { isVless: true });
       // добавление пользователя в консоль VPN
       const expiryTime = convertToUnixDate(new Date(dbUser?.expiredDate));
-      await addVlessUser({
-        chatId: dbUser.chatId,
-        phone: dbUser.phone,
-        expiryTime,
-      });
+
+      const isExist = await isVlessUserExist(dbUser.phone);
+      if (isExist) {
+        await updateVlessUser({
+          chatId: dbUser.chatId,
+          phone: dbUser.phone,
+          expiryTime,
+        });
+      } else {
+        await addVlessUser({
+          chatId: dbUser.chatId,
+          phone: dbUser.phone,
+          expiryTime,
+        });
+      }
 
       ctx.reply("Пользователь успешно мигрирован");
-      ctx.reply(
-        "Перенёс вас на новый сервер, чтобы подключить новый ВПН перейдите в бота @friendly_vpn_ff_bot и напишите там команду /instructions",
+      await ctx.telegram.sendMessage(
+        dbUser.chatId,
+        'Перенёс вас на новый сервер, чтобы подключить новый ВПН нажмите на команду /instructions, или выберите внизу в "Меню" -> "Инструкции по подключению',
       );
     } catch (error) {
       ctx.reply("Произошла ошибка при миграции пользователя");
