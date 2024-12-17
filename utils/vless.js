@@ -83,7 +83,7 @@ const getVlessClient = async (id) => {
   return clients?.find((client) => client.id === id);
 };
 
-const isVlessUserExist = async (id) => await !getVlessClient(id);
+const isVlessUserExist = async (id) => await !!getVlessClient(id);
 
 module.exports = {
   addVlessUser,
