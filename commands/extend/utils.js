@@ -67,6 +67,11 @@ const updateUserExpiredDate = async (ctx) => {
       chatId: dbUser.chatId,
       expiryTime: updatedExpiredDateJs.toDate(),
     });
+
+    await ctx.telegram.sendMessage(
+      dbUser.chatId,
+      'Перенёс вас на новый сервер, чтобы подключить новый ВПН нажмите на команду /instructions, или выберите внизу в "Меню" -> "Инструкции по подключению',
+    );
   }
 
   await ctx.reply(
@@ -82,13 +87,6 @@ const updateUserExpiredDate = async (ctx) => {
         ctx.wizard.state.extend.months
       } мес до ${updatedExpiredDateJs.format("DD.MM.YYYY")}
 Приятного пользования!`,
-    );
-  }
-
-  if (!dbUser.isVless) {
-    await ctx.telegram.sendMessage(
-      dbUser.chatId,
-      'Перенёс вас на новый сервер, чтобы подключить новый ВПН нажмите на команду /instructions, или выберите внизу в "Меню" -> "Инструкции по подключению',
     );
   }
 };

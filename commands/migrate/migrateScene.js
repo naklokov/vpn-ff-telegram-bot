@@ -68,10 +68,10 @@ const migrateScene = new Scenes.WizardScene(
       }
 
       ctx.reply("Пользователь успешно мигрирован");
-      // await ctx.telegram.sendMessage(
-      //   dbUser.chatId,
-      //   'Перенёс вас на новый сервер, чтобы подключить новый ВПН нажмите на команду /instructions, или выберите внизу в "Меню" -> "Инструкции по подключению',
-      // );
+      await ctx.telegram.sendMessage(
+        dbUser.chatId,
+        'Перенёс вас на новый сервер, чтобы подключить новый ВПН нажмите на команду /instructions, или выберите внизу в "Меню" -> "Инструкции по подключению',
+      );
     } catch (error) {
       ctx.reply("Произошла ошибка при миграции пользователя");
       console.error(error);
