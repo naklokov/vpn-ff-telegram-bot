@@ -1,13 +1,8 @@
 require("dotenv").config();
+const { getInbounds } = require("../api/vless");
 const { usersConnector } = require("../db");
 // const { secretsFileToUsers } = require("../utils/secrets");
-const {
-  addVlessUser,
-  isVlessUserExist,
-  updateVlessUser,
-} = require("../utils/vless");
-
-const logger = require("../utils/logger");
+const { isVlessUserExist } = require("../utils/vless");
 
 // const migrateFromSecretsFileToDb = async () => {
 //   const users = await secretsFileToUsers();
@@ -21,31 +16,21 @@ const logger = require("../utils/logger");
 
 // migrateFromSecretsFileToDb();
 
+// Выставление признака isVless для тех пользователей, кто уже зарегистрирован
 const migrateFromDbToVless = async () => {
   try {
     const dbUsers = await usersConnector.getUsers();
+    const inbounds = await getInbounds();
+    const { clients } = JSON.parse(inbounds?.[0]?.settings ?? {});
 
     await dbUsers.forEach(async (dbUser) => {
-      const isUserExist = await isVlessUserExist(dbUser.phone);
+      const isExist = clients?.find((client) => client.id === dbUser.phone);
+      console.log(`user ${dbUser.phone} - ${isExist}`);
 
       // если пользователь существует, то обновляем его из БД, если не сушествует, то добавляем
-      if (isUserExist) {
-        logger.debug("Update user " + dbUser.phone);
-        await updateVlessUser({
-          phone: dbUser.phone,
-          chatId: dbUser.chatId,
-          expiryTime: dbUser.expiredDate,
-        });
-      } else {
-        logger.debug("Add user " + dbUser.phone);
-        await addVlessUser({
-          phone: dbUser.phone,
-          chatId: dbUser.chatId,
-          expiryTime: dbUser.expiredDate,
-        });
-      }
-
-      await usersConnector.updateUserByPhone(dbUser.phone, { isVless: true });
+      await usersConnector.updateUserByPhone(dbUser.phone, {
+        isVless: !!isExist,
+      });
     });
     console.log("Миграция успешна");
   } catch (error) {
