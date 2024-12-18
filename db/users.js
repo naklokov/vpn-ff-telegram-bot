@@ -20,7 +20,7 @@ const userScheme = new mongoose.Schema({
   },
   password: { type: String, required: true },
   isActive: { type: Boolean, default: true },
-  isVless: { type: Boolean, default: false },
+  isVless: { type: Boolean, default: true },
   referralUserLogin: { type: String },
 });
 
