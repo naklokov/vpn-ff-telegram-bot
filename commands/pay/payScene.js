@@ -1,5 +1,5 @@
 const { Scenes, Markup } = require("telegraf");
-const { SCENE_IDS, ADMIN_CHAT_ID, CMD_TEXT } = require("../../constants");
+const { SCENE_IDS, CMD_TEXT, MONTH_COST } = require("../../constants");
 const { exitButton } = require("../../components/buttons");
 const { usersConnector } = require("../../db");
 const { getUserPersonalDataFromContext } = require("../../utils/common");
@@ -11,16 +11,17 @@ const logger = require("../../utils/logger");
 const payScene = new Scenes.WizardScene(
   SCENE_IDS.PAY,
   async (ctx) => {
-    if (ctx.message.chat.id !== ADMIN_CHAT_ID) {
-      ctx.scene.leave();
-      return;
-    }
     // инициализация формы пользователя
     ctx.wizard.state.extend = {};
 
-    await ctx.reply("Введите количество оплаченных месяцев", {
-      ...exitButton,
-    });
+    await ctx.reply(
+      `💰 Стоимость подписки на VPN - ${MONTH_COST} руб / месяц
+
+Укажите количество месяцев, которые вы хотите оплатить`,
+      {
+        ...exitButton,
+      },
+    );
     return ctx.wizard.next();
   },
   async (ctx) => {
@@ -32,9 +33,19 @@ const payScene = new Scenes.WizardScene(
     ctx.wizard.state.extend.months = payedMonthsCount;
     ctx.wizard.state.extend.tryCount = 0;
 
-    ctx.reply("Прикрепите информацию об оплате как скриншот или изображение", {
-      ...exitButton,
-    });
+    const amount = payedMonthsCount * MONTH_COST;
+
+    await ctx.reply(
+      `Сумма к оплате ${amount} руб
+
+📲 Оплату можно произвести переводом на карту по номеру телефона +79106174473
+Яндекс пей, Тинькофф, Альфа, Сбер
+
+После оплаты пришлите в ответном сообщение скриншот чека`,
+      {
+        ...exitButton,
+      },
+    );
     return ctx.wizard.next();
   },
   async (ctx) => {
@@ -57,7 +68,7 @@ const payScene = new Scenes.WizardScene(
       }
 
       await ctx.reply(
-        "Прикрепите корректное изображение или чек об оплате, проверьте что вы прикрепляете квитанцию как изображение",
+        "Прикрепите корректное изображение чека об оплате, проверьте что вы прикрепляете квитанцию как изображение",
         {
           ...exitButton,
         },
