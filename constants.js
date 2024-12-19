@@ -12,6 +12,7 @@ const CMD = {
   help: "help",
   instructions: "instructions",
   extend: "extend",
+  pay: "pay",
   migrate: "migrate",
   rupor: "rupor",
 };
@@ -35,6 +36,7 @@ const SCENE_IDS = {
   EXTEND: "EXTEND",
   MIGRATE: "MIGRATE",
   RUPOR: "RUPOR",
+  PAY: "PAY",
 };
 
 const IOS_INSTRUCTIONS_LINK =

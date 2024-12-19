@@ -5,6 +5,7 @@ const startCommand = require("./commands/start");
 const registrationCommand = require("./commands/registration");
 const ruporCommand = require("./commands/rupor");
 const extendCommand = require("./commands/extend");
+const payCommand = require("./commands/pay");
 const migrateCommand = require("./commands/migrate");
 const infoCommand = require("./commands/info");
 const instructionsCommand = require("./commands/instructions");
@@ -17,6 +18,7 @@ const {
 const { extendScene } = require("./commands/extend/extendScene");
 const { ruporScene } = require("./commands/rupor/ruporScene");
 const { migrateScene } = require("./commands/migrate/migrateScene");
+const { payScene } = require("./commands/pay/payScene");
 const {
   runSyncActiveUserSheduler,
 } = require("./utils/shedulers/synsActiveUser");
@@ -40,6 +42,7 @@ const setupBot = () => {
     extendScene,
     ruporScene,
     migrateScene,
+    payScene,
   ]);
   bot.use(session());
   bot.use(stage.middleware());
@@ -53,6 +56,7 @@ const setupBot = () => {
   bot.command(CMD.instructions, instructionsCommand);
   bot.command(CMD.registration, registrationCommand);
   bot.command(CMD.rupor, ruporCommand);
+  bot.command(CMD.pay, payCommand);
   bot.command(CMD.help, (ctx) =>
     ctx.reply(
       `Если у вас возникли вопросы, пишите разработчику ${process.env.DEVELOPER_CONTACT}`,
