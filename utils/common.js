@@ -1,5 +1,6 @@
 const { readFileSync } = require("fs");
-const { FREE_PERIOD_MONTH } = require("../constants");
+const { FREE_PERIOD_DAYS } = require("../constants");
+const dayjs = require("dayjs");
 
 const getMarkdownContentSync = (filename) => readFileSync(filename, "utf-8");
 
@@ -23,7 +24,7 @@ const getRegistrationDate = () => new Date().toISOString();
 
 const getExpiredDate = () => {
   const curDate = new Date();
-  return new Date(curDate.setMonth(curDate.getMonth() + FREE_PERIOD_MONTH));
+  return new dayjs(curDate).add(FREE_PERIOD_DAYS, "days").endOf("day").toDate();
 };
 
 const convertToUnixDate = (date) => Math.floor(date.getTime());

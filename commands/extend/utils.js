@@ -1,10 +1,6 @@
 const { usersConnector } = require("../../db");
 const dayjs = require("dayjs");
-const {
-  updateVlessUser,
-  isVlessUserExist,
-  addVlessUser,
-} = require("../../utils/vless");
+const { updateVlessUser, addVlessUser } = require("../../utils/vless");
 
 const updateReferralUser = async (ctx) => {
   const extendedUser = await usersConnector.getUserByPhone(
@@ -23,7 +19,7 @@ const updateReferralUser = async (ctx) => {
       );
 
       const bonusExpiredDate = dayjs(referralUser?.expiredDate).add(
-        2,
+        1,
         "months",
       );
       await usersConnector.updateUserByPhone(referralUser?.phone, {
