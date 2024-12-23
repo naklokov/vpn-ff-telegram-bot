@@ -1,6 +1,10 @@
 const { usersConnector } = require("../../db");
 const dayjs = require("dayjs");
-const { updateVlessUser, addVlessUser } = require("../../utils/vless");
+const {
+  updateVlessUser,
+  addVlessUser,
+  getVlessClient,
+} = require("../../utils/vless");
 
 const updateReferralUser = async (ctx) => {
   const extendedUser = await usersConnector.getUserByPhone(
@@ -49,8 +53,9 @@ const updateUserExpiredDate = async (ctx) => {
     isVless: true,
   });
 
+  const isExist = await getVlessClient(dbUser.phone);
   // временный механизм обновления пользователя который уже в системе,чтобы не просрать expiryTime
-  if (dbUser.isVless) {
+  if (isExist) {
     await updateVlessUser({
       phone: dbUser.phone,
       chatId: dbUser.chatId,
