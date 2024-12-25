@@ -1,5 +1,5 @@
 const { Scenes, Markup } = require("telegraf");
-const { SCENE_IDS, CMD_TEXT, MONTH_COST } = require("../../constants");
+const { SCENE_IDS, CMD_TEXT, MONTH_COST, CMD } = require("../../constants");
 const { exitButton } = require("../../components/buttons");
 const { usersConnector } = require("../../db");
 const { getUserPersonalDataFromContext } = require("../../utils/common");
@@ -14,8 +14,22 @@ const payScene = new Scenes.WizardScene(
     // инициализация формы пользователя
     ctx.wizard.state.extend = {};
 
+    const { id: chatId } = getUserPersonalDataFromContext(ctx);
+    const dbUser = await usersConnector.getUserByChatId(chatId);
+
+    if (!dbUser) {
+      ctx.reply(
+        `Вы пока что не зарегистрированы в системе, пройдите регистрацию 👉 /${CMD.registration}`,
+      );
+      await exitCommand(ctx);
+      ctx.scene.leave();
+      return;
+    }
+
     await ctx.reply(
       `💰 Стоимость подписки на VPN - ${MONTH_COST} руб / месяц
+
+Оплата будет произведена на логин ${dbUser.phone}
 
 Укажите количество месяцев, которые вы хотите оплатить`,
       {
