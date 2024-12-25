@@ -49,6 +49,12 @@ const registrationScene = new Scenes.WizardScene(
       return;
     }
 
+    if (!ctx.wizard.state?.user) {
+      await registrationExitCommand(ctx);
+      await ctx.scene.leave();
+      return;
+    }
+
     ctx.wizard.state.user.phone = ctx.message?.text;
 
     ctx.reply("Введите вашу электронную почту в формате: test@mail.ru", {
@@ -63,6 +69,13 @@ const registrationScene = new Scenes.WizardScene(
       });
       return;
     }
+
+    if (!ctx.wizard.state?.user) {
+      await registrationExitCommand(ctx);
+      await ctx.scene.leave();
+      return;
+    }
+
     ctx.wizard.state.user.email = ctx.message?.text;
     const { chatId, phone } = ctx.wizard.state.user;
 
