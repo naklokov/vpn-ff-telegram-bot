@@ -46,6 +46,7 @@ const sendAdminPaymentInfo = async (ctx, message = "") => {
 \`${dbUser.phone}\`   ${ctx.wizard.state.extend.months} мес`,
     { parse_mode: "MarkdownV2" },
   );
+  await ctx.telegram.sendMessage(ADMIN_CHAT_ID, "/extend");
 };
 
 module.exports = { checkPayment, sendAdminPaymentInfo };
