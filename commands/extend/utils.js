@@ -40,11 +40,20 @@ const updateReferralUser = async (ctx) => {
 };
 
 const updateUserExpiredDate = async (ctx) => {
+  if (!ctx.wizard.state?.extend) {
+    throw Error("Отсутствуют данные для продления");
+  }
+
   const dbUser = await usersConnector.getUserByPhone(
     ctx.wizard.state.extend.login,
   );
 
-  const payedMonths = ctx.wizard.state.extend.months;
+  const payedMonths = ctx.wizard.state?.extend?.months;
+
+  if (!payedMonths) {
+    throw Error("Не указано количество месяцев для продления");
+  }
+
   const updatedExpiredDateJs = dayjs(
     dbUser?.isActive ? dbUser?.expiredDate : undefined,
   ).add(+payedMonths, "months");

@@ -38,14 +38,14 @@ const extendScene = new Scenes.WizardScene(
     return ctx.wizard.next();
   },
   async (ctx) => {
-    const payedMonths = parseInt(ctx.message.text, 10);
-    if (isNaN(payedMonths)) {
-      ctx.reply("Количество месяцев введено некорректно", { ...exitButton });
-      return;
-    }
-    ctx.wizard.state.extend.months = payedMonths;
-
     try {
+      const payedMonths = parseInt(ctx.message.text, 10);
+      if (isNaN(payedMonths)) {
+        ctx.reply("Количество месяцев введено некорректно", { ...exitButton });
+        return;
+      }
+      ctx.wizard.state.extend.months = payedMonths;
+
       // проверяем рефералку (если пользователь зарегистрирован менее месяца назад) и продлеваем
       await updateReferralUser(ctx);
 
