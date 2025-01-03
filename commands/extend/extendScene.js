@@ -16,8 +16,6 @@ const extendScene = new Scenes.WizardScene(
       ctx.scene.leave();
       return;
     }
-    // инициализация формы пользователя
-    ctx.wizard.state.extend = {};
 
     ctx.reply("Введите логин пользователя", {
       ...exitButton,
@@ -25,6 +23,8 @@ const extendScene = new Scenes.WizardScene(
     return ctx.wizard.next();
   },
   async (ctx) => {
+    // инициализация формы пользователя
+    ctx.wizard.state.extend = {};
     const userPhone = ctx.message.text;
     if (!PHONE_REGEXP.test(userPhone)) {
       ctx.reply("Логин введён некорректно", { ...exitButton });

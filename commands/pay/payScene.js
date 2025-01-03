@@ -11,9 +11,6 @@ const logger = require("../../utils/logger");
 const payScene = new Scenes.WizardScene(
   SCENE_IDS.PAY,
   async (ctx) => {
-    // инициализация формы пользователя
-    ctx.wizard.state.extend = {};
-
     const { id: chatId } = getUserPersonalDataFromContext(ctx);
     const dbUser = await usersConnector.getUserByChatId(chatId);
 
@@ -44,6 +41,9 @@ const payScene = new Scenes.WizardScene(
       ctx.reply("Количество месяцев введено некорректно", { ...exitButton });
       return;
     }
+
+    // инициализация формы пользователя
+    ctx.wizard.state.extend = {};
     ctx.wizard.state.extend.months = payedMonthsCount;
     ctx.wizard.state.extend.tryCount = 0;
 
