@@ -134,7 +134,8 @@ const registrationScene = new Scenes.WizardScene(
       await usersConnector.deleteUser(ctx.wizard.state.user.chatId);
       ctx.reply("Произошла ошибка при регистрации, обратитесь к разработчку");
       logger.error(
-        `Произошла ошибка при регистрации пользователя ${ctx.wizard.state.user.phone}: ${error}`,
+        `Произошла ошибка при регистрации пользователя ${ctx.wizard.state.user.phone}`,
+        error,
       );
     } finally {
       registrationExitCommand(ctx);

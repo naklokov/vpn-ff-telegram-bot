@@ -68,6 +68,7 @@ const setupBot = () => {
 
   bot.catch((e) => {
     logger.error(e);
+    throw e;
   });
 
   bot.on("callback_query", (ctx) => {

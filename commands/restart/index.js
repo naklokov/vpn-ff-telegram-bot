@@ -13,6 +13,6 @@ module.exports = async (ctx) => {
     await ctx.reply("Бот перезагружен");
   } catch (error) {
     await ctx.reply("Произошла ошибка при перезагрузке бота");
-    logger.error(error, ctx.message.chat.id);
+    logger.error("Произошла ошибка при перезагрузке бота", error);
   }
 };

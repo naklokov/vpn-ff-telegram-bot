@@ -1,8 +1,9 @@
 const {
-  getInbounds,
   addClientToInbound,
   updateClient,
+  getInbound,
 } = require("../api/vless");
+const { DEFAULT_INBOUND_ID } = require("../constants");
 const { getExpiredDate, convertToUnixDate } = require("./common");
 
 const { VPN_HOST } = process.env;
@@ -28,8 +29,7 @@ const addVlessUser = async ({ phone, chatId, expiryTime: inputExpiryTime }) => {
     ? new Date(inputExpiryTime)
     : getExpiredDate();
   const expiryTimeUnix = convertToUnixDate(new Date(expiryTime));
-  const inbounds = await getInbounds();
-  const { id } = inbounds?.[0] ?? {};
+  const { id } = await getInbound(DEFAULT_INBOUND_ID);
 
   await addClientToInbound(id, {
     chatId,
@@ -41,20 +41,21 @@ const addVlessUser = async ({ phone, chatId, expiryTime: inputExpiryTime }) => {
 
 const updateVlessUser = async ({ phone, chatId, expiryTime }) => {
   const expiryTimeUnix = convertToUnixDate(new Date(expiryTime));
-  const inbounds = await getInbounds();
-  const { id } = inbounds?.[0] ?? {};
+  const { id } = await getInbound(DEFAULT_INBOUND_ID);
 
-  await updateClient(id, {
+  const client = await updateClient(id, {
     chatId,
     email: phone,
     id: phone,
     expiryTime: expiryTimeUnix,
   });
+
+  return client;
 };
 
 const getVlessConnectionString = async (phone) => {
-  const inbounds = await getInbounds();
-  const { remark, protocol, port, streamSettings } = inbounds?.[0] ?? {};
+  const inbound = await getInbound(DEFAULT_INBOUND_ID);
+  const { remark, protocol, port, streamSettings } = inbound;
   const { realitySettings, security, network } = JSON.parse(streamSettings);
 
   const connectionString = generateVlessConnectionString({
@@ -76,9 +77,9 @@ const getVlessConnectionString = async (phone) => {
 };
 
 const getVlessClient = async (id) => {
-  const inbounds = await getInbounds();
+  const inbound = await getInbound(DEFAULT_INBOUND_ID);
 
-  const { clients } = JSON.parse(inbounds?.[0]?.settings ?? {});
+  const { clients } = JSON.parse(inbound?.settings ?? {});
 
   return clients?.find((client) => client.id === id);
 };

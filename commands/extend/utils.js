@@ -59,7 +59,7 @@ const updateUserExpiredDate = async (ctx) => {
   });
 
   // временный механизм обновления пользователя который уже в системе,чтобы не просрать expiryTime
-  if (dbUser.isVless) {
+  if (dbUser?.isVless) {
     await updateVlessUser({
       phone: dbUser.phone,
       chatId: dbUser.chatId,

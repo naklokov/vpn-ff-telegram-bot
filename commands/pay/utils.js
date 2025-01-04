@@ -20,17 +20,24 @@ const checkPaymentOnImage = async (amount, imgPath) => {
 };
 
 const checkPayment = async (ctx) => {
-  try {
-    const fileId =
-      ctx?.message?.photo?.[ctx?.message?.photo.length - 1]?.file_id;
-    const { href } = await ctx.telegram.getFileLink(fileId);
-    const amount = MONTH_COST * ctx.wizard.state.extend.months;
-    const isPayCorrect = await checkPaymentOnImage(amount, href);
-    return isPayCorrect;
-  } catch (error) {
-    logger.error("Произошла ошибка при обработке изображения" + error);
-    return false;
+  if (ctx?.message?.photo) {
+    try {
+      const fileId =
+        ctx?.message?.photo?.[ctx?.message?.photo.length - 2]?.file_id;
+      const { href } = await ctx.telegram.getFileLink(fileId);
+      const amount = MONTH_COST * ctx.wizard.state.extend.months;
+      const isPayCorrect = await checkPaymentOnImage(amount, href);
+      return isPayCorrect;
+    } catch (error) {
+      logger.error("Произошла ошибка при обработке изображения", error);
+      return false;
+    }
   }
+
+  await ctx.reply(
+    `Вы прикладываете не изображение, необходимо прикрепить изображение как подтверждение оплаты`,
+  );
+  return false;
 };
 
 const sendAdminPaymentInfo = async (ctx, message = "") => {

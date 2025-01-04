@@ -87,7 +87,7 @@ const payScene = new Scenes.WizardScene(
       }
 
       await ctx.reply(
-        "Прикрепите корректное изображение квитанции (чека) об оплате. Проверьте, что вы прикрепляете изображение",
+        "Прикрепите корректное изображение квитанции (чека) об оплате",
         {
           ...exitButton,
         },
@@ -95,7 +95,7 @@ const payScene = new Scenes.WizardScene(
 
       ctx.wizard.state.extend.tryCount = ctx.wizard.state.extend.tryCount + 1;
 
-      logger.error("Произошла ошибка при распознавании платежа", dbUser.chatId);
+      logger.error("Произошла ошибка при распознавании платежа user:" + chatId);
 
       return;
     }
@@ -107,10 +107,7 @@ const payScene = new Scenes.WizardScene(
       await sendAdminPaymentInfo(ctx, "Оплата прошла");
     } catch (error) {
       ctx.reply("Произошла ошибка при продлении периода");
-      logger.error(
-        "Произошла ошибка при продлении периода платежа" + error,
-        dbUser.chatId,
-      );
+      logger.error("Произошла ошибка при продлении периода платежа", error);
     } finally {
       await exitCommand(ctx);
       ctx.scene.leave();

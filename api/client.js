@@ -42,6 +42,7 @@ class ApiClient {
     } catch (error) {
       logger.error(
         `LOGIN failed: ${error.response ? error.response.data : error.message}`,
+        error,
       );
       throw error;
     }
@@ -55,6 +56,7 @@ class ApiClient {
     } catch (error) {
       logger.error(
         `GET failed: ${error.response ? error.response.data : error.message}`,
+        error,
       );
       throw error;
     }
@@ -68,6 +70,7 @@ class ApiClient {
     } catch (error) {
       logger.error(
         `POST failed: ${error.response ? error.response.data : error.message}`,
+        error,
       );
       throw error;
     }

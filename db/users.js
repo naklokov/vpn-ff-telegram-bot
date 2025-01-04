@@ -46,9 +46,7 @@ const getUsers = async () => {
     const users = User.find({});
     return users;
   } catch (error) {
-    logger.error(
-      `Произошла ошибка при получении пользователей из БД: ${error}`,
-    );
+    logger.error(`Произошла ошибка при получении пользователей из БД`, error);
     throw error;
   }
 };
@@ -60,7 +58,8 @@ const getUserByChatId = async (chatId) => {
     return user;
   } catch (error) {
     logger.error(
-      `Произошла ошибка при получении пользователя по chatId ${chatId}: ${error}`,
+      `Произошла ошибка при получении пользователя по chatId ${chatId}`,
+      error,
     );
     throw error;
   }
@@ -73,7 +72,8 @@ const getUserByPhone = async (phone) => {
     return user;
   } catch (error) {
     logger.error(
-      `Произошла ошибка при получении пользователя по телефону ${phone}: ${error}`,
+      `Произошла ошибка при получении пользователя по телефону ${phone}`,
+      error,
     );
     throw error;
   }
@@ -85,7 +85,8 @@ const deleteUser = async (userId) => {
     await User.deleteOne({ id: userId });
   } catch (error) {
     logger.error(
-      `Произошла ошибка при удалении пользователя по телефону ${userId}: ${error}`,
+      `Произошла ошибка при удалении пользователя по телефону ${userId}`,
+      error,
     );
     throw error;
   }
@@ -97,7 +98,8 @@ const updateUserById = async (userId, user) => {
     await User.updateOne({ id: userId }, { ...user });
   } catch (error) {
     logger.error(
-      `Произошла ошибка при обновлении пользователя по id ${userId}: ${error}`,
+      `Произошла ошибка при обновлении пользователя по id ${userId}`,
+      error,
     );
     throw error;
   }
@@ -109,7 +111,8 @@ const updateUserByPhone = async (phone, user) => {
     await User.updateOne({ phone }, { ...user });
   } catch (error) {
     logger.error(
-      `Произошла ошибка при обновлении пользователя по телефону ${phone}: ${error}`,
+      `Произошла ошибка при обновлении пользователя по телефону ${phone}`,
+      error,
     );
     throw error;
   }

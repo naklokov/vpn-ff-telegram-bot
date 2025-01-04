@@ -39,7 +39,8 @@ const addUserToSecrets = async (login, password) => {
     restartService();
   } catch (error) {
     logger.error(
-      `Произошла ошибка при добавлении пользователя в файл секретов логина ${login} : ${error}`,
+      `Произошла ошибка при добавлении пользователя в файл секретов логина ${login}`,
+      error,
     );
     throw error;
   }
@@ -53,7 +54,8 @@ const removeUserFromSecrets = async (login) => {
     restartService();
   } catch (error) {
     logger.error(
-      `Произошла ошибка при удалении из файла секретов логина ${login} : ${error}`,
+      `Произошла ошибка при удалении из файла секретов логина ${login}`,
+      error,
     );
     throw error;
   }

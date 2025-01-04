@@ -18,6 +18,22 @@ async function getInbounds() {
   } catch (error) {
     logger.error(
       `Error fetching inbounds: ${error.response ? error.response.data : error.message}`,
+      error,
+    );
+    throw error;
+  }
+}
+
+// Функция для получения списка Inbounds
+async function getInbound(id) {
+  try {
+    await apiClient.login(VPN_USERNAME, VPN_PASSWORD);
+    const response = await apiClient.get(`/panel/api/inbounds/get/${id}`);
+    return response?.obj ?? {};
+  } catch (error) {
+    logger.error(
+      `Error fetching inbounds: ${error.response ? error.response.data : error.message}`,
+      error,
     );
     throw error;
   }
@@ -41,6 +57,7 @@ async function addClientToInbound(
   } catch (error) {
     logger.error(
       `Error adding client: ${error.response ? error.response.data : error.message}`,
+      error,
     );
     throw error;
   }
@@ -72,4 +89,5 @@ module.exports = {
   addClientToInbound,
   updateClient,
   getInbounds,
+  getInbound,
 };
