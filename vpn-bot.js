@@ -7,6 +7,7 @@ const ruporCommand = require("./commands/rupor");
 const extendCommand = require("./commands/extend");
 const payCommand = require("./commands/pay");
 const migrateCommand = require("./commands/migrate");
+const restartCommand = require("./commands/restart");
 const infoCommand = require("./commands/info");
 const instructionsCommand = require("./commands/instructions");
 const referralCommand = require("./commands/referral");
@@ -30,7 +31,9 @@ const {
 } = require("./utils/shedulers/toogleUserStatus");
 const { getMarkdownContentSync } = require("./utils/common");
 
-const bot = new Telegraf(process.env.BOT_TOKEN);
+const bot = new Telegraf(process.env.BOT_TOKEN, {
+  handlerTimeout: Infinity,
+});
 
 const setupBot = () => {
   runPaymentNotificationSheduler(bot);
@@ -52,6 +55,7 @@ const setupBot = () => {
   bot.command(CMD.referral, referralCommand);
   bot.command(CMD.status, statusCommand);
   bot.command(CMD.extend, extendCommand);
+  bot.command(CMD.restart, restartCommand);
   bot.command(CMD.migrate, migrateCommand);
   bot.command(CMD.instructions, instructionsCommand);
   bot.command(CMD.registration, registrationCommand);

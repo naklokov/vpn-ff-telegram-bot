@@ -12,6 +12,7 @@ const CMD = {
   help: "help",
   instructions: "instructions",
   extend: "extend",
+  restart: "restart",
   pay: "pay",
   migrate: "migrate",
   rupor: "rupor",

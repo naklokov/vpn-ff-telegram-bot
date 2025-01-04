@@ -63,6 +63,11 @@ const payScene = new Scenes.WizardScene(
     return ctx.wizard.next();
   },
   async (ctx) => {
+    if (!ctx.wizard.state?.extend) {
+      ctx.scene.leave();
+      return;
+    }
+
     const { id: chatId } = getUserPersonalDataFromContext(ctx);
     const dbUser = await usersConnector.getUserByChatId(chatId);
 

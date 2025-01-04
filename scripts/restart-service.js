@@ -15,4 +15,8 @@ const restartService = () => {
   }
 };
 
-module.exports = { restartService };
+const restartBot = () => {
+  execSync("pm2 restart 0");
+};
+
+module.exports = { restartService, restartBot };
