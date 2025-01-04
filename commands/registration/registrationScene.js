@@ -8,6 +8,7 @@ const {
   EMAIL_REGEXP,
   PHONE_REGEXP,
   CMD_TEXT,
+  ADMIN_CHAT_ID,
 } = require("../../constants");
 const instructionsCommand = require("../instructions");
 const { registrationExitButton } = require("../../components/buttons");
@@ -94,14 +95,14 @@ const registrationScene = new Scenes.WizardScene(
     }
 
     // валидация наличия пользователя в БД
-    if (existedUserByChatId && !isDev) {
+    if (existedUserByChatId && !chatId === ADMIN_CHAT_ID) {
       await ctx.reply("Данный пользователь уже зарегистрирован");
       await registrationExitCommand(ctx);
       await ctx.scene.leave();
       return;
     }
 
-    if (existedUserByPhone && !isDev) {
+    if (existedUserByPhone && !chatId === ADMIN_CHAT_ID) {
       await ctx.reply(`Пользователь с номером ${phone} уже зарегистрирован`);
       await registrationExitCommand(ctx);
       await ctx.scene.leave();
