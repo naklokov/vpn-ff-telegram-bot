@@ -1,5 +1,6 @@
 const { Telegraf, Scenes, session } = require("telegraf");
 const path = require("path");
+const logger = require("./utils/logger");
 
 const startCommand = require("./commands/start");
 const registrationCommand = require("./commands/registration");
@@ -64,6 +65,10 @@ const setupBot = () => {
       `Если у вас возникли вопросы, пишите разработчику ${process.env.DEVELOPER_CONTACT}`,
     ),
   );
+
+  bot.catch((e) => {
+    logger.error(e);
+  });
 
   bot.on("callback_query", (ctx) => {
     const queryData = ctx?.update?.callback_query?.data;
