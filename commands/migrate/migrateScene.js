@@ -7,11 +7,7 @@ const {
 } = require("../../constants");
 const { exitButton } = require("../../components/buttons");
 const { exitCommand } = require("../../components/exit");
-const {
-  addVlessUser,
-  updateVlessUser,
-  getVlessClient,
-} = require("../../utils/vless");
+const { addVlessUser, updateVlessUser } = require("../../utils/vless");
 const { usersConnector } = require("../../db");
 const { convertToUnixDate } = require("../../utils/common");
 
@@ -52,9 +48,7 @@ const migrateScene = new Scenes.WizardScene(
       // добавление пользователя в консоль VPN
       const expiryTime = convertToUnixDate(new Date(dbUser?.expiredDate));
 
-      // проверяем наличие пользователя в VLESS
-      const isExist = await getVlessClient(dbUser.phone);
-      if (isExist) {
+      if (dbUser.isVless) {
         await updateVlessUser({
           chatId: dbUser.chatId,
           phone: dbUser.phone,
