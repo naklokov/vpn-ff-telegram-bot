@@ -23,7 +23,7 @@ const syncActiveUserSheduler = async () => {
     );
   }
 };
-const runSyncActiveUserSheduler = (interval = "* * * * *") =>
+const runSyncActiveUserSheduler = (interval = "0/10 * * * *") =>
   cron.schedule(interval, () => {
     syncActiveUserSheduler();
   });

@@ -10,8 +10,6 @@ const checkPaymentOnImage = async (amount, imgPath) => {
   const recognizedEng = await Tesseract.recognize(imgPath, "rus");
   const amountRegExp = new RegExp(`(${amount})[\\s|.|,]{1}`);
   if (recognizedRus?.data?.text || recognizedEng?.data?.text) {
-    console.log(recognizedRus?.data?.text);
-    console.log(recognizedEng?.data?.text);
     return (
       amountRegExp.test(recognizedRus?.data?.text) ||
       amountRegExp.test(recognizedEng?.data?.text)

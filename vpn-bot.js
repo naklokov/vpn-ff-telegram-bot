@@ -31,9 +31,7 @@ const {
 } = require("./utils/shedulers/toogleUserStatus");
 const { getMarkdownContentSync } = require("./utils/common");
 
-const bot = new Telegraf(process.env.BOT_TOKEN, {
-  handlerTimeout: Infinity,
-});
+const bot = new Telegraf(process.env.BOT_TOKEN);
 
 const setupBot = () => {
   runPaymentNotificationSheduler(bot);
