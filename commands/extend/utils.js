@@ -92,6 +92,11 @@ const updateUserExpiredDate = async (ctx) => {
       } мес до ${updatedExpiredDateJs.format("DD.MM.YYYY")}
 Приятного пользования!`,
     );
+
+    await ctx.telegram.sendMessage(
+      dbUser.chatId,
+      `⚠️ ВНИМАНИЕ! Старый сервер VPN больше не работает, если вы НЕ подключаетесь к VPN через Streissand или Hiddify, то переходите на новый сервер по инструкции`,
+    );
   }
 };
 
