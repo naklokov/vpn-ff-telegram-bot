@@ -21,12 +21,12 @@ const { extendScene } = require("./commands/extend/extendScene");
 const { ruporScene } = require("./commands/rupor/ruporScene");
 const { migrateScene } = require("./commands/migrate/migrateScene");
 const { payScene } = require("./commands/pay/payScene");
-// const {
-//   runSyncActiveUserSheduler,
-// } = require("./utils/shedulers/synsActiveUser");
 const {
-  runPaymentNotificationSheduler,
-} = require("./utils/shedulers/paymentNotification");
+  runSyncActiveUserSheduler,
+} = require("./utils/shedulers/synsActiveUser");
+// const {
+//   runPaymentNotificationSheduler,
+// } = require("./utils/shedulers/paymentNotification");
 const {
   runToogleUserStatusSheduler,
 } = require("./utils/shedulers/toogleUserStatus");
@@ -35,9 +35,9 @@ const { getMarkdownContentSync } = require("./utils/common");
 const bot = new Telegraf(process.env.BOT_TOKEN, { handlerTimeout: 20000 });
 
 const setupBot = () => {
-  runPaymentNotificationSheduler(bot);
+  // runPaymentNotificationSheduler(bot);
   runToogleUserStatusSheduler();
-  // runSyncActiveUserSheduler();
+  runSyncActiveUserSheduler();
 
   const stage = new Scenes.Stage([
     registrationScene,

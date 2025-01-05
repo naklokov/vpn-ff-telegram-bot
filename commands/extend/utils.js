@@ -25,12 +25,12 @@ const updateReferralUser = async (ctx) => {
       await usersConnector.updateUserByPhone(referralUser?.phone, {
         expiredDate: bonusExpiredDate.toISOString(),
       });
-      await ctx.telegram.sendMessage(
-        referralUser?.chatId,
-        `Ваш период использования продлён за счёт реферальной программы до ${bonusExpiredDate.format("DD.MM.YYYY")}
-  
-Спасибо, что рекомендуете наш ВПН ❤️`,
-      );
+      //       await ctx.telegram.sendMessage(
+      //         referralUser?.chatId,
+      //         `Ваш период использования продлён за счёт реферальной программы до ${bonusExpiredDate.format("DD.MM.YYYY")}
+
+      // Спасибо, что рекомендуете наш ВПН ❤️`,
+      //       );
     }
   }
 };
@@ -72,10 +72,10 @@ const updateUserExpiredDate = async (ctx) => {
       expiryTime: updatedExpiredDateJs.toDate(),
     });
 
-    await ctx.telegram.sendMessage(
-      dbUser.chatId,
-      'Перенёс вас на новый сервер, чтобы подключить новый ВПН нажмите на команду /instructions, или выберите внизу в "Меню" -> "Инструкции по подключению',
-    );
+    // await ctx.telegram.sendMessage(
+    //   dbUser.chatId,
+    //   'Перенёс вас на новый сервер, чтобы подключить новый ВПН нажмите на команду /instructions, или выберите внизу в "Меню" -> "Инструкции по подключению',
+    // );
   }
 
   await ctx.reply(
@@ -84,20 +84,20 @@ const updateUserExpiredDate = async (ctx) => {
     } мес до ${updatedExpiredDateJs.format("DD.MM.YYYY")}`,
   );
 
-  if (dbUser?.chatId) {
-    await ctx.telegram.sendMessage(
-      dbUser.chatId,
-      `Ваш доступ успешно продлён на ${
-        ctx.wizard.state.extend.months
-      } мес до ${updatedExpiredDateJs.format("DD.MM.YYYY")}
-Приятного пользования!`,
-    );
+  //   if (dbUser?.chatId) {
+  //     await ctx.telegram.sendMessage(
+  //       dbUser.chatId,
+  //       `Ваш доступ успешно продлён на ${
+  //         ctx.wizard.state.extend.months
+  //       } мес до ${updatedExpiredDateJs.format("DD.MM.YYYY")}
+  // Приятного пользования!`,
+  //     );
 
-    await ctx.telegram.sendMessage(
-      dbUser.chatId,
-      `⚠️ ВНИМАНИЕ! Старый сервер VPN больше не работает, если вы НЕ подключаетесь к VPN через Streissand или Hiddify, то переходите на новый сервер по инструкции`,
-    );
-  }
+  //     await ctx.telegram.sendMessage(
+  //       dbUser.chatId,
+  //       `⚠️ ВНИМАНИЕ! Старый сервер VPN больше не работает, если вы НЕ подключаетесь к VPN через Streissand или Hiddify, то переходите на новый сервер по инструкции`,
+  //     );
+  //   }
 };
 
 module.exports = { updateReferralUser, updateUserExpiredDate };

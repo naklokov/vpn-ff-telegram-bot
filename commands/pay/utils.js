@@ -41,16 +41,15 @@ const checkPayment = async (ctx) => {
 };
 
 const sendAdminPaymentInfo = async (ctx, message = "") => {
-  const { id: chatId } = getUserPersonalDataFromContext(ctx);
-  const dbUser = await usersConnector.getUserByChatId(chatId);
-
-  await ctx.forwardMessage(ADMIN_CHAT_ID, ctx.message.text);
-  await ctx.telegram.sendMessage(
-    ADMIN_CHAT_ID,
-    `${message}
-\`${dbUser.phone}\`   ${ctx.wizard.state.extend.months} мес`,
-    { parse_mode: "MarkdownV2" },
-  );
+  // const { id: chatId } = getUserPersonalDataFromContext(ctx);
+  // const dbUser = await usersConnector.getUserByChatId(chatId);
+  // await ctx.forwardMessage(ADMIN_CHAT_ID, ctx.message.text);
+  //   await ctx.telegram.sendMessage(
+  //     ADMIN_CHAT_ID,
+  //     `${message}
+  // \`${dbUser.phone}\`   ${ctx.wizard.state.extend.months} мес`,
+  //     { parse_mode: "MarkdownV2" },
+  //   );
 };
 
 module.exports = { checkPayment, sendAdminPaymentInfo };
