@@ -57,10 +57,7 @@ const SECRET_ROW_REGEXP = /^(.+) : EAP "(.+)"$/i;
 
 const VPN_DB_CONNECTION = process.env.MONGO_URL + "vpn";
 
-const DEFAULT_INBOUND_ID = process.env.INBOUND_ID;
-
 module.exports = {
-  DEFAULT_INBOUND_ID,
   CMD,
   CMD_TEXT,
   NOTION_PAGE_ID_MAP,

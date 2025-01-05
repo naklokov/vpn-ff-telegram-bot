@@ -1,6 +1,5 @@
 require("dotenv").config();
-const { getInbound } = require("../api/vless");
-const { DEFAULT_INBOUND_ID } = require("../constants");
+const { getInbounds } = require("../api/vless");
 const { usersConnector } = require("../db");
 // const { secretsFileToUsers } = require("../utils/secrets");
 
@@ -20,8 +19,8 @@ const { usersConnector } = require("../db");
 const migrateFromDbToVless = async () => {
   try {
     const dbUsers = await usersConnector.getUsers();
-    const { settings } = await getInbound(DEFAULT_INBOUND_ID);
-    const { clients } = JSON.parse(settings);
+    const inbounds = await getInbounds();
+    const { clients } = JSON.parse(inbounds?.[0]?.settings ?? {});
 
     await dbUsers.forEach(async (dbUser) => {
       const isExist = clients?.find((client) => client.id === dbUser.phone);
