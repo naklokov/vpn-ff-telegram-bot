@@ -22,6 +22,7 @@ const CALLBACK_QUERY_DATA = {
   instructionsIos: "instructions_ios",
   instructionsAndroid: "instructions_android",
   instructionsWindows: "instructions_windows",
+  extendOnError: "extend_on_error",
 };
 
 const NOTION_PAGE_ID_MAP = {
@@ -57,6 +58,8 @@ const SECRET_ROW_REGEXP = /^(.+) : EAP "(.+)"$/i;
 
 const VPN_DB_CONNECTION = process.env.MONGO_URL + "vpn";
 
+const CALLBACK_QUERY_DATA_DELIMETER = ":";
+
 module.exports = {
   CMD,
   CMD_TEXT,
@@ -72,4 +75,5 @@ module.exports = {
   ADMIN_CHAT_ID,
   MONTH_COST,
   CALLBACK_QUERY_DATA,
+  CALLBACK_QUERY_DATA_DELIMETER,
 };

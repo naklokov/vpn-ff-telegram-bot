@@ -80,7 +80,7 @@ const payScene = new Scenes.WizardScene(
     if (!isPayCorrect) {
       if (ctx.wizard.state.extend.tryCount > 0) {
         await ctx.reply("Оплата принята, ожидайте проведения платежа");
-        await sendAdminPaymentInfo(ctx, "⚠️ ОПЛАТА НЕ ПРОШЛА ⚠️\n/extend");
+        await sendAdminPaymentInfo(ctx, "⚠️ ОПЛАТА НЕ ПРОШЛА");
         await exitCommand(ctx);
         ctx.scene.leave();
         return;

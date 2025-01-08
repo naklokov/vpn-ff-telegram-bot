@@ -1,5 +1,10 @@
 var Tesseract = require("tesseract.js");
-const { MONTH_COST, ADMIN_CHAT_ID } = require("../../constants");
+const {
+  MONTH_COST,
+  ADMIN_CHAT_ID,
+  CALLBACK_QUERY_DATA_DELIMETER,
+  CALLBACK_QUERY_DATA,
+} = require("../../constants");
 const { getUserPersonalDataFromContext } = require("../../utils/common");
 const { usersConnector } = require("../../db");
 
@@ -43,13 +48,27 @@ const checkPayment = async (ctx) => {
 const sendAdminPaymentInfo = async (ctx, message = "") => {
   const { id: chatId } = getUserPersonalDataFromContext(ctx);
   const dbUser = await usersConnector.getUserByChatId(chatId);
+  const months = ctx.wizard.state?.extend?.months ?? 0;
 
   await ctx.forwardMessage(ADMIN_CHAT_ID, ctx.message.text);
+  var extendOptions = {
+    reply_markup: JSON.stringify({
+      inline_keyboard: [
+        [
+          {
+            text: "Продлить",
+            callback_data: `${CALLBACK_QUERY_DATA.extendOnError}${CALLBACK_QUERY_DATA_DELIMETER}${dbUser.chatId}${CALLBACK_QUERY_DATA_DELIMETER}${months}`,
+          },
+        ],
+      ],
+    }),
+  };
+
   await ctx.telegram.sendMessage(
     ADMIN_CHAT_ID,
     `${message}
-\`${dbUser.phone}\`   ${ctx.wizard.state.extend.months} мес`,
-    { parse_mode: "MarkdownV2" },
+\`${dbUser.phone}\`   ${months} мес`,
+    { parse_mode: "MarkdownV2", ...extendOptions },
   );
 };
 

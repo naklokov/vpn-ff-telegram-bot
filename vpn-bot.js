@@ -1,5 +1,4 @@
 const { Telegraf, Scenes, session } = require("telegraf");
-const path = require("path");
 const logger = require("./utils/logger");
 
 const startCommand = require("./commands/start");
@@ -13,7 +12,7 @@ const infoCommand = require("./commands/info");
 const instructionsCommand = require("./commands/instructions");
 const referralCommand = require("./commands/referral");
 const statusCommand = require("./commands/status");
-const { CMD, CALLBACK_QUERY_DATA } = require("./constants");
+const { CMD } = require("./constants");
 const {
   registrationScene,
 } = require("./commands/registration/registrationScene");
@@ -21,16 +20,20 @@ const { extendScene } = require("./commands/extend/extendScene");
 const { ruporScene } = require("./commands/rupor/ruporScene");
 const { migrateScene } = require("./commands/migrate/migrateScene");
 const { payScene } = require("./commands/pay/payScene");
-// const {
-//   runSyncActiveUserSheduler,
-// } = require("./utils/shedulers/synsActiveUser");
+
+const {
+  instructionsCallbackQuery,
+} = require("./commands/instructions/callbackQuery");
+
 const {
   runPaymentNotificationSheduler,
 } = require("./utils/shedulers/paymentNotification");
 const {
   runToogleUserStatusSheduler,
 } = require("./utils/shedulers/toogleUserStatus");
-const { getMarkdownContentSync } = require("./utils/common");
+const {
+  extendOnErrorCallbackQuery,
+} = require("./commands/extend/callbackQuery");
 
 const bot = new Telegraf(process.env.BOT_TOKEN, { handlerTimeout: 20000 });
 
@@ -73,27 +76,9 @@ const setupBot = () => {
 
   bot.on("callback_query", (ctx) => {
     const queryData = ctx?.update?.callback_query?.data;
-    if (queryData === CALLBACK_QUERY_DATA.instructionsAndroid) {
-      const startReplyContent = getMarkdownContentSync(
-        path.dirname(__filename) + "/reply/instructions-android.md",
-      );
 
-      ctx.reply(startReplyContent);
-    }
-
-    if (queryData === CALLBACK_QUERY_DATA.instructionsIos) {
-      const startReplyContent = getMarkdownContentSync(
-        path.dirname(__filename) + "/reply/instructions-ios.md",
-      );
-      ctx.reply(startReplyContent);
-    }
-
-    if (queryData === CALLBACK_QUERY_DATA.instructionsWindows) {
-      const startReplyContent = getMarkdownContentSync(
-        path.dirname(__filename) + "/reply/instructions-windows.md",
-      );
-      ctx.reply(startReplyContent);
-    }
+    instructionsCallbackQuery(ctx, queryData);
+    extendOnErrorCallbackQuery(ctx, queryData);
   });
 
   return bot;

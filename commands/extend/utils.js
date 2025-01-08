@@ -2,10 +2,8 @@ const { usersConnector } = require("../../db");
 const dayjs = require("dayjs");
 const { updateVlessUser, addVlessUser } = require("../../utils/vless");
 
-const updateReferralUser = async (ctx) => {
-  const extendedUser = await usersConnector.getUserByPhone(
-    ctx.wizard.state.extend.login,
-  );
+const updateReferralUser = async (phone, ctx) => {
+  const extendedUser = await usersConnector.getUserByPhone(phone);
 
   if (extendedUser?.referralUserLogin) {
     const isNeedBonus = dayjs(extendedUser.registrationDate).isAfter(
@@ -25,6 +23,7 @@ const updateReferralUser = async (ctx) => {
       await usersConnector.updateUserByPhone(referralUser?.phone, {
         expiredDate: bonusExpiredDate.toISOString(),
       });
+
       await ctx.telegram.sendMessage(
         referralUser?.chatId,
         `Ваш период использования продлён за счёт реферальной программы до ${bonusExpiredDate.format("DD.MM.YYYY")}
@@ -32,28 +31,26 @@ const updateReferralUser = async (ctx) => {
 Спасибо, что рекомендуете наш ВПН ❤️`,
       );
     }
+
+    return isNeedBonus;
   }
 };
 
-const updateUserExpiredDate = async (ctx) => {
-  if (!ctx.wizard.state?.extend) {
+const updateUser = async (phone, months, ctx) => {
+  if (!phone || !months) {
     throw Error("Отсутствуют данные для продления");
   }
 
-  const dbUser = await usersConnector.getUserByPhone(
-    ctx.wizard.state.extend.login,
-  );
+  const dbUser = await usersConnector.getUserByPhone(phone);
 
-  const payedMonths = ctx.wizard.state?.extend?.months;
-
-  if (!payedMonths) {
+  if (!months) {
     throw Error("Не указано количество месяцев для продления");
   }
 
   const updatedExpiredDateJs = dayjs(
     dbUser?.isActive ? dbUser?.expiredDate : undefined,
-  ).add(+payedMonths, "months");
-  await usersConnector.updateUserByPhone(ctx.wizard.state.extend.login, {
+  ).add(+months, "months");
+  await usersConnector.updateUserByPhone(phone, {
     expiredDate: updatedExpiredDateJs.toISOString(),
     isVless: true,
   });
@@ -79,8 +76,8 @@ const updateUserExpiredDate = async (ctx) => {
   }
 
   await ctx.reply(
-    `Пользователь ${ctx.wizard.state.extend.login} успешно продлён на ${
-      ctx.wizard.state.extend.months
+    `Пользователь ${phone} успешно продлён на ${
+      months
     } мес до ${updatedExpiredDateJs.format("DD.MM.YYYY")}`,
   );
 
@@ -88,7 +85,7 @@ const updateUserExpiredDate = async (ctx) => {
     await ctx.telegram.sendMessage(
       dbUser.chatId,
       `Ваш доступ успешно продлён на ${
-        ctx.wizard.state.extend.months
+        months
       } мес до ${updatedExpiredDateJs.format("DD.MM.YYYY")}
 Приятного пользования!`,
     );
@@ -100,4 +97,12 @@ const updateUserExpiredDate = async (ctx) => {
   }
 };
 
-module.exports = { updateReferralUser, updateUserExpiredDate };
+const extendUser = async (phone, months, ctx) => {
+  // проверяем наличие реферального приглашения и продлеваем тому кто прислал пользование
+  await updateReferralUser(phone, ctx);
+
+  // обновляем expiredDate пользователя и высылаем ему уведомление
+  await updateUser(phone, months, ctx);
+};
+
+module.exports = { extendUser };

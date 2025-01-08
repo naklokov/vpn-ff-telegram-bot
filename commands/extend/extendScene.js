@@ -7,7 +7,8 @@ const {
 } = require("../../constants");
 const { exitButton } = require("../../components/buttons");
 const { exitCommand } = require("../../components/exit");
-const { updateReferralUser, updateUserExpiredDate } = require("./utils");
+const { extendUser } = require("./utils");
+const logger = require("../../utils/logger");
 
 const extendScene = new Scenes.WizardScene(
   SCENE_IDS.EXTEND,
@@ -45,15 +46,20 @@ const extendScene = new Scenes.WizardScene(
         return;
       }
       ctx.wizard.state.extend.months = payedMonths;
+      const phone = ctx?.wizard?.state?.extend?.login;
+      const months = payedMonths;
+
+      if (!phone || !months) {
+        throw Error("Некорректные данные для продления периода");
+      }
+
+      // продление пользователя в БД и ВПН сервере
+      await extendUser(phone, months, ctx);
 
       // проверяем рефералку (если пользователь зарегистрирован менее месяца назад) и продлеваем
-      await updateReferralUser(ctx);
-
-      // обновляем expiredDate пользователя и высылаем ему уведомление
-      await updateUserExpiredDate(ctx);
     } catch (error) {
       ctx.reply("Произошла ошибка при продлении периода");
-      console.error(error);
+      logger.error(error);
     } finally {
       exitCommand(ctx);
       ctx.scene.leave();
