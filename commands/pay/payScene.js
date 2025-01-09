@@ -80,7 +80,7 @@ const payScene = new Scenes.WizardScene(
     if (!isPayCorrect) {
       if (ctx.wizard.state.extend.tryCount > 0) {
         await ctx.reply("Оплата принята, ожидайте проведения платежа");
-        await sendAdminPaymentInfo(ctx, "⚠️ ОПЛАТА НЕ ПРОШЛА");
+        await sendAdminPaymentInfo(isPayCorrect, ctx);
         await exitCommand(ctx);
         ctx.scene.leave();
         return;
@@ -104,7 +104,7 @@ const payScene = new Scenes.WizardScene(
       await extendUser(dbUser.phone, ctx.wizard.state.extend.months, ctx);
 
       // временная мера для проверки оплаты
-      await sendAdminPaymentInfo(ctx, "Оплата прошла");
+      await sendAdminPaymentInfo(isPayCorrect, ctx);
     } catch (error) {
       ctx.reply("Произошла ошибка при продлении периода");
       logger.error("Произошла ошибка при продлении периода платежа", error);

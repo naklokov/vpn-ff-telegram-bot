@@ -45,10 +45,12 @@ const checkPayment = async (ctx) => {
   return false;
 };
 
-const sendAdminPaymentInfo = async (ctx, message = "") => {
+const sendAdminPaymentInfo = async (isPayCorrect, ctx) => {
   const { id: chatId } = getUserPersonalDataFromContext(ctx);
   const dbUser = await usersConnector.getUserByChatId(chatId);
   const months = ctx.wizard.state?.extend?.months ?? 0;
+
+  const message = isPayCorrect ? "Оплата прошла" : "⚠️ ОПЛАТА НЕ ПРОШЛА";
 
   await ctx.forwardMessage(ADMIN_CHAT_ID, ctx.message.text);
   var extendOptions = {
@@ -67,8 +69,8 @@ const sendAdminPaymentInfo = async (ctx, message = "") => {
   await ctx.telegram.sendMessage(
     ADMIN_CHAT_ID,
     `${message}
-\`${dbUser.phone}\`   ${months} мес`,
-    { parse_mode: "MarkdownV2", ...extendOptions },
+\`${dbUser.phone}\` ${months} мес`,
+    { parse_mode: "MarkdownV2", ...(!isPayCorrect ? extendOptions : {}) },
   );
 };
 
