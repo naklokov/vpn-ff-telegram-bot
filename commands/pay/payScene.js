@@ -4,7 +4,7 @@ const { exitButton } = require("../../components/buttons");
 const { usersConnector } = require("../../db");
 const { getUserPersonalDataFromContext } = require("../../utils/common");
 const { checkPayment, sendAdminPaymentInfo } = require("./utils");
-const { updateUserExpiredDate } = require("../extend/utils");
+const { extendUser } = require("../extend/utils");
 const { exitCommand } = require("../../components/exit");
 const logger = require("../../utils/logger");
 
@@ -101,13 +101,14 @@ const payScene = new Scenes.WizardScene(
     }
 
     try {
-      await updateUserExpiredDate(ctx);
+      await extendUser(dbUser.phone, ctx.wizard.state.extend.months, ctx);
 
       // временная мера для проверки оплаты
       await sendAdminPaymentInfo(ctx, "Оплата прошла");
     } catch (error) {
       ctx.reply("Произошла ошибка при продлении периода");
       logger.error("Произошла ошибка при продлении периода платежа", error);
+      throw Error(error);
     } finally {
       await exitCommand(ctx);
       ctx.scene.leave();
