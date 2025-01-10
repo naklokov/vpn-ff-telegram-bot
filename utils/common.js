@@ -1,6 +1,7 @@
 const { readFileSync } = require("fs");
 const { FREE_PERIOD_DAYS } = require("../constants");
 const dayjs = require("dayjs");
+const pdfjsLib = require("pdfjs-dist");
 
 const getMarkdownContentSync = (filename) => readFileSync(filename, "utf-8");
 
@@ -43,6 +44,16 @@ const generateUuidv4 = () => {
   );
 };
 
+async function getTextFromPDF(path) {
+  let doc = await pdfjsLib.getDocument(path).promise;
+  let page1 = await doc.getPage(1);
+  let content = await page1.getTextContent();
+  let strings = content.items.map(function (item) {
+    return item.str;
+  });
+  return strings;
+}
+
 module.exports = {
   generateUuidv4,
   getMarkdownContentSync,
@@ -51,4 +62,5 @@ module.exports = {
   convertToUnixDate,
   getExpiredDate,
   getRegistrationDate,
+  getTextFromPDF,
 };

@@ -23,6 +23,7 @@
     "mongodb": "^5.8.1",
     "mongoose": "^7.4.5",
     "node-cron": "^3.0.2",
+    "pdfjs-dist": "^3.11.174",
     "proxy-agent": "^6.5.0",
     "telegraf": "^4.12.2",
     "telegraf-session-mongodb": "^2.0.2",

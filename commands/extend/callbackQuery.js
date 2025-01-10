@@ -7,7 +7,6 @@ const { extendUser } = require("./utils");
 const logger = require("../../utils/logger");
 
 const extendOnErrorCallbackQuery = async (ctx, queryData) => {
-  console.log(queryData);
   const [callbackQueryDataType, chatId, months = 0] =
     queryData.split(CALLBACK_QUERY_DATA_DELIMETER) || [];
 

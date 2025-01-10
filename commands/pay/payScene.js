@@ -3,9 +3,10 @@ const { SCENE_IDS, CMD_TEXT, MONTH_COST, CMD } = require("../../constants");
 const { exitButton } = require("../../components/buttons");
 const { usersConnector } = require("../../db");
 const { getUserPersonalDataFromContext } = require("../../utils/common");
-const { checkPayment, sendAdminPaymentInfo } = require("./utils");
+const { sendAdminPaymentInfo } = require("./utils");
 const { extendUser } = require("../extend/utils");
 const { exitCommand } = require("../../components/exit");
+const { checkPayment } = require("../../utils/recognize");
 const logger = require("../../utils/logger");
 
 const payScene = new Scenes.WizardScene(
@@ -45,9 +46,10 @@ const payScene = new Scenes.WizardScene(
     // инициализация формы пользователя
     ctx.wizard.state.extend = {};
     ctx.wizard.state.extend.months = payedMonthsCount;
-    ctx.wizard.state.extend.tryCount = 0;
 
     const amount = payedMonthsCount * MONTH_COST;
+    ctx.wizard.state.extend.amount = amount;
+    ctx.wizard.state.extend.tryCount = 0;
 
     await ctx.reply(
       `Сумма к оплате ${amount} руб
@@ -55,7 +57,7 @@ const payScene = new Scenes.WizardScene(
 📲 Оплату можно произвести переводом на карту по номеру телефона +79106174473
 Яндекс пей, Тинькофф, Альфа, Сбер
 
-После оплаты пришлите в ответном сообщение скриншот чека`,
+После оплаты пришлите в ответном сообщении квитанцию или скриншот с оплатой`,
       {
         ...exitButton,
       },
@@ -73,7 +75,8 @@ const payScene = new Scenes.WizardScene(
 
     ctx.wizard.state.extend.login = dbUser.phone;
 
-    const isPayCorrect = await checkPayment(ctx);
+    const amount = ctx.wizard.state?.extend?.amount ?? 0;
+    const isPayCorrect = await checkPayment(amount, ctx);
 
     logger.info("Разпознавание платежа успешно", dbUser.chatId);
 
@@ -86,12 +89,9 @@ const payScene = new Scenes.WizardScene(
         return;
       }
 
-      await ctx.reply(
-        "Прикрепите корректное изображение квитанции (чека) об оплате",
-        {
-          ...exitButton,
-        },
-      );
+      await ctx.reply("Прикрепите корректную квитанцию об оплате", {
+        ...exitButton,
+      });
 
       ctx.wizard.state.extend.tryCount = ctx.wizard.state.extend.tryCount + 1;
 
