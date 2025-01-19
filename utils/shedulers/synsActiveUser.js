@@ -18,10 +18,8 @@ const syncActiveUserSheduler = async () => {
     restartService();
     logger.debug("Синхронизация активных пользователей прошла успешно");
   } catch (error) {
-    logger.error(
-      `Произошла ошибка при синхронизации активных пользователей`,
-      error,
-    );
+    logger.error(`Произошла ошибка при синхронизации активных пользователей`);
+    throw Error(error);
   }
 };
 const runSyncActiveUserSheduler = (interval = "0/10 * * * *") =>

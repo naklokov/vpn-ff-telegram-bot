@@ -20,9 +20,8 @@ module.exports = async (ctx) => {
   ).format("DD.MM.YYYY")}`;
 
   ctx.replyWithMarkdown(`
-*Данные для входа* (_копируются по клику_)
-- Ваш логин: \`${user.phone}\`
-- Ваш пароль: \`${user.password}\`
+*Инструкции по подключению*
+/instructions
 
 *Состояние подключения*
 - ${statusText}

@@ -17,7 +17,8 @@ const extendOnErrorCallbackQuery = async (ctx, queryData) => {
         await extendUser(dbUser.phone, months, ctx);
       } catch (error) {
         ctx.reply("Произошла ошибка при продлении периода");
-        logger.error(error);
+        logger.error("Произошла ошибка при продлении периода");
+        throw Error(error);
       }
     }
   }

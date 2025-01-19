@@ -40,11 +40,8 @@ class ApiClient {
 
       return response.data;
     } catch (error) {
-      logger.error(
-        `LOGIN failed: ${error.response ? error.response.data : error.message}`,
-        error,
-      );
-      throw error;
+      logger.error(error);
+      throw Error(error);
     }
   }
 
@@ -54,11 +51,8 @@ class ApiClient {
       const response = await this.client.get(endpoint, { params });
       return response.data;
     } catch (error) {
-      logger.error(
-        `GET failed: ${error.response ? error.response.data : error.message}`,
-        error,
-      );
-      throw error;
+      logger.error(error);
+      throw Error(error);
     }
   }
 
@@ -68,11 +62,8 @@ class ApiClient {
       const response = await this.client.post(endpoint, data);
       return response.data;
     } catch (error) {
-      logger.error(
-        `POST failed: ${error.response ? error.response.data : error.message}`,
-        error,
-      );
-      throw error;
+      logger.error(error);
+      throw Error(error);
     }
   }
 }

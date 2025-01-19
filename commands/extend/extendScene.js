@@ -59,7 +59,8 @@ const extendScene = new Scenes.WizardScene(
       // проверяем рефералку (если пользователь зарегистрирован менее месяца назад) и продлеваем
     } catch (error) {
       ctx.reply("Произошла ошибка при продлении периода");
-      logger.error(error);
+      logger.error("Произошла ошибка при продлении периода");
+      throw Error(error);
     } finally {
       exitCommand(ctx);
       ctx.scene.leave();

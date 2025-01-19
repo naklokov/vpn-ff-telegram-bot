@@ -41,7 +41,7 @@ const checkPaymentPdf = async (amount, ctx) => {
     const stringParts = await getTextFromPDF(filePath);
     return checkRegexpAmount(stringParts.join(" "), amount);
   } catch (error) {
-    logger.error("Произошла ошибка при обработке изображения", error);
+    logger.error("Произошла ошибка при обработке PDF", error);
     return false;
   }
 };

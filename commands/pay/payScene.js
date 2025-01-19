@@ -81,22 +81,10 @@ const payScene = new Scenes.WizardScene(
     logger.info("Разпознавание платежа успешно", dbUser.chatId);
 
     if (!isPayCorrect) {
-      if (ctx.wizard.state.extend.tryCount > 0) {
-        await ctx.reply("Оплата не прошла, свяжитесь с @naklokov");
-        await sendAdminPaymentInfo(isPayCorrect, ctx);
-        await exitCommand(ctx);
-        ctx.scene.leave();
-        return;
-      }
-
-      await ctx.reply("Прикрепите корректную квитанцию об оплате", {
-        ...exitButton,
-      });
-
-      ctx.wizard.state.extend.tryCount = ctx.wizard.state.extend.tryCount + 1;
-
-      logger.error("Произошла ошибка при распознавании платежа user:" + chatId);
-
+      await ctx.reply("Оплата не прошла, свяжитесь с @naklokov");
+      await sendAdminPaymentInfo(isPayCorrect, ctx);
+      await exitCommand(ctx);
+      ctx.scene.leave();
       return;
     }
 
@@ -107,7 +95,7 @@ const payScene = new Scenes.WizardScene(
       await sendAdminPaymentInfo(isPayCorrect, ctx);
     } catch (error) {
       ctx.reply("Произошла ошибка при продлении периода");
-      logger.error("Произошла ошибка при продлении периода платежа", error);
+      logger.error("Произошла ошибка при продлении периода платежа");
       throw Error(error);
     } finally {
       await exitCommand(ctx);

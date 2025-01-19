@@ -19,8 +19,9 @@ const info = (message, chatId) => {
   console.log(getLogMessage(LOG_LEVEL_LEVELS.INFO, message, chatId));
 };
 
-const error = (message, stack) => {
-  console.error(getLogMessage(LOG_LEVEL_LEVELS.ERROR, message), stack);
+const error = (error, chatId) => {
+  console.error(getLogMessage(LOG_LEVEL_LEVELS.ERROR, chatId, error));
+  console.log(error.stack);
 };
 
 const debug = (message, chatId) => {

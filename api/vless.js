@@ -16,11 +16,8 @@ async function getInbounds() {
     const response = await apiClient.get("/panel/api/inbounds/list");
     return response.obj;
   } catch (error) {
-    logger.error(
-      `Error fetching inbounds: ${error.response ? error.response.data : error.message}`,
-      error,
-    );
-    throw error;
+    logger.error(error);
+    throw Error(error);
   }
 }
 
@@ -31,11 +28,8 @@ async function getInbound(id) {
     const response = await apiClient.get(`/panel/api/inbounds/get/${id}`);
     return response?.obj ?? {};
   } catch (error) {
-    logger.error(
-      `Error fetching inbounds: ${error.response ? error.response.data : error.message}`,
-      error,
-    );
-    throw error;
+    logger.error(error);
+    throw Error(error);
   }
 }
 
@@ -55,11 +49,8 @@ async function addClientToInbound(
     logger.info(`Client added successfully ${id}`);
     return response.data;
   } catch (error) {
-    logger.error(
-      `Error adding client: ${error.response ? error.response.data : error.message}`,
-      error,
-    );
-    throw error;
+    logger.error(error);
+    throw Error(error);
   }
 }
 

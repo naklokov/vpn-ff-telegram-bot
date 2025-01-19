@@ -21,6 +21,7 @@ const {
 const { addVlessUser } = require("../../utils/vless");
 // const { addUserToSecrets } = require('../../utils/secrets');
 const { usersConnector } = require("../../db");
+const { error } = require("console");
 
 const isDev = NODE_ENV === "development";
 
@@ -131,13 +132,13 @@ const registrationScene = new Scenes.WizardScene(
       logger.info(
         `Пользователь успешно добавлен ${ctx.wizard.state.user.phone}`,
       );
-    } catch (error) {
+    } catch {
       await usersConnector.deleteUser(ctx.wizard.state.user.chatId);
       ctx.reply("Произошла ошибка при регистрации, обратитесь к разработчку");
       logger.error(
         `Произошла ошибка при регистрации пользователя ${ctx.wizard.state.user.phone}`,
-        error,
       );
+      throw Error(error);
     } finally {
       registrationExitCommand(ctx);
       ctx.scene.leave();

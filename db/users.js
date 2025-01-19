@@ -46,8 +46,8 @@ const getUsers = async () => {
     const users = User.find({});
     return users;
   } catch (error) {
-    logger.error(`Произошла ошибка при получении пользователей из БД`, error);
-    throw error;
+    logger.error(`Произошла ошибка при получении пользователей из БД`);
+    throw Error(error);
   }
 };
 
@@ -59,9 +59,8 @@ const getUserByChatId = async (chatId) => {
   } catch (error) {
     logger.error(
       `Произошла ошибка при получении пользователя по chatId ${chatId}`,
-      error,
     );
-    throw error;
+    throw Error(error);
   }
 };
 
@@ -73,9 +72,8 @@ const getUserByPhone = async (phone) => {
   } catch (error) {
     logger.error(
       `Произошла ошибка при получении пользователя по телефону ${phone}`,
-      error,
     );
-    throw error;
+    throw Error(error);
   }
 };
 
@@ -86,9 +84,8 @@ const deleteUser = async (userId) => {
   } catch (error) {
     logger.error(
       `Произошла ошибка при удалении пользователя по телефону ${userId}`,
-      error,
     );
-    throw error;
+    throw Error(error);
   }
 };
 
@@ -99,9 +96,8 @@ const updateUserById = async (userId, user) => {
   } catch (error) {
     logger.error(
       `Произошла ошибка при обновлении пользователя по id ${userId}`,
-      error,
     );
-    throw error;
+    throw Error(error);
   }
 };
 
@@ -112,9 +108,8 @@ const updateUserByPhone = async (phone, user) => {
   } catch (error) {
     logger.error(
       `Произошла ошибка при обновлении пользователя по телефону ${phone}`,
-      error,
     );
-    throw error;
+    throw Error(error);
   }
 };
 

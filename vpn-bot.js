@@ -69,9 +69,9 @@ const setupBot = () => {
     ),
   );
 
-  bot.catch((e) => {
-    logger.error(e);
-    throw e;
+  bot.catch((err, ctx) => {
+    logger.error(err, ctx.message.from.id);
+    ctx.sendMessage("Произошла ошибка при выполнении операции 👉 /help");
   });
 
   bot.on("callback_query", (ctx) => {
