@@ -34,7 +34,7 @@ class ApiClient {
       // Обновление cookie из заголовков ответа
       const setCookie = response.headers["set-cookie"];
       if (setCookie) {
-        this.cookie = setCookie?.[1] ?? "";
+        this.cookie = setCookie?.[0] ?? "";
         this.client.defaults.headers["Cookie"] = this.cookie;
       }
 
