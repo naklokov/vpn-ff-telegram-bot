@@ -114,10 +114,14 @@ const registrationScene = new Scenes.WizardScene(
     ctx.wizard.state.user.password = password;
 
     try {
+      await addVlessUser({ chatId, phone });
+    } catch (error) {
+      logger.error("Произошла ошибка при добавление на vless сервер", error);
+    }
+
+    try {
       // добавление в БД
       await usersConnector.addUser(ctx.wizard.state.user);
-      // добавление пользователя в консоль VPN
-      await addVlessUser({ chatId, phone });
 
       await ctx.reply(getSuccessReply(), {
         parse_mode: "MarkdownV2",
@@ -125,12 +129,9 @@ const registrationScene = new Scenes.WizardScene(
       logger.info(
         `Пользователь успешно добавлен ${ctx.wizard.state.user.phone}`,
       );
-    } catch {
+    } catch (error) {
       await usersConnector.deleteUser(ctx.wizard.state.user.chatId);
-      ctx.reply("Произошла ошибка при регистрации, обратитесь к разработчку");
-      logger.error(
-        `Произошла ошибка при регистрации пользователя ${ctx.wizard.state.user.phone}`,
-      );
+      logger.error(error);
       throw Error(error);
     } finally {
       registrationExitCommand(ctx);

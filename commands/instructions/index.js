@@ -13,30 +13,41 @@ module.exports = async (ctx) => {
     return;
   }
 
-  var options = {
+  var optionsIpsec = {
     parse_mode: "MarkdownV2",
     reply_markup: JSON.stringify({
       inline_keyboard: [
         [
           {
-            text: "IPSEC",
+            text: "IPSEC инструкции",
             callback_data: CALLBACK_QUERY_DATA.instructionsIpsec,
           },
+        ],
+      ],
+    }),
+  };
+  var optionsVless = {
+    parse_mode: "MarkdownV2",
+    reply_markup: JSON.stringify({
+      inline_keyboard: [
+        [
           {
-            text: "VLESS",
+            text: "VLESS инструкции",
             callback_data: CALLBACK_QUERY_DATA.instructionsVless,
           },
         ],
       ],
     }),
   };
-
+  await ctx.reply("Выберите сервер для настройки");
   await ctx.reply(
-    `Вам доступны на выбор два сервера выберите нужную вам инструкцию и настройте ВПН
-    
-*IPSEC* \\- лёгкий и быстрый ВПН, чаще работает шустрее чем VLESS, но иногда попадает под блокировки
-*VLESS* \\- более зашифрованный ВПН, крайне редко блокируется провайдерами, но иногда работает чуть медленнее \\(особенно на ios\\)
-    `,
-    options,
+    `*IPSEC* \\- лёгкий и быстрый ВПН, чаще работает шустрее чем VLESS, но иногда попадает под блокировки`,
+    optionsIpsec,
   );
+
+  user.isVless &&
+    (await ctx.reply(
+      `*VLESS* \\- более зашифрованный ВПН, крайне редко блокируется провайдерами, но иногда работает чуть медленнее \\(особенно на ios\\)`,
+      optionsVless,
+    ));
 };

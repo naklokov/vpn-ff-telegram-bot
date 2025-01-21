@@ -37,8 +37,6 @@ module.exports = async (ctx) => {
               text: "iOS (Macbook)",
               callback_data: CALLBACK_QUERY_DATA.instructionsIos,
             },
-          ],
-          [
             {
               text: "Android",
               callback_data: CALLBACK_QUERY_DATA.instructionsAndroid,

@@ -29,8 +29,6 @@ const usersToSecretsFile = async (users) => {
     (acc, cur) => acc + `${cur.login} : EAP "${cur.password}"\n`,
     "",
   );
-  console.log("write to secrets");
-  console.log(usersSecretsRow);
   await fs.writeFile(SECRETS_FILE_PATH, FIRST_REQUIRED_ROW + usersSecretsRow);
 };
 
