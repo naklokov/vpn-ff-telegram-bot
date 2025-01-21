@@ -9,8 +9,6 @@ const syncActiveUserSheduler = async () => {
 
   const activeUsers = users
     .filter(({ isActive }) => isActive)
-    // продлеваем только для старых пользователей
-    // .filter(({ isVless }) => !isVless)
     .map(({ phone, password }) => ({ login: phone, password }));
 
   try {

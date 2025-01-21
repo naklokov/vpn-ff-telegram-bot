@@ -24,10 +24,12 @@ const { payScene } = require("./commands/pay/payScene");
 const {
   instructionsCallbackQuery,
 } = require("./commands/instructions/callbackQuery");
-
 const {
   runPaymentNotificationSheduler,
 } = require("./utils/shedulers/paymentNotification");
+const {
+  runSyncActiveUserSheduler,
+} = require("./utils/shedulers/synsActiveUser");
 const {
   runToogleUserStatusSheduler,
 } = require("./utils/shedulers/toogleUserStatus");
@@ -40,7 +42,7 @@ const bot = new Telegraf(process.env.BOT_TOKEN, { handlerTimeout: 20000 });
 const setupBot = () => {
   runPaymentNotificationSheduler(bot);
   runToogleUserStatusSheduler();
-  // runSyncActiveUserSheduler();
+  runSyncActiveUserSheduler();
 
   const stage = new Scenes.Stage([
     registrationScene,

@@ -1,0 +1,8 @@
+{
+  "uuid": "f4b73e82-f22c-4a78-99bd-c67b79e4f3c1",
+  "name": "second.server-npv.uk",
+  "type": "ikev2-eap",
+  "remote": {
+    "addr": "second.server-npv.uk"
+  }
+}

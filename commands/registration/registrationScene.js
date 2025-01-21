@@ -1,8 +1,6 @@
 const { Scenes, Markup } = require("telegraf");
 const logger = require("../../utils/logger");
 
-const { NODE_ENV } = process.env;
-
 const {
   SCENE_IDS,
   EMAIL_REGEXP,
@@ -10,7 +8,6 @@ const {
   CMD_TEXT,
   ADMIN_CHAT_ID,
 } = require("../../constants");
-const instructionsCommand = require("../instructions");
 const { registrationExitButton } = require("../../components/buttons");
 const { registrationExitCommand } = require("../../components/exit");
 const { getSuccessReply } = require("./constants");
@@ -19,11 +16,8 @@ const {
   generatePassword,
 } = require("../../utils/common");
 const { addVlessUser } = require("../../utils/vless");
-// const { addUserToSecrets } = require('../../utils/secrets');
 const { usersConnector } = require("../../db");
 const { error } = require("console");
-
-const isDev = NODE_ENV === "development";
 
 const registrationScene = new Scenes.WizardScene(
   SCENE_IDS.REGISTRATION,
@@ -128,7 +122,6 @@ const registrationScene = new Scenes.WizardScene(
       await ctx.reply(getSuccessReply(), {
         parse_mode: "MarkdownV2",
       });
-      await instructionsCommand(ctx);
       logger.info(
         `Пользователь успешно добавлен ${ctx.wizard.state.user.phone}`,
       );

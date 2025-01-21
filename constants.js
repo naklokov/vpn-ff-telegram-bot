@@ -19,9 +19,13 @@ const CMD = {
 };
 
 const CALLBACK_QUERY_DATA = {
-  instructionsIos: "instructions_ios",
-  instructionsAndroid: "instructions_android",
-  instructionsWindows: "instructions_windows",
+  instructionsVless: "instructions_vless",
+  instructionsIpsec: "instructions_ipsec",
+  instructionsIosVless: "instructions_ios_vless",
+  instructionsAndroidVless: "instructions_android_vless",
+  instructionsWindowsVless: "instructions_windows_vless",
+  instructionsIosIpsec: "instructions_ios_ipsec",
+  instructionsAndroidIpsec: "instructions_android_ipsec",
   extendOnError: "extend_on_error",
 };
 
