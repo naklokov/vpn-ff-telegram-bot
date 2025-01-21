@@ -6,7 +6,7 @@ const logger = require("../utils/logger");
 
 const { SECRETS_FILE_PATH } = process.env;
 
-const FIRST_REQUIRED_ROW = 'v1538375.hosted-by-vdsina.ru : RSA "privkey.pem"\n';
+const FIRST_REQUIRED_ROW = 'second.server-npv.uk : RSA "privkey.pem"\n';
 
 const secretsFileToUsers = async () => {
   const data = await fs.readFile(SECRETS_FILE_PATH, {
@@ -29,6 +29,8 @@ const usersToSecretsFile = async (users) => {
     (acc, cur) => acc + `${cur.login} : EAP "${cur.password}"\n`,
     "",
   );
+  console.log("write to secrets");
+  console.log(usersSecretsRow);
   await fs.writeFile(SECRETS_FILE_PATH, FIRST_REQUIRED_ROW + usersSecretsRow);
 };
 
