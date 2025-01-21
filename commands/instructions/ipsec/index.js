@@ -36,5 +36,5 @@ module.exports = async (ctx) => {
     }),
   };
 
-  await ctx.reply("Инструкции по подключению VPN", ipsecOptions);
+  await ctx.reply("Инструкции по подключению VPN IPSEC", ipsecOptions);
 };

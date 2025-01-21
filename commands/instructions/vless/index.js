@@ -35,24 +35,24 @@ module.exports = async (ctx) => {
           [
             {
               text: "iOS (Macbook)",
-              callback_data: CALLBACK_QUERY_DATA.instructionsIos,
+              callback_data: CALLBACK_QUERY_DATA.instructionsIosVless,
             },
             {
               text: "Android",
-              callback_data: CALLBACK_QUERY_DATA.instructionsAndroid,
+              callback_data: CALLBACK_QUERY_DATA.instructionsAndroidVless,
             },
           ],
           [
             {
               text: "Windows",
-              callback_data: CALLBACK_QUERY_DATA.instructionsWindows,
+              callback_data: CALLBACK_QUERY_DATA.instructionsWindowsVless,
             },
           ],
         ],
       }),
     };
 
-    await ctx.reply("Инструкции по подключению VPN", vlessOptions);
+    await ctx.reply("Инструкции по подключению VPN VLESS", vlessOptions);
     return;
   }
 
