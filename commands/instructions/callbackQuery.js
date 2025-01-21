@@ -44,7 +44,7 @@ const instructionsIpsecCallbackQuery = async (ctx, queryData) => {
 };
 
 const instructionsVlessCallbackQuery = (ctx, queryData) => {
-  if (queryData === CALLBACK_QUERY_DATA.instructionsAndroid) {
+  if (queryData === CALLBACK_QUERY_DATA.instructionsAndroidVless) {
     const startReplyContent = getMarkdownContentSync(
       path.dirname(__filename) + "/reply/instructions-android.md",
     );
@@ -52,14 +52,14 @@ const instructionsVlessCallbackQuery = (ctx, queryData) => {
     ctx.reply(startReplyContent);
   }
 
-  if (queryData === CALLBACK_QUERY_DATA.instructionsIos) {
+  if (queryData === CALLBACK_QUERY_DATA.instructionsIosVless) {
     const startReplyContent = getMarkdownContentSync(
       path.dirname(__filename) + "/reply/instructions-ios.md",
     );
     ctx.reply(startReplyContent);
   }
 
-  if (queryData === CALLBACK_QUERY_DATA.instructionsWindows) {
+  if (queryData === CALLBACK_QUERY_DATA.instructionsWindowsVless) {
     const startReplyContent = getMarkdownContentSync(
       path.dirname(__filename) + "/reply/instructions-windows.md",
     );
