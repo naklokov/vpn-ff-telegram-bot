@@ -21,6 +21,18 @@ async function getInbounds() {
   }
 }
 
+// Функция для создания бекапа
+async function getBackup() {
+  try {
+    await apiClient.login(VPN_USERNAME, VPN_PASSWORD);
+    const response = await apiClient.get("/panel/api/inbounds/createbackup");
+    return response.obj;
+  } catch (error) {
+    logger.error(error);
+    throw Error(error);
+  }
+}
+
 // Функция для получения списка Inbounds
 async function getInbound(id) {
   try {
@@ -81,4 +93,5 @@ module.exports = {
   updateClient,
   getInbounds,
   getInbound,
+  getBackup,
 };

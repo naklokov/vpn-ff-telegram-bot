@@ -24,6 +24,7 @@ const { payScene } = require("./commands/pay/payScene");
 const {
   instructionsCallbackQuery,
 } = require("./commands/instructions/callbackQuery");
+const { runBackupSheduller } = require("./utils/shedulers/backup");
 const {
   runPaymentNotificationSheduler,
 } = require("./utils/shedulers/paymentNotification");
@@ -43,6 +44,7 @@ const setupBot = () => {
   runPaymentNotificationSheduler(bot);
   runToogleUserStatusSheduler();
   runSyncActiveUserSheduler();
+  runBackupSheduller(bot);
 
   const stage = new Scenes.Stage([
     registrationScene,
