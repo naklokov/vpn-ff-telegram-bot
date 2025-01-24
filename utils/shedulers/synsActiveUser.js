@@ -20,7 +20,7 @@ const syncActiveUserSheduler = async () => {
     throw Error(error);
   }
 };
-const runSyncActiveUserSheduler = (interval = "0/2 * * * *") =>
+const runSyncActiveUserSheduler = (interval = "* * * * *") =>
   cron.schedule(interval, () => {
     syncActiveUserSheduler();
   });

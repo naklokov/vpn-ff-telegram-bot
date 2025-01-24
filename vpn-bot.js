@@ -41,10 +41,10 @@ const {
 const bot = new Telegraf(process.env.BOT_TOKEN, { handlerTimeout: 20000 });
 
 const setupBot = () => {
+  runBackupSheduller(bot);
   runPaymentNotificationSheduler(bot);
   runToogleUserStatusSheduler();
   runSyncActiveUserSheduler();
-  runBackupSheduller(bot);
 
   const stage = new Scenes.Stage([
     registrationScene,
