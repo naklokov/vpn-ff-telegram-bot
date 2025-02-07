@@ -29,7 +29,15 @@ const getRegistrationDate = () => new Date().toISOString();
 
 const getExpiredDate = () => {
   const curDate = new Date();
-  return new dayjs(curDate).add(FREE_PERIOD_DAYS, "days").endOf("day").toDate();
+  console.log(
+    "expired date",
+    dayjs(curDate)
+      .add(FREE_PERIOD_DAYS, "days")
+      .endOf("day")
+      .toDate()
+      .toISOString(),
+  );
+  return dayjs(curDate).add(FREE_PERIOD_DAYS, "days").endOf("day").toDate();
 };
 
 const convertToUnixDate = (date) => Math.floor(date.getTime());

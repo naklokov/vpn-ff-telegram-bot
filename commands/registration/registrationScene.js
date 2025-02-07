@@ -81,14 +81,6 @@ const registrationScene = new Scenes.WizardScene(
     const existedUserByPhone = await usersConnector.getUserByPhone(phone);
     const existedUserByChatId = await usersConnector.getUserByChatId(chatId);
 
-    // если пользователь старый то нужно обновить его данные в системе
-    if (existedUserByPhone && !existedUserByChatId) {
-      await usersConnector.updateUserByPhone(phone, ctx.wizard.state.user);
-      await ctx.reply("Ваши данные регистрации обновлены");
-      registrationExitCommand(ctx);
-      return;
-    }
-
     // валидация наличия пользователя в БД
     if (existedUserByChatId && !chatId === ADMIN_CHAT_ID) {
       await ctx.reply("Данный пользователь уже зарегистрирован");
@@ -97,7 +89,7 @@ const registrationScene = new Scenes.WizardScene(
       return;
     }
 
-    if (existedUserByPhone && !chatId === ADMIN_CHAT_ID) {
+    if (existedUserByPhone) {
       await ctx.reply(`Пользователь с номером ${phone} уже зарегистрирован`);
       await registrationExitCommand(ctx);
       await ctx.scene.leave();
