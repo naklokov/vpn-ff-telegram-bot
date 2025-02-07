@@ -25,18 +25,11 @@ const getUserPersonalDataFromContext = (ctx) => {
   return { name, id };
 };
 
-const getRegistrationDate = () => new Date().toISOString();
+const getRegistrationDateIso = () => new Date().toISOString();
+const getExpiredDateIso = () => getExpiredDate().toISOString();
 
 const getExpiredDate = () => {
   const curDate = new Date();
-  console.log(
-    "expired date",
-    dayjs(curDate)
-      .add(FREE_PERIOD_DAYS, "days")
-      .endOf("day")
-      .toDate()
-      .toISOString(),
-  );
   return dayjs(curDate).add(FREE_PERIOD_DAYS, "days").endOf("day").toDate();
 };
 
@@ -68,6 +61,7 @@ module.exports = {
   getUserPersonalDataFromContext,
   convertToUnixDate,
   getExpiredDate,
-  getRegistrationDate,
+  getRegistrationDateIso,
+  getExpiredDateIso,
   getTextFromPDF,
 };

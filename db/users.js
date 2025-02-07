@@ -1,5 +1,8 @@
 const mongoose = require("mongoose");
-const { getRegistrationDate, getExpiredDate } = require("../utils/common");
+const {
+  getExpiredDateIso,
+  getRegistrationDateIso,
+} = require("../utils/common");
 const { VPN_DB_CONNECTION } = require("../constants");
 
 const logger = require("../utils/logger");
@@ -11,12 +14,12 @@ const userScheme = new mongoose.Schema({
   email: String,
   registrationDate: {
     type: String,
-    default: getRegistrationDate,
+    default: getRegistrationDateIso,
     required: true,
   },
   expiredDate: {
     type: String,
-    default: getExpiredDate().toISOString(),
+    default: getExpiredDateIso,
   },
   password: { type: String, required: true },
   isActive: { type: Boolean, default: true },
