@@ -89,11 +89,6 @@ const updateUser = async (phone, months, ctx) => {
       } мес до ${updatedExpiredDateJs.format("DD.MM.YYYY")}
 Приятного пользования!`,
     );
-
-    await ctx.telegram.sendMessage(
-      dbUser.chatId,
-      `! Обратите внимание, что для всех стал доступен новый сервер IPSEC, узнать как подключиться можно 👉 /instructions`,
-    );
   }
 };
 
