@@ -1,35 +1,47 @@
-const { Scenes, Markup } = require("telegraf");
+const { Scenes } = require("telegraf");
 const {
   SCENE_IDS,
   PHONE_REGEXP,
   ADMIN_CHAT_ID,
-  CMD_TEXT,
+  USERS_TEXT,
 } = require("../../constants");
-const { exitButton } = require("../../components/buttons");
-const { exitCommand } = require("../../components/exit");
+const {
+  getMainMenu,
+  hideButtons,
+  exitButtonScene,
+} = require("../../components/buttons");
 const { addVlessUser, updateVlessUser } = require("../../utils/vless");
 const { usersConnector } = require("../../db");
-const { convertToUnixDate } = require("../../utils/common");
+const {
+  convertToUnixDate,
+  getUserPersonalDataFromContext,
+} = require("../../utils/common");
+
+const exitScene = async (ctx) => {
+  ctx.scene.leave();
+  ctx.reply(USERS_TEXT.mainMenu, hideButtons);
+  ctx.reply(USERS_TEXT.selectActions, await getMainMenu(ctx));
+};
 
 const migrateScene = new Scenes.WizardScene(
   SCENE_IDS.MIGRATE,
-  (ctx) => {
-    if (ctx.message.chat.id !== ADMIN_CHAT_ID) {
-      ctx.scene.leave();
+  async (ctx) => {
+    const { id: chatId } = getUserPersonalDataFromContext(ctx);
+    if (chatId !== ADMIN_CHAT_ID) {
+      ctx.reply("Вам сюда нельзя)");
+      await exitScene(ctx);
       return;
     }
     // инициализация формы пользователя
     ctx.wizard.state.extend = {};
 
-    ctx.reply("Введите логин пользователя", {
-      ...exitButton,
-    });
+    ctx.reply("Введите логин пользователя", exitButtonScene);
     return ctx.wizard.next();
   },
   async (ctx) => {
-    const phone = ctx.message.text;
+    const phone = ctx.message?.text;
     if (!PHONE_REGEXP.test(phone)) {
-      ctx.reply("Логин введён некорректно", { ...exitButton });
+      ctx.reply("Логин введён некорректно", exitButtonScene);
       return;
     }
 
@@ -38,8 +50,7 @@ const migrateScene = new Scenes.WizardScene(
 
       if (!dbUser) {
         ctx.reply(`Пользователь с номером ${phone} отсутствует в БД`);
-        await exitCommand(ctx);
-        await ctx.scene.leave();
+        await exitScene(ctx);
         return;
       }
 
@@ -74,15 +85,13 @@ const migrateScene = new Scenes.WizardScene(
       ctx.reply("Произошла ошибка при миграции пользователя");
       console.error(error);
     } finally {
-      exitCommand(ctx);
-      ctx.scene.leave();
+      await exitScene(ctx);
     }
   },
 );
 
-migrateScene.hears(CMD_TEXT.exit, async (ctx) => {
-  ctx.reply("Вы на главной странице", Markup.removeKeyboard(true));
-  ctx.scene.leave();
+migrateScene.hears(USERS_TEXT.exitScene, async (ctx) => {
+  await exitScene(ctx);
 });
 
 module.exports = { migrateScene };

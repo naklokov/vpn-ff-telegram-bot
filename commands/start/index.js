@@ -1,8 +1,9 @@
+const { getMainMenu } = require("../../components/buttons");
 const { PHONE_REGEXP } = require("../../constants");
 const { getMarkdownContentSync } = require("../../utils/common");
 const path = require("path");
 
-module.exports = (ctx) => {
+module.exports = async (ctx) => {
   const startReplyContent = getMarkdownContentSync(
     path.dirname(__filename) + "/content.md",
   );
@@ -19,5 +20,5 @@ module.exports = (ctx) => {
     }
   }
 
-  ctx.reply(startReplyContent);
+  await ctx.reply(startReplyContent, await getMainMenu(ctx));
 };

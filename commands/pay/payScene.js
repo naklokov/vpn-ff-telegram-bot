@@ -1,23 +1,33 @@
 const { Scenes, Markup } = require("telegraf");
-const { SCENE_IDS, CMD_TEXT, CMD } = require("../../constants");
-const { exitButton } = require("../../components/buttons");
+const {
+  SCENE_IDS,
+  CMD,
+  USERS_TEXT,
+  DEVELOPER_CONTACT,
+} = require("../../constants");
 const { usersConnector } = require("../../db");
 const { getUserPersonalDataFromContext } = require("../../utils/common");
 const { sendAdminPaymentInfo } = require("./utils");
 const { extendUser } = require("../extend/utils");
-const { exitCommand } = require("../../components/exit");
 const { checkPayment } = require("../../utils/recognize");
 const logger = require("../../utils/logger");
+const {
+  exitButtonScene,
+  getMainMenu,
+  hideButtons,
+} = require("../../components/buttons");
 
 const exitScene = async (ctx) => {
-  await exitCommand(ctx);
-  ctx.scene.leave();
+  await ctx.scene.leave();
+  await ctx.reply(USERS_TEXT.mainMenu, hideButtons);
+  await ctx.reply(USERS_TEXT.selectActions, await getMainMenu(ctx));
 };
 
 const handlePaymentError = async (ctx, error) => {
   await ctx.reply(
-    "Произошла ошибка при обработке платежа. Свяжитесь с @naklokov.",
+    `Произошла ошибка при обработке платежа. Свяжитесь с ${DEVELOPER_CONTACT}`,
   );
+  await exitScene(ctx);
   logger.error("Ошибка при обработке платежа:", error);
 };
 
@@ -25,6 +35,7 @@ const payScene = new Scenes.WizardScene(
   SCENE_IDS.PAY,
   async (ctx) => {
     const { id: chatId } = getUserPersonalDataFromContext(ctx);
+
     const dbUser = await usersConnector.getUserByChatId(chatId);
 
     if (!dbUser) {
@@ -36,10 +47,16 @@ const payScene = new Scenes.WizardScene(
     }
 
     await ctx.reply(
-      `💰 Выберите количество месяцев для оплаты`,
+      "💰 Оплата VPN осуществляется путём продления подписки",
+      exitButtonScene,
+    );
+    await ctx.reply(
+      `🗓 Выберите количество месяцев для оплаты`,
       Markup.inlineKeyboard([
-        [Markup.button.callback("1 мес / 200 руб", "1_200")],
-        [Markup.button.callback("3 мес / 500 руб", "3_500")],
+        [
+          Markup.button.callback("1 мес / 200 руб", "1_200"),
+          Markup.button.callback("3 мес / 500 руб", "3_500"),
+        ],
         [Markup.button.callback("6 мес / 900 руб", "6_900")],
       ]),
     );
@@ -65,14 +82,17 @@ const payScene = new Scenes.WizardScene(
         `📲 Оплату можно произвести переводом на карту по номеру телефона +79106174473\n` +
         `*Яндекс пей, Тинькофф, Альфа, Сбер*\n\n` +
         `После оплаты пришлите в ответном сообщении квитанцию или чек об оплате`,
-      { reply_markup: exitButton, parse_mode: "Markdown" },
+      {
+        parse_mode: "Markdown",
+      },
+      exitButtonScene,
     );
 
     return ctx.wizard.next();
   },
   async (ctx) => {
     if (!ctx.wizard.state?.extend) {
-      ctx.scene.leave();
+      await exitScene(ctx);
       return;
     }
 
@@ -104,7 +124,7 @@ const payScene = new Scenes.WizardScene(
   },
 );
 
-payScene.hears(CMD_TEXT.exit, async (ctx) => {
+payScene.hears(USERS_TEXT.exitScene, async (ctx) => {
   await exitScene(ctx);
 });
 

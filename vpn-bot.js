@@ -7,12 +7,12 @@ const ruporCommand = require("./commands/rupor");
 const extendCommand = require("./commands/extend");
 const payCommand = require("./commands/pay");
 const migrateCommand = require("./commands/migrate");
-const restartCommand = require("./commands/restart");
 const infoCommand = require("./commands/info");
+const helpCommand = require("./commands/help");
 const instructionsCommand = require("./commands/instructions");
 const referralCommand = require("./commands/referral");
 const statusCommand = require("./commands/status");
-const { CMD } = require("./constants");
+const { CMD, USERS_TEXT } = require("./constants");
 const {
   registrationScene,
 } = require("./commands/registration/registrationScene");
@@ -37,6 +37,8 @@ const {
 const {
   extendOnErrorCallbackQuery,
 } = require("./commands/extend/callbackQuery");
+const { hideButtons, getMainMenu } = require("./components/buttons");
+const { getUserPersonalDataFromContext } = require("./utils/common");
 
 const bot = new Telegraf(process.env.BOT_TOKEN, { handlerTimeout: 20000 });
 
@@ -53,29 +55,27 @@ const setupBot = () => {
     migrateScene,
     payScene,
   ]);
+
   bot.use(session());
   bot.use(stage.middleware());
 
   bot.start(startCommand);
-  bot.command(CMD.info, infoCommand);
-  bot.command(CMD.referral, referralCommand);
-  bot.command(CMD.status, statusCommand);
-  bot.command(CMD.extend, extendCommand);
-  bot.command(CMD.restart, restartCommand);
-  bot.command(CMD.migrate, migrateCommand);
-  bot.command(CMD.instructions, instructionsCommand);
-  bot.command(CMD.registration, registrationCommand);
-  bot.command(CMD.rupor, ruporCommand);
-  bot.command(CMD.pay, payCommand);
-  bot.command(CMD.help, (ctx) =>
-    ctx.reply(
-      `Если у вас возникли вопросы, пишите разработчику ${process.env.DEVELOPER_CONTACT}`,
-    ),
-  );
+
+  bot.action(CMD.info, infoCommand);
+  bot.action(CMD.referral, referralCommand);
+  bot.action(CMD.status, statusCommand);
+  bot.action(CMD.extend, extendCommand);
+  bot.action(CMD.migrate, migrateCommand);
+  bot.action(CMD.instructions, instructionsCommand);
+  bot.action(CMD.registration, registrationCommand);
+  bot.action(CMD.rupor, ruporCommand);
+  bot.action(CMD.pay, payCommand);
+  bot.action(CMD.help, helpCommand);
 
   bot.catch((err, ctx) => {
-    logger.error(err, ctx.message.from.id);
-    ctx.sendMessage("Произошла ошибка при выполнении операции 👉 /help");
+    const { id: chatId } = getUserPersonalDataFromContext(ctx);
+    logger.error(err, chatId);
+    ctx.sendMessage("Произошла ошибка, мы разберёмся и поправим 👌");
   });
 
   bot.on("callback_query", (ctx) => {
@@ -87,6 +87,12 @@ const setupBot = () => {
 
   return bot;
 };
+
+// слушаем переход на главную,чтобы скрыть кнопку внизу
+bot.hears(USERS_TEXT.goToMain, async (ctx) => {
+  await ctx.reply(USERS_TEXT.mainMenu, hideButtons);
+  await ctx.reply(USERS_TEXT.selectActions, await getMainMenu(ctx));
+});
 
 // Enable graceful stop
 process.once("SIGINT", () => bot.stop("SIGINT"));

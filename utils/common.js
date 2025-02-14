@@ -16,11 +16,19 @@ const generatePassword = (length = 6) => {
 
 const getUserPersonalDataFromContext = (ctx) => {
   // берём данные из чата
-  const chat = ctx?.message?.chat ?? {};
+  const messageChat = ctx?.message?.chat ?? {};
+  const chat = ctx?.chat ?? {};
   // берём данные из callbackQuery потому что в чате их нет
   const callbackQueryChat = ctx?.update?.callback_query?.message?.chat;
+  const callbackQueryFrom = ctx?.update?.callback_query?.from?.id;
+  const fromId = ctx.message?.from?.id;
   const name = chat?.username || callbackQueryChat?.username;
-  const id = chat?.id || callbackQueryChat?.id;
+  const id =
+    chat?.id ||
+    callbackQueryChat?.id ||
+    callbackQueryFrom?.id ||
+    fromId ||
+    messageChat?.id;
 
   return { name, id };
 };

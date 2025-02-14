@@ -1,10 +1,59 @@
 const { Markup } = require("telegraf");
-const { CMD_TEXT } = require("../constants");
+const { CMD, USERS_TEXT, ADMIN_CHAT_ID } = require("../constants");
+const { getUserPersonalDataFromContext } = require("../utils/common");
+const { usersConnector } = require("../db");
 
-const registrationExitButton = Markup.keyboard([
-  [CMD_TEXT.registrationExit],
-]).resize();
+const exitButtonScene = Markup.keyboard([[USERS_TEXT.exitScene]]).resize();
 
-const exitButton = Markup.keyboard([[CMD_TEXT.exit]]).resize();
+const exitButton = Markup.keyboard([[USERS_TEXT.goToMain]]).resize();
 
-module.exports = { registrationExitButton, exitButton };
+const hideButtons = {
+  reply_markup: { remove_keyboard: true },
+};
+
+const getMainMenu = async (ctx) => {
+  const { id: chatId } = getUserPersonalDataFromContext(ctx);
+  const dbUser = await usersConnector.getUserByChatId(chatId);
+  const isAdmin = chatId === ADMIN_CHAT_ID;
+  const isUserRegistered = dbUser?.chatId;
+
+  let keyboardButtons = [[Markup.button.callback(USERS_TEXT.help, CMD.help)]];
+
+  if (isUserRegistered || isAdmin) {
+    keyboardButtons.unshift([
+      Markup.button.callback(USERS_TEXT.referral, CMD.referral),
+    ]);
+    keyboardButtons.unshift([
+      Markup.button.callback(USERS_TEXT.info, CMD.info),
+    ]);
+    keyboardButtons.unshift([
+      Markup.button.callback(USERS_TEXT.instructions, CMD.instructions),
+    ]);
+    keyboardButtons.unshift([Markup.button.callback(USERS_TEXT.pay, CMD.pay)]);
+  } else {
+    keyboardButtons.unshift([
+      Markup.button.callback(USERS_TEXT.registration, CMD.registration),
+    ]);
+  }
+
+  if (isAdmin) {
+    keyboardButtons.unshift([
+      Markup.button.callback(USERS_TEXT.migrate, CMD.migrate),
+    ]);
+    keyboardButtons.unshift([
+      Markup.button.callback(USERS_TEXT.rupor, CMD.rupor),
+    ]);
+    keyboardButtons.unshift([
+      Markup.button.callback(USERS_TEXT.extend, CMD.extend),
+    ]);
+  }
+
+  return Markup.inlineKeyboard(keyboardButtons).resize();
+};
+
+module.exports = {
+  exitButton,
+  exitButtonScene,
+  hideButtons,
+  getMainMenu,
+};

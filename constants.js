@@ -1,6 +1,20 @@
-const CMD_TEXT = {
-  registrationExit: "Выход из регистрации",
-  exit: "Выход на главную",
+const USERS_TEXT = {
+  hidden: "(^_^)",
+  goToMain: "На главную",
+  mainMenu: "🏠 Главная страница",
+  exitScene: "Выйти в меню",
+  selectActions: "Выберите действиe: ",
+  pay: "💰 Оплата",
+  info: "ℹ️ Тарифы и условия",
+  instructions: "📖 Настройка VPN",
+  referral: "🎁 Бонусная программа",
+  help: "🆘 Помощь",
+  registration: "📝 Регистрация",
+
+  // админские действия
+  extend: "Продлить",
+  migrate: "Мигрировать",
+  rupor: "Сообщение всем",
 };
 
 const CMD = {
@@ -12,10 +26,10 @@ const CMD = {
   help: "help",
   instructions: "instructions",
   extend: "extend",
-  restart: "restart",
   pay: "pay",
   migrate: "migrate",
   rupor: "rupor",
+  exit: "exit",
 };
 
 const CALLBACK_QUERY_DATA = {
@@ -43,11 +57,6 @@ const SCENE_IDS = {
   PAY: "PAY",
 };
 
-const IOS_INSTRUCTIONS_LINK =
-  "https://www.notion.so/naklokov/iOS-0f60ca2d58af48349ebaabbbb4ecb503";
-const ANDROID_INSTRUCTIONS_LINK =
-  "https://www.notion.so/naklokov/android-b694609f436f4cb086fd620801bd5540";
-
 const EMAIL_REGEXP =
   // eslint-disable-next-line no-useless-escape
   /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
@@ -60,15 +69,16 @@ const SECRET_ROW_REGEXP = /^(.+) : EAP "(.+)"$/i;
 
 const VPN_DB_CONNECTION = process.env.MONGO_URL + "vpn";
 
+const DEVELOPER_CONTACT = "@naklokov";
+
 const CALLBACK_QUERY_DATA_DELIMETER = ":";
 
 module.exports = {
   CMD,
-  CMD_TEXT,
+  USERS_TEXT,
+  DEVELOPER_CONTACT,
   NOTION_PAGE_ID_MAP,
   SCENE_IDS,
-  IOS_INSTRUCTIONS_LINK,
-  ANDROID_INSTRUCTIONS_LINK,
   EMAIL_REGEXP,
   PHONE_REGEXP,
   FREE_PERIOD_DAYS,

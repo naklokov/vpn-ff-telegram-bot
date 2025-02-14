@@ -1,3 +1,4 @@
+const { exitButton } = require("../../components/buttons");
 const { CMD, CALLBACK_QUERY_DATA } = require("../../constants");
 const { usersConnector } = require("../../db");
 const { getUserPersonalDataFromContext } = require("../../utils/common");
@@ -39,7 +40,8 @@ module.exports = async (ctx) => {
       ],
     }),
   };
-  await ctx.reply("Выберите сервер для настройки");
+
+  await ctx.reply("Выберите сервер для настройки", exitButton);
   await ctx.reply(
     `*IPSEC* \\- лёгкий и быстрый ВПН, чаще работает шустрее чем VLESS, но иногда попадает под блокировки`,
     optionsIpsec,

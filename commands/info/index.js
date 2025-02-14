@@ -1,3 +1,4 @@
+const { exitButton } = require("../../components/buttons");
 const { getMarkdownContentSync } = require("../../utils/common");
 const path = require("path");
 
@@ -7,5 +8,5 @@ module.exports = (ctx) => {
   );
 
   //  const infoReplyContent = getNotionPage(NOTION_PAGE_ID_MAP.IOS_INSTRUCTIONS);
-  ctx.reply(infoReplyContent);
+  ctx.replyWithMarkdown(infoReplyContent, exitButton);
 };

@@ -13,7 +13,7 @@ const sendAdminPaymentInfo = async (isPayCorrect, ctx) => {
 
   const message = isPayCorrect ? "Оплата прошла" : "⚠️ ОПЛАТА НЕ ПРОШЛА";
 
-  await ctx.forwardMessage(ADMIN_CHAT_ID, ctx.message.text);
+  await ctx.forwardMessage(ADMIN_CHAT_ID, ctx.message?.text);
   var extendOptions = {
     reply_markup: JSON.stringify({
       inline_keyboard: [

@@ -1,15 +1,18 @@
-const { Scenes, Markup } = require("telegraf");
+const { Scenes } = require("telegraf");
 const logger = require("../../utils/logger");
 
 const {
   SCENE_IDS,
   EMAIL_REGEXP,
   PHONE_REGEXP,
-  CMD_TEXT,
   ADMIN_CHAT_ID,
+  USERS_TEXT,
 } = require("../../constants");
-const { registrationExitButton } = require("../../components/buttons");
-const { registrationExitCommand } = require("../../components/exit");
+const {
+  getMainMenu,
+  hideButtons,
+  exitButtonScene,
+} = require("../../components/buttons");
 const { getSuccessReply } = require("./constants");
 const {
   getUserPersonalDataFromContext,
@@ -17,7 +20,12 @@ const {
 } = require("../../utils/common");
 const { addVlessUser } = require("../../utils/vless");
 const { usersConnector } = require("../../db");
-const { error } = require("console");
+
+const exitScene = async (ctx) => {
+  await ctx.scene.leave();
+  await ctx.reply(USERS_TEXT.mainMenu, hideButtons);
+  await ctx.reply(USERS_TEXT.selectActions, await getMainMenu(ctx));
+};
 
 const registrationScene = new Scenes.WizardScene(
   SCENE_IDS.REGISTRATION,
@@ -31,44 +39,45 @@ const registrationScene = new Scenes.WizardScene(
     ctx.wizard.state.user.name = name;
     ctx.wizard.state.user.chatId = id;
 
-    ctx.reply("Введите ваш номер телефон в формате 79998887766", {
-      ...registrationExitButton,
-    });
+    ctx.reply(
+      "Введите ваш номер телефон в формате 79998887766",
+      exitButtonScene,
+    );
     return ctx.wizard.next();
   },
   async (ctx) => {
     if (!PHONE_REGEXP.test(ctx?.message?.text)) {
       ctx.reply(
         "Номер введён некорректно. Введите номер в формате 79998887766",
-        { ...registrationExitButton },
+        exitButtonScene,
       );
       return;
     }
 
     if (!ctx.wizard.state?.user) {
-      await registrationExitCommand(ctx);
-      await ctx.scene.leave();
+      await exitScene(ctx);
       return;
     }
 
     ctx.wizard.state.user.phone = ctx.message?.text;
 
-    ctx.reply("Введите вашу электронную почту в формате: test@mail.ru", {
-      ...registrationExitButton,
-    });
+    ctx.reply(
+      "Введите вашу электронную почту в формате: test@mail.ru",
+      exitButtonScene,
+    );
     return ctx.wizard.next();
   },
   async (ctx) => {
     if (!EMAIL_REGEXP.test(ctx?.message?.text)) {
-      ctx.reply("Введите корректную почту в формате: test@mail.ru", {
-        ...registrationExitButton,
-      });
+      ctx.reply(
+        "Введите корректную почту в формате: test@mail.ru",
+        exitButtonScene,
+      );
       return;
     }
 
     if (!ctx.wizard.state?.user) {
-      await registrationExitCommand(ctx);
-      await ctx.scene.leave();
+      await exitScene(ctx);
       return;
     }
 
@@ -84,15 +93,13 @@ const registrationScene = new Scenes.WizardScene(
     // валидация наличия пользователя в БД
     if (existedUserByChatId && !chatId === ADMIN_CHAT_ID) {
       await ctx.reply("Данный пользователь уже зарегистрирован");
-      await registrationExitCommand(ctx);
-      await ctx.scene.leave();
+      await exitScene(ctx);
       return;
     }
 
     if (existedUserByPhone) {
       await ctx.reply(`Пользователь с номером ${phone} уже зарегистрирован`);
-      await registrationExitCommand(ctx);
-      await ctx.scene.leave();
+      await exitScene(ctx);
       return;
     }
 
@@ -126,15 +133,13 @@ const registrationScene = new Scenes.WizardScene(
       logger.error(error);
       throw Error(error);
     } finally {
-      registrationExitCommand(ctx);
-      ctx.scene.leave();
+      await exitScene(ctx);
     }
   },
 );
 
-registrationScene.hears(CMD_TEXT.registrationExit, (ctx) => {
-  ctx.reply("Вы на главной странице", Markup.removeKeyboard(true));
-  ctx.scene.leave();
+registrationScene.hears(USERS_TEXT.exitScene, async (ctx) => {
+  await exitScene(ctx);
 });
 
 module.exports = { registrationScene };

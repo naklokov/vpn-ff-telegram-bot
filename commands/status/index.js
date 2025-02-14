@@ -2,6 +2,7 @@ const dayjs = require("dayjs");
 const { usersConnector } = require("../../db");
 const { getUserPersonalDataFromContext } = require("../../utils/common");
 const { CMD } = require("../../constants");
+const { exitButton } = require("../../components/buttons");
 
 module.exports = async (ctx) => {
   const { id: chatId } = getUserPersonalDataFromContext(ctx);
@@ -19,12 +20,15 @@ module.exports = async (ctx) => {
     user.expiredDate,
   ).format("DD.MM.YYYY")}`;
 
-  ctx.replyWithMarkdown(`
+  ctx.replyWithMarkdown(
+    `
 *Инструкции по подключению*
 /instructions
 
 *Состояние подключения*
 - ${statusText}
 - ${expiredDateText}
-`);
+`,
+    exitButton,
+  );
 };
