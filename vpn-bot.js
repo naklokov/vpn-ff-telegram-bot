@@ -72,10 +72,12 @@ const setupBot = () => {
   bot.action(CMD.pay, payCommand);
   bot.action(CMD.help, helpCommand);
 
-  bot.catch((err, ctx) => {
+  bot.catch(async (err, ctx) => {
     const { id: chatId } = getUserPersonalDataFromContext(ctx);
     logger.error(err, chatId);
-    ctx.sendMessage("Произошла ошибка, мы разберёмся и поправим 👌");
+    await ctx.sendMessage("Произошла ошибка, мы разберёмся и поправим 👌");
+    await ctx.reply(USERS_TEXT.mainMenu, hideButtons);
+    await ctx.reply(USERS_TEXT.selectActions, await getMainMenu(ctx));
   });
 
   bot.on("callback_query", (ctx) => {

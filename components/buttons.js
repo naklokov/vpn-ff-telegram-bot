@@ -23,13 +23,14 @@ const getMainMenu = async (ctx) => {
     keyboardButtons.unshift([
       Markup.button.callback(USERS_TEXT.referral, CMD.referral),
     ]);
-    keyboardButtons.unshift([
-      Markup.button.callback(USERS_TEXT.info, CMD.info),
-    ]);
+
     keyboardButtons.unshift([
       Markup.button.callback(USERS_TEXT.instructions, CMD.instructions),
     ]);
     keyboardButtons.unshift([Markup.button.callback(USERS_TEXT.pay, CMD.pay)]);
+    keyboardButtons.unshift([
+      Markup.button.callback(USERS_TEXT.info, CMD.info),
+    ]);
   } else {
     keyboardButtons.unshift([
       Markup.button.callback(USERS_TEXT.registration, CMD.registration),

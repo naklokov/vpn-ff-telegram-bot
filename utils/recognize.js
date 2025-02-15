@@ -62,9 +62,6 @@ const checkPayment = async (amount, ctx) => {
     return isPayPhotoCorrect;
   }
 
-  await ctx.reply(
-    "Вы прикладываете некорректную квитанцию или указали некорректный период оплаты, приложите корректный документ об оплате",
-  );
   return false;
 };
 
