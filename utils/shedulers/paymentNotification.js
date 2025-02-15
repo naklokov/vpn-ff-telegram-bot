@@ -1,9 +1,10 @@
 const cron = require("node-cron");
 const dayjs = require("dayjs");
 const { usersConnector } = require("../../db");
-const { ADMIN_CHAT_ID } = require("../../constants");
+const { ADMIN_CHAT_ID, USERS_TEXT, CMD } = require("../../constants");
 
 const logger = require("../logger");
+const { Markup } = require("telegraf");
 
 const getNotificationMessage = (expiredDate) => `
 Доброго времени суток! 👋  
@@ -14,8 +15,6 @@ const getNotificationMessage = (expiredDate) => `
 Оплату необходимо произвести до ${dayjs(expiredDate)
   .endOf("day")
   .format("DD.MM.YYYY")}
-
-Для оплаты нажмите команду /pay или "Меню" выбрать пункт "Оплата"
 `;
 
 const paymentNotificationSheduler = async (bot) => {
@@ -32,6 +31,9 @@ const paymentNotificationSheduler = async (bot) => {
         bot.telegram.sendMessage(
           sendedChatId,
           getNotificationMessage(expiredDate, phone, chatId),
+          Markup.inlineKeyboard([
+            Markup.button.callback(USERS_TEXT.pay, CMD.pay),
+          ]).resize(),
         );
       }
     }
