@@ -1,10 +1,5 @@
 const { Scenes, Markup } = require("telegraf");
-const {
-  SCENE_IDS,
-  CMD,
-  USERS_TEXT,
-  DEVELOPER_CONTACT,
-} = require("../../constants");
+const { SCENE_IDS, USERS_TEXT, DEVELOPER_CONTACT } = require("../../constants");
 const { usersConnector } = require("../../db");
 const { getUserPersonalDataFromContext } = require("../../utils/common");
 const { sendAdminPaymentInfo } = require("./utils");
@@ -40,7 +35,7 @@ const payScene = new Scenes.WizardScene(
 
     if (!dbUser) {
       ctx.reply(
-        `Вы пока что не зарегистрированы в системе, пройдите регистрацию 👉 /${CMD.registration}`,
+        `Вы пока что не зарегистрированы в системе, пройдите регистрацию`,
       );
       await exitScene(ctx);
       return;
@@ -66,12 +61,10 @@ const payScene = new Scenes.WizardScene(
   async (ctx) => {
     const [payedMonthsCount, amount] =
       ctx.callbackQuery?.data?.split("_") ?? [];
-
     if (!payedMonthsCount || !amount) {
       await ctx.reply("Некорректно выбран период оплаты. Попробуйте снова.");
       return ctx.wizard.back(); // Возврат на предыдущий шаг для повторного выбора
     }
-
     // инициализация формы пользователя
     ctx.wizard.state.extend = {};
     ctx.wizard.state.extend.months = parseInt(payedMonthsCount, 10);

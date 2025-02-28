@@ -24,7 +24,7 @@ const checkRecognizedImage = async (amount, filePath) => {
 const checkPaymentPhoto = async (amount, ctx) => {
   try {
     const fileId =
-      ctx?.message?.photo?.[ctx?.message?.photo.length - 2]?.file_id;
+      ctx?.message?.photo?.[ctx?.message?.photo.length - 1]?.file_id;
     const filePath = await getFilePath(fileId, ctx);
     const isPayCorrect = await checkRecognizedImage(amount, filePath);
     return isPayCorrect;

@@ -1,7 +1,6 @@
 const dayjs = require("dayjs");
 const { usersConnector } = require("../../db");
 const { getUserPersonalDataFromContext } = require("../../utils/common");
-const { CMD } = require("../../constants");
 const { exitButton } = require("../../components/buttons");
 
 module.exports = async (ctx) => {
@@ -10,7 +9,7 @@ module.exports = async (ctx) => {
 
   if (!user?.chatId) {
     ctx.reply(
-      `Вы пока что не зарегистрированы в системе, пройдите регистрацию 👉 /${CMD.registration}`,
+      `Вы пока что не зарегистрированы в системе, пройдите регистрацию`,
     );
     return;
   }

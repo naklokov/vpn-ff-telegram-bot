@@ -8,6 +8,7 @@ const USERS_TEXT = {
   info: "ℹ️ Тарифы и условия",
   instructions: "📖 Настройка VPN",
   referral: "🎁 Бонусная программа",
+  status: "❔ Статус подключения",
   help: "🆘 Помощь",
   registration: "📝 Регистрация",
 

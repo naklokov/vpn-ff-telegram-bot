@@ -19,7 +19,7 @@ const getMainMenu = async (ctx) => {
 
   let keyboardButtons = [[Markup.button.callback(USERS_TEXT.help, CMD.help)]];
 
-  if (isUserRegistered || isAdmin) {
+  if (isUserRegistered) {
     keyboardButtons.unshift([
       Markup.button.callback(USERS_TEXT.referral, CMD.referral),
     ]);

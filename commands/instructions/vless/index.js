@@ -1,5 +1,4 @@
 const {
-  CMD,
   CALLBACK_QUERY_DATA,
   IOS_INSTRUCTIONS_LINK,
   ANDROID_INSTRUCTIONS_LINK,
@@ -14,7 +13,7 @@ module.exports = async (ctx) => {
 
   if (!user?.chatId) {
     ctx.reply(
-      `Вы пока что не зарегистрированы в системе, пройдите регистрацию 👉 /${CMD.registration}`,
+      `Вы пока что не зарегистрированы в системе, пройдите регистрацию`,
     );
     return;
   }

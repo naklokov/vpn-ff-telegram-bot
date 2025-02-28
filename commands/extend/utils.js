@@ -1,6 +1,7 @@
 const { usersConnector } = require("../../db");
 const dayjs = require("dayjs");
 const { updateVlessUser, addVlessUser } = require("../../utils/vless");
+const { USERS_TEXT } = require("../../constants");
 
 const updateReferralUser = async (phone, ctx) => {
   const extendedUser = await usersConnector.getUserByPhone(phone);
@@ -71,7 +72,7 @@ const updateUser = async (phone, months, ctx) => {
 
     await ctx.telegram.sendMessage(
       dbUser.chatId,
-      'Перенёс вас на новый сервер, чтобы подключить новый ВПН нажмите на команду /instructions, или выберите внизу в "Меню" -> "Инструкции по подключению',
+      `Перенёс вас на новый сервер, чтобы перейти на него, выберите пункт ${USERS_TEXT.instructions}`,
     );
   }
 

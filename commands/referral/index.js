@@ -1,6 +1,5 @@
 const { usersConnector } = require("../../db");
 const { getUserPersonalDataFromContext } = require("../../utils/common");
-const { CMD, FREE_PERIOD_DAYS } = require("../../constants");
 const { exitButton } = require("../../components/buttons");
 
 module.exports = async (ctx) => {
@@ -9,7 +8,7 @@ module.exports = async (ctx) => {
 
   if (!user?.chatId) {
     await ctx.reply(
-      `Вы пока что не зарегистрированы в системе, пройдите регистрацию 👉 /${CMD.registration}`,
+      `Вы пока что не зарегистрированы в системе, пройдите регистрацию`,
     );
     return;
   }

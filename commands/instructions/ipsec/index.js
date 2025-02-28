@@ -1,4 +1,4 @@
-const { CMD, CALLBACK_QUERY_DATA } = require("../../../constants");
+const { CALLBACK_QUERY_DATA } = require("../../../constants");
 const { usersConnector } = require("../../../db");
 const { getUserPersonalDataFromContext } = require("../../../utils/common");
 
@@ -8,7 +8,7 @@ module.exports = async (ctx) => {
 
   if (!user?.chatId) {
     await ctx.reply(
-      `Вы пока что не зарегистрированы в системе, пройдите регистрацию 👉 /${CMD.registration}`,
+      `Вы пока что не зарегистрированы в системе, пройдите регистрацию`,
     );
     return;
   }
