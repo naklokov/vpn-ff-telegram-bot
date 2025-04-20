@@ -12,6 +12,12 @@ const {
   hideButtons,
 } = require("../../components/buttons");
 
+const PAYMENT_CALLBACK_QUERY = {
+  ONE: "1_200",
+  THREE: "3_500",
+  SIX: "6_900",
+};
+
 const exitScene = async (ctx) => {
   await ctx.scene.leave();
   await ctx.reply(USERS_TEXT.mainMenu, hideButtons);
@@ -49,10 +55,10 @@ const payScene = new Scenes.WizardScene(
       `🗓 Выберите количество месяцев для оплаты`,
       Markup.inlineKeyboard([
         [
-          Markup.button.callback("1 мес / 200₽", "1_200"),
-          Markup.button.callback("3 мес / 500₽", "3_500"),
+          Markup.button.callback("1 мес / 200₽", PAYMENT_CALLBACK_QUERY.ONE),
+          Markup.button.callback("3 мес / 500₽", PAYMENT_CALLBACK_QUERY.THREE),
         ],
-        [Markup.button.callback("6 мес / 900₽", "6_900")],
+        [Markup.button.callback("6 мес / 900₽", PAYMENT_CALLBACK_QUERY.SIX)],
       ]),
     );
 
@@ -86,6 +92,15 @@ const payScene = new Scenes.WizardScene(
   async (ctx) => {
     if (!ctx.wizard.state?.extend) {
       await exitScene(ctx);
+      return;
+    }
+
+    // Если пользователь щёлкает по периодам, то повторяем для него шаг оплаты
+    if (
+      Object.values(PAYMENT_CALLBACK_QUERY).includes(ctx.callbackQuery.data)
+    ) {
+      await ctx.wizard.back();
+      await ctx.wizard.step(ctx);
       return;
     }
 
