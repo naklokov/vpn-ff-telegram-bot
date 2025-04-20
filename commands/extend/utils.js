@@ -2,6 +2,7 @@ const { usersConnector } = require("../../db");
 const dayjs = require("dayjs");
 const { updateVlessUser, addVlessUser } = require("../../utils/vless");
 const { USERS_TEXT } = require("../../constants");
+const { convertToUnixDate } = require("../../utils/common");
 
 const updateReferralUser = async (phone, ctx) => {
   const extendedUser = await usersConnector.getUserByPhone(phone);
@@ -21,8 +22,15 @@ const updateReferralUser = async (phone, ctx) => {
         1,
         "months",
       );
+      const expiryTime = convertToUnixDate(new Date(bonusExpiredDate));
+
       await usersConnector.updateUserByPhone(referralUser?.phone, {
         expiredDate: bonusExpiredDate.toISOString(),
+      });
+      await updateVlessUser({
+        chatId: referralUser.chatId,
+        phone: referralUser.phone,
+        expiryTime,
       });
 
       await ctx.telegram.sendMessage(

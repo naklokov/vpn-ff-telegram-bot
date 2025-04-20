@@ -97,7 +97,7 @@ const payScene = new Scenes.WizardScene(
 
     // Если пользователь щёлкает по периодам, то повторяем для него шаг оплаты
     if (
-      Object.values(PAYMENT_CALLBACK_QUERY).includes(ctx.callbackQuery.data)
+      Object.values(PAYMENT_CALLBACK_QUERY).includes(ctx?.callbackQuery?.data)
     ) {
       await ctx.wizard.back();
       await ctx.wizard.step(ctx);
