@@ -46,6 +46,10 @@ module.exports = async (ctx) => {
               text: "Windows",
               callback_data: CALLBACK_QUERY_DATA.instructionsWindowsVless,
             },
+            {
+              text: "Keenetic",
+              callback_data: CALLBACK_QUERY_DATA.instructionsKeeneticVless,
+            },
           ],
         ],
       }),

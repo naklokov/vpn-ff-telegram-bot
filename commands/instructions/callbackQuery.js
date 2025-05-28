@@ -65,6 +65,13 @@ const instructionsVlessCallbackQuery = (ctx, queryData) => {
     );
     ctx.reply(startReplyContent);
   }
+
+  if (queryData === CALLBACK_QUERY_DATA.instructionsKeeneticVless) {
+    const startReplyContent = getMarkdownContentSync(
+      path.dirname(__filename) + "/reply/instructions-keenetic.md",
+    );
+    ctx.replyWithMarkdown(startReplyContent);
+  }
 };
 
 const instructionsCallbackQuery = async (ctx, queryData) => {

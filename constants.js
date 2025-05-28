@@ -39,6 +39,7 @@ const CALLBACK_QUERY_DATA = {
   instructionsIosVless: "instructions_ios_vless",
   instructionsAndroidVless: "instructions_android_vless",
   instructionsWindowsVless: "instructions_windows_vless",
+  instructionsKeeneticVless: "instructions_keenetic_vless",
   instructionsIosIpsec: "instructions_ios_ipsec",
   instructionsAndroidIpsec: "instructions_android_ipsec",
   extendOnError: "extend_on_error",
