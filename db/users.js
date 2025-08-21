@@ -25,6 +25,7 @@ const userScheme = new mongoose.Schema({
   isActive: { type: Boolean, default: true },
   isVless: { type: Boolean, default: true },
   referralUserLogin: { type: String },
+  serverPrefix: { type: String, default: "" },
 });
 
 const User = mongoose.model("User", userScheme);

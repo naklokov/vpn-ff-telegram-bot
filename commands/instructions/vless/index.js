@@ -19,7 +19,10 @@ module.exports = async (ctx) => {
   }
 
   if (user.isVless) {
-    const connectionString = await getVlessConnectionString(user.phone);
+    const connectionString = await getVlessConnectionString(
+      user.phone,
+      user?.serverPrefix ?? "",
+    );
 
     await ctx.reply(
       "Для подключения скопируйте строку ниже, нажав на неё, и следуйте нужной инструкции",

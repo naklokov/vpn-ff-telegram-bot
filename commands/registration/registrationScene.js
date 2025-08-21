@@ -110,10 +110,16 @@ const registrationScene = new Scenes.WizardScene(
     }
 
     const password = generatePassword();
+    const serverPrefix = process?.env?.NEW_USER_SERVER_PREFIX ?? "";
     ctx.wizard.state.user.password = password;
+    ctx.wizard.state.user.serverPrefix = serverPrefix;
 
     try {
-      await addVlessUser({ chatId, phone });
+      await addVlessUser({
+        chatId,
+        phone,
+        serverPrefix,
+      });
     } catch (error) {
       logger.error("Произошла ошибка при добавление на vless сервер", error);
     }

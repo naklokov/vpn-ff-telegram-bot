@@ -5,8 +5,6 @@ const {
 } = require("../api/vless");
 const { getExpiredDate, convertToUnixDate } = require("./common");
 
-const { VPN_HOST } = process.env;
-
 const generateVlessConnectionString = ({
   userId,
   serverProtocol,
@@ -23,12 +21,17 @@ const generateVlessConnectionString = ({
 }) =>
   `${serverProtocol}://${userId}@${host}:${port}?type=${serverNetwork}&security=${serverSecurity}&pbk=${serverPublicId}&fp=${serverFingerprint}&sni=${serverName}&sid=${serverShortId}&spx=%2F#${serverDescription}-${userEmail}`;
 
-const addVlessUser = async ({ phone, chatId, expiryTime: inputExpiryTime }) => {
+const addVlessUser = async ({
+  phone,
+  chatId,
+  serverPrefix,
+  expiryTime: inputExpiryTime,
+}) => {
   const expiryTime = inputExpiryTime
     ? new Date(inputExpiryTime)
     : getExpiredDate();
   const expiryTimeUnix = convertToUnixDate(new Date(expiryTime));
-  const inbounds = await getInbounds();
+  const inbounds = await getInbounds(serverPrefix);
   const { id } = inbounds?.[0] ?? {};
 
   await addClientToInbound(id, {
@@ -36,12 +39,18 @@ const addVlessUser = async ({ phone, chatId, expiryTime: inputExpiryTime }) => {
     email: phone,
     id: phone,
     expiryTime: expiryTimeUnix,
+    serverPrefix,
   });
 };
 
-const updateVlessUser = async ({ phone, chatId, expiryTime }) => {
+const updateVlessUser = async ({
+  phone,
+  chatId,
+  expiryTime,
+  serverPrefix = "",
+}) => {
   const expiryTimeUnix = convertToUnixDate(new Date(expiryTime));
-  const inbounds = await getInbounds();
+  const inbounds = await getInbounds(serverPrefix);
   const { id } = inbounds?.[0] ?? {};
 
   const client = await updateClient(id, {
@@ -49,13 +58,14 @@ const updateVlessUser = async ({ phone, chatId, expiryTime }) => {
     email: phone,
     id: phone,
     expiryTime: expiryTimeUnix,
+    serverPrefix,
   });
 
   return client;
 };
 
-const getVlessConnectionString = async (phone) => {
-  const inbounds = await getInbounds();
+const getVlessConnectionString = async (phone, serverPrefix = "") => {
+  const inbounds = await getInbounds(serverPrefix);
   const { remark, protocol, port, streamSettings } = inbounds?.[0] ?? {};
   const { realitySettings, security, network } = JSON.parse(streamSettings);
 
@@ -64,7 +74,7 @@ const getVlessConnectionString = async (phone) => {
     userEmail: phone,
     serverProtocol: protocol,
     port,
-    host: VPN_HOST,
+    host: process.env[`${serverPrefix}VPN_HOST`] ?? process.env.VPN_HOST,
     serverPublicId: realitySettings?.settings?.publicKey,
     serverFingerprint: realitySettings?.settings?.fingerprint,
     serverSecurity: security,
