@@ -29,9 +29,6 @@ const {
   runPaymentNotificationSheduler,
 } = require("./utils/shedulers/paymentNotification");
 const {
-  runSyncActiveUserSheduler,
-} = require("./utils/shedulers/synsActiveUser");
-const {
   runToogleUserStatusSheduler,
 } = require("./utils/shedulers/toogleUserStatus");
 const {
@@ -43,10 +40,12 @@ const { getUserPersonalDataFromContext } = require("./utils/common");
 const bot = new Telegraf(process.env.BOT_TOKEN, { handlerTimeout: 20000 });
 
 const setupBot = () => {
+  // ежедневное создание бекапов
   runBackupSheduller(bot);
+  // ежедневное напоминание об оплате за 2 дня
   runPaymentNotificationSheduler(bot);
-  runToogleUserStatusSheduler();
-  runSyncActiveUserSheduler();
+  // выставление признака активный/неактивный пользователь
+  runToogleUserStatusSheduler("0 * * * *");
 
   const stage = new Scenes.Stage([
     registrationScene,
