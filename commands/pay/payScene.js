@@ -1,6 +1,6 @@
 const { Scenes, Markup } = require("telegraf");
 const { SCENE_IDS, USERS_TEXT, DEVELOPER_CONTACT } = require("../../constants");
-const { usersConnector } = require("../../db");
+const { usersConnector, paymentConnector } = require("../../db");
 const { getUserPersonalDataFromContext } = require("../../utils/common");
 const { sendAdminPaymentInfo } = require("./utils");
 const { extendUser } = require("../extend/utils");
@@ -109,6 +109,7 @@ const payScene = new Scenes.WizardScene(
 
     ctx.wizard.state.extend.login = dbUser.phone;
 
+    const period = ctx.wizard.state?.extend?.months ?? 0;
     const amount = ctx.wizard.state?.extend?.amount ?? 0;
     const isPayCorrect = await checkPayment(amount, ctx);
 
@@ -121,7 +122,14 @@ const payScene = new Scenes.WizardScene(
     }
 
     try {
-      await extendUser(dbUser.phone, ctx.wizard.state.extend.months, ctx);
+      await extendUser(dbUser.phone, period, ctx);
+      await paymentConnector.savePayment({
+        chatId,
+        period,
+        amount,
+        phone: dbUser.phone,
+        date: new Date().toISOString(),
+      });
       // дублирование сообщения админу об оплате
       await sendAdminPaymentInfo(isPayCorrect, ctx);
     } catch (error) {

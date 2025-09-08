@@ -20,7 +20,6 @@ const {
   convertToUnixDate,
   getUserPersonalDataFromContext,
 } = require("../../utils/common");
-const { getUsers } = require("../../db/users");
 
 const exitScene = async (ctx) => {
   ctx.scene.leave();
