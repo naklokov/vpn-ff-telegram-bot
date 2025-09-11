@@ -62,7 +62,10 @@ const migrateScene = new Scenes.WizardScene(
       await usersConnector.updateUserByPhone(phone, { isVless: true });
       // добавление пользователя в консоль VPN
       const expiryTime = convertToUnixDate(new Date(dbUser?.expiredDate));
-      const isVlessExist = await getVlessClient(dbUser.phone);
+      const isVlessExist = await getVlessClient(
+        dbUser.phone,
+        dbUser.serverPrefix,
+      );
 
       if (isVlessExist) {
         await updateVlessUser({

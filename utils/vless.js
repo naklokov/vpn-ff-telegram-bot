@@ -87,8 +87,8 @@ const getVlessConnectionString = async (phone, serverPrefix = "") => {
   return connectionString;
 };
 
-const getVlessClient = async (id) => {
-  const inbounds = await getInbounds();
+const getVlessClient = async (id, serverPrefix = "") => {
+  const inbounds = await getInbounds(serverPrefix);
 
   const { clients } = JSON.parse(inbounds?.[0]?.settings ?? {});
 
