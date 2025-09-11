@@ -30,6 +30,7 @@ const updateReferralUser = async (phone, ctx) => {
       await updateVlessUser({
         chatId: referralUser.chatId,
         phone: referralUser.phone,
+        serverPrefix: referralUser?.serverPrefix,
         expiryTime,
       });
 
@@ -70,12 +71,14 @@ const updateUser = async (phone, months, ctx) => {
       phone: dbUser.phone,
       chatId: dbUser.chatId,
       expiryTime: updatedExpiredDateJs.toDate(),
+      serverPrefix: dbUser.serverPrefix,
     });
   } else {
     await addVlessUser({
       phone: dbUser.phone,
       chatId: dbUser.chatId,
       expiryTime: updatedExpiredDateJs.toDate(),
+      serverPrefix: dbUser.serverPrefix,
     });
 
     await ctx.telegram.sendMessage(

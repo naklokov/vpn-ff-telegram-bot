@@ -68,12 +68,14 @@ const migrateScene = new Scenes.WizardScene(
         await updateVlessUser({
           chatId: dbUser.chatId,
           phone: dbUser.phone,
+          serverPrefix: dbUser.serverPrefix,
           expiryTime,
         });
       } else {
         await addVlessUser({
           chatId: dbUser.chatId,
           phone: dbUser.phone,
+          serverPrefix: dbUser.serverPrefix,
           expiryTime,
         });
       }
