@@ -1,5 +1,5 @@
 const { readFileSync } = require("fs");
-const { FREE_PERIOD_DAYS } = require("../constants");
+const { FREE_PERIOD_DAYS, CMD } = require("../constants");
 const dayjs = require("dayjs");
 const pdfjsLib = require("pdfjs-dist");
 
@@ -62,6 +62,12 @@ async function getTextFromPDF(path) {
   return strings;
 }
 
+// Функция для проверки, является ли callback query командой меню
+const isMenuCommand = (callbackData) => {
+  const menuCommands = Object.values(CMD);
+  return menuCommands.includes(callbackData);
+};
+
 module.exports = {
   generateUuidv4,
   getMarkdownContentSync,
@@ -72,4 +78,5 @@ module.exports = {
   getRegistrationDateIso,
   getExpiredDateIso,
   getTextFromPDF,
+  isMenuCommand,
 };

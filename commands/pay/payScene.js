@@ -1,7 +1,10 @@
 const { Scenes, Markup } = require("telegraf");
 const { SCENE_IDS, USERS_TEXT, DEVELOPER_CONTACT } = require("../../constants");
 const { usersConnector, paymentConnector } = require("../../db");
-const { getUserPersonalDataFromContext } = require("../../utils/common");
+const {
+  getUserPersonalDataFromContext,
+  isMenuCommand,
+} = require("../../utils/common");
 const { sendAdminPaymentInfo } = require("./utils");
 const { extendUser } = require("../extend/utils");
 const { checkPayment } = require("../../utils/recognize");
@@ -65,6 +68,12 @@ const payScene = new Scenes.WizardScene(
     return ctx.wizard.next();
   },
   async (ctx) => {
+    // Проверяем, если пользователь нажал на команду меню, выходим из сцены
+    if (ctx.callbackQuery?.data && isMenuCommand(ctx.callbackQuery.data)) {
+      await exitScene(ctx);
+      return;
+    }
+
     const [payedMonthsCount, amount] =
       ctx.callbackQuery?.data?.split("_") ?? [];
     if (!payedMonthsCount || !amount) {
@@ -90,6 +99,11 @@ const payScene = new Scenes.WizardScene(
     return ctx.wizard.next();
   },
   async (ctx) => {
+    if (ctx.callbackQuery?.data && isMenuCommand(ctx.callbackQuery.data)) {
+      await exitScene(ctx);
+      return;
+    }
+
     if (!ctx.wizard.state?.extend) {
       await exitScene(ctx);
       return;
