@@ -17,7 +17,10 @@ const getMainMenu = async (ctx) => {
   const isAdmin = chatId === ADMIN_CHAT_ID;
   const isUserRegistered = dbUser?.chatId;
 
-  let keyboardButtons = [[Markup.button.callback(USERS_TEXT.help, CMD.help)]];
+  let keyboardButtons = [
+    [Markup.button.callback(USERS_TEXT.info, CMD.info)],
+    [Markup.button.callback(USERS_TEXT.help, CMD.help)],
+  ];
 
   if (isUserRegistered) {
     keyboardButtons.unshift([
@@ -28,9 +31,6 @@ const getMainMenu = async (ctx) => {
       Markup.button.callback(USERS_TEXT.instructions, CMD.instructions),
     ]);
     keyboardButtons.unshift([Markup.button.callback(USERS_TEXT.pay, CMD.pay)]);
-    keyboardButtons.unshift([
-      Markup.button.callback(USERS_TEXT.info, CMD.info),
-    ]);
   } else {
     keyboardButtons.unshift([
       Markup.button.callback(USERS_TEXT.registration, CMD.registration),
@@ -40,6 +40,9 @@ const getMainMenu = async (ctx) => {
   if (isAdmin) {
     keyboardButtons.unshift([
       Markup.button.callback(USERS_TEXT.migrate, CMD.migrate),
+    ]);
+    keyboardButtons.unshift([
+      Markup.button.callback(USERS_TEXT.migrateToSlave, CMD.migrateToSlave),
     ]);
     keyboardButtons.unshift([
       Markup.button.callback(USERS_TEXT.rupor, CMD.rupor),

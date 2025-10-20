@@ -7,6 +7,7 @@ const ruporCommand = require("./commands/rupor");
 const extendCommand = require("./commands/extend");
 const payCommand = require("./commands/pay");
 const migrateCommand = require("./commands/migrate");
+const migrateToSlaveCommand = require("./commands/migrateToSlave");
 const infoCommand = require("./commands/info");
 const helpCommand = require("./commands/help");
 const instructionsCommand = require("./commands/instructions");
@@ -19,6 +20,9 @@ const {
 const { extendScene } = require("./commands/extend/extendScene");
 const { ruporScene } = require("./commands/rupor/ruporScene");
 const { migrateScene } = require("./commands/migrate/migrateScene");
+const {
+  migrateToSlaveScene,
+} = require("./commands/migrateToSlave/migrateToSlaveScene");
 const { payScene } = require("./commands/pay/payScene");
 
 const {
@@ -52,6 +56,7 @@ const setupBot = () => {
     extendScene,
     ruporScene,
     migrateScene,
+    migrateToSlaveScene,
     payScene,
   ]);
 
@@ -65,6 +70,7 @@ const setupBot = () => {
   bot.action(CMD.status, statusCommand);
   bot.action(CMD.extend, extendCommand);
   bot.action(CMD.migrate, migrateCommand);
+  bot.action(CMD.migrateToSlave, migrateToSlaveCommand);
   bot.action(CMD.instructions, instructionsCommand);
   bot.action(CMD.registration, registrationCommand);
   bot.action(CMD.rupor, ruporCommand);
