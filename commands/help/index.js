@@ -1,8 +1,21 @@
 const { exitButton } = require("../../components/buttons");
 const { DEVELOPER_CONTACT } = require("../../constants");
+const { usersConnector } = require("../../db");
+const { getUserPersonalDataFromContext } = require("../../utils/common");
 
-module.exports = (ctx) =>
-  ctx.reply(
+module.exports = async (ctx) => {
+  const { id: chatId } = getUserPersonalDataFromContext(ctx);
+  const dbUser = await usersConnector.getUserByChatId(chatId);
+
+  await ctx.reply(
     `Если у вас возникли вопросы, пишите 👉 ${DEVELOPER_CONTACT}`,
     exitButton,
   );
+
+  if (dbUser) {
+    await ctx.reply(
+      `Для оперативного решения проблемы сразу укажите ваш логин \`${dbUser.phone}\``,
+      { parse_mode: "MarkdownV2" },
+    );
+  }
+};

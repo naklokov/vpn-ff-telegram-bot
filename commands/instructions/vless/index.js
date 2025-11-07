@@ -36,7 +36,7 @@ module.exports = async (ctx) => {
         inline_keyboard: [
           [
             {
-              text: "iOS (Macbook)",
+              text: "iPhone (Macbook)",
               callback_data: CALLBACK_QUERY_DATA.instructionsIosVless,
             },
             {
