@@ -16,6 +16,7 @@ const USERS_TEXT = {
   extend: "Продлить",
   migrate: "Мигрировать",
   migrateToSlave: "Миграция на новый сервер",
+  checkUser: "Информация о пользователе",
   rupor: "Сообщение всем",
 };
 
@@ -31,6 +32,7 @@ const CMD = {
   pay: "pay",
   migrate: "migrate",
   migrateToSlave: "migrateToSlave",
+  checkUser: "checkUser",
   rupor: "rupor",
   exit: "exit",
 };
@@ -58,6 +60,7 @@ const SCENE_IDS = {
   EXTEND: "EXTEND",
   MIGRATE: "MIGRATE",
   MIGRATE_TO_SLAVE: "MIGRATE_TO_SLAVE",
+  CHECK_USER: "CHECK_USER",
   RUPOR: "RUPOR",
   PAY: "PAY",
 };

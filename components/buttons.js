@@ -45,6 +45,9 @@ const getMainMenu = async (ctx) => {
       Markup.button.callback(USERS_TEXT.migrateToSlave, CMD.migrateToSlave),
     ]);
     keyboardButtons.unshift([
+      Markup.button.callback(USERS_TEXT.checkUser, CMD.checkUser),
+    ]);
+    keyboardButtons.unshift([
       Markup.button.callback(USERS_TEXT.rupor, CMD.rupor),
     ]);
     keyboardButtons.unshift([
