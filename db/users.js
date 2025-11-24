@@ -11,7 +11,6 @@ const userScheme = new mongoose.Schema({
   chatId: { type: Number },
   name: String,
   phone: { type: String, required: true },
-  email: String,
   registrationDate: {
     type: String,
     default: getRegistrationDateIso,

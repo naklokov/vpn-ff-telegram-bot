@@ -60,28 +60,6 @@ const registrationScene = new Scenes.WizardScene(
     }
 
     ctx.wizard.state.user.phone = ctx.message?.text;
-
-    ctx.reply(
-      "Введите вашу электронную почту в формате: test@mail.ru",
-      exitButtonScene,
-    );
-    return ctx.wizard.next();
-  },
-  async (ctx) => {
-    if (!EMAIL_REGEXP.test(ctx?.message?.text)) {
-      ctx.reply(
-        "Введите корректную почту в формате: test@mail.ru",
-        exitButtonScene,
-      );
-      return;
-    }
-
-    if (!ctx.wizard.state?.user) {
-      await exitScene(ctx);
-      return;
-    }
-
-    ctx.wizard.state.user.email = ctx.message?.text;
     const { chatId, phone } = ctx.wizard.state.user;
 
     // Миграция на новый ВПН
