@@ -7,6 +7,7 @@ const {
   PHONE_REGEXP,
   ADMIN_CHAT_ID,
   USERS_TEXT,
+  DEVELOPER_CONTACT,
 } = require("../../constants");
 const {
   getMainMenu,
@@ -138,6 +139,7 @@ const registrationScene = new Scenes.WizardScene(
         "Для настройки VPN перейдите по ссылке ниже 👇👇👇\n" +
           `${subscriptionUrl}`,
       );
+      await ctx.reply(`Если возникнут вопросы, пишите 👉 ${DEVELOPER_CONTACT}`);
       logger.info(
         `Пользователь успешно добавлен ${ctx.wizard.state.user.phone}`,
       );
