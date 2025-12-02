@@ -135,7 +135,8 @@ const registrationScene = new Scenes.WizardScene(
       const subscriptionUrl = await getSubscriptionUrlByPhone(phone);
       await ctx.reply("Вы успешно зарегистрированы!\n\n");
       await ctx.reply(
-        "Для настройки VPN перейдите по ссылке 👉 " + subscriptionUrl,
+        "Для настройки VPN перейдите по ссылке ниже 👇👇👇\n" +
+          `${subscriptionUrl}`,
       );
       logger.info(
         `Пользователь успешно добавлен ${ctx.wizard.state.user.phone}`,

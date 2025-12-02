@@ -2,11 +2,9 @@ const {
   CALLBACK_QUERY_DATA,
   IOS_INSTRUCTIONS_LINK,
   ANDROID_INSTRUCTIONS_LINK,
-  REMNAWAVE_PREFIX,
 } = require("../../../constants");
 const { usersConnector } = require("../../../db");
 const { getUserPersonalDataFromContext } = require("../../../utils/common");
-const { getSubscriptionUrlByPhone } = require("../../../utils/remnawave");
 const { getVlessConnectionString } = require("../../../utils/vless");
 
 module.exports = async (ctx) => {
@@ -17,13 +15,6 @@ module.exports = async (ctx) => {
     ctx.reply(
       `Вы пока что не зарегистрированы в системе, пройдите регистрацию`,
     );
-    return;
-  }
-
-  if (user?.serverPrefix === REMNAWAVE_PREFIX) {
-    const subscriptionUrl = await getSubscriptionUrlByPhone(user.phone);
-    await ctx.reply("Для получения информации нажмите на ссылку ниже 👇👇👇");
-    await ctx.reply(subscriptionUrl);
     return;
   }
 

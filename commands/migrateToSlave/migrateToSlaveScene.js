@@ -99,9 +99,10 @@ const migrateToSlaveScene = new Scenes.WizardScene(
         const subscriptionUrl = await getSubscriptionUrlByPhone(dbUser.phone);
         await ctx.telegram.sendMessage(
           dbUser.chatId,
-          "🔄 Вы мигрированы на новый сервер!\n\n" +
-            "Просьба перейти на него в течение трёх дней.\n" +
-            `Для настройки перейдите по ссылке ${subscriptionUrl}\n\n` +
+          "🔄 Вы мигрированы на новый сервер!\n" +
+            "Просьба перейти на него в течение трёх дней.\n\n" +
+            "Для настройки VPN перейдите по ссылке ниже 👇👇👇\n" +
+            `${subscriptionUrl}\n\n` +
             "Если у вас возникли вопросы, пишите 👉 " +
             DEVELOPER_CONTACT,
         );
