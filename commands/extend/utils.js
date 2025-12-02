@@ -1,8 +1,12 @@
 const { usersConnector } = require("../../db");
 const dayjs = require("dayjs");
-const { updateVlessUser, addVlessUser } = require("../../utils/vless");
-const { USERS_TEXT } = require("../../constants");
-const { convertToUnixDate } = require("../../utils/common");
+const { updateVlessUser } = require("../../utils/vless");
+const {
+  convertToUnixDate,
+  getUserPersonalDataFromContext,
+} = require("../../utils/common");
+const { updateRemnawaveUserByPhone } = require("../../utils/remnawave");
+const { REMNAWAVE_PREFIX } = require("../../constants");
 
 const updateReferralUser = async (phone, ctx) => {
   const extendedUser = await usersConnector.getUserByPhone(phone);
@@ -27,12 +31,19 @@ const updateReferralUser = async (phone, ctx) => {
       await usersConnector.updateUserByPhone(referralUser?.phone, {
         expiredDate: bonusExpiredDate.toISOString(),
       });
-      await updateVlessUser({
-        chatId: referralUser.chatId,
-        phone: referralUser.phone,
-        serverPrefix: referralUser?.serverPrefix,
-        expiryTime,
-      });
+
+      if (referralUser?.serverPrefix === REMNAWAVE_PREFIX) {
+        await updateRemnawaveUserByPhone(referralUser.phone, {
+          expireAt: expiryTime,
+        });
+      } else {
+        await updateVlessUser({
+          chatId: referralUser.chatId,
+          phone: referralUser.phone,
+          serverPrefix: referralUser?.serverPrefix,
+          expiryTime,
+        });
+      }
 
       await ctx.telegram.sendMessage(
         referralUser?.chatId,
@@ -66,24 +77,32 @@ const updateUser = async (phone, months, ctx) => {
   });
 
   // временный механизм обновления пользователя который уже в системе,чтобы не просрать expiryTime
-  if (dbUser?.isVless) {
-    await updateVlessUser({
-      phone: dbUser.phone,
-      chatId: dbUser.chatId,
-      expiryTime: updatedExpiredDateJs.toDate(),
-      serverPrefix: dbUser.serverPrefix,
-    });
-  } else {
-    await addVlessUser({
-      phone: dbUser.phone,
-      chatId: dbUser.chatId,
-      expiryTime: updatedExpiredDateJs.toDate(),
-      serverPrefix: dbUser.serverPrefix,
-    });
+  // if (dbUser?.serverPrefix !== REMNAWAVE_PREFIX) {
+  //   await addRemnawaveUser({
+  //     chatId,
+  //     phone,
+  //     name: ctx.wizard.state.user.name,
+  //     email: ctx.wizard.state.user.email,
+  //   });
+  // }
 
-    await ctx.telegram.sendMessage(
-      dbUser.chatId,
-      `Перенёс вас на новый сервер, чтобы перейти на него, выберите пункт ${USERS_TEXT.instructions}`,
+  // const subscriptionUrl = await getSubscriptionUrlByPhone(dbUser.phone);
+
+  // await ctx.telegram.sendMessage(
+  //   dbUser.chatId,
+  //   `Перенёс вас на новый сервер, чтобы настроить его нажмите на ссылку ${subscriptionUrl}`,
+  // );
+
+  // Обновляем срок действия пользователя в Remnawave
+  try {
+    await updateRemnawaveUserByPhone(phone, {
+      expireAt: updatedExpiredDateJs.toDate(),
+    });
+  } catch (error) {
+    // не падаем сценой, просто логируем
+    console.error(
+      `Remnawave: ошибка при обновлении пользователя ${phone} после продления`,
+      error,
     );
   }
 

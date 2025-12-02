@@ -14,7 +14,6 @@ const USERS_TEXT = {
 
   // админские действия
   extend: "Продлить",
-  migrate: "Мигрировать",
   migrateToSlave: "Миграция на новый сервер",
   checkUser: "Информация о пользователе",
   rupor: "Сообщение всем",
@@ -30,7 +29,6 @@ const CMD = {
   instructions: "instructions",
   extend: "extend",
   pay: "pay",
-  migrate: "migrate",
   migrateToSlave: "migrateToSlave",
   checkUser: "checkUser",
   rupor: "rupor",
@@ -58,7 +56,6 @@ const ADMIN_CHAT_ID = 332529322;
 const SCENE_IDS = {
   REGISTRATION: "REGISTRATION_SCENE_ID",
   EXTEND: "EXTEND",
-  MIGRATE: "MIGRATE",
   MIGRATE_TO_SLAVE: "MIGRATE_TO_SLAVE",
   CHECK_USER: "CHECK_USER",
   RUPOR: "RUPOR",
@@ -81,9 +78,12 @@ const DEVELOPER_CONTACT = "@naklokov";
 
 const CALLBACK_QUERY_DATA_DELIMETER = ":";
 
+const REMNAWAVE_PREFIX = "REMNAWAVE";
+
 module.exports = {
   CMD,
   USERS_TEXT,
+  REMNAWAVE_PREFIX,
   DEVELOPER_CONTACT,
   NOTION_PAGE_ID_MAP,
   SCENE_IDS,

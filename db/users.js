@@ -10,6 +10,7 @@ const logger = require("../utils/logger");
 const userScheme = new mongoose.Schema({
   chatId: { type: Number },
   name: String,
+  email: String,
   phone: { type: String, required: true },
   registrationDate: {
     type: String,
