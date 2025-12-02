@@ -92,12 +92,18 @@ const updateUser = async (phone, months, ctx) => {
   //   dbUser.chatId,
   //   `Перенёс вас на новый сервер, чтобы настроить его нажмите на ссылку ${subscriptionUrl}`,
   // );
-
-  // Обновляем срок действия пользователя в Remnawave
   try {
-    await updateRemnawaveUserByPhone(phone, {
-      expireAt: updatedExpiredDateJs.toDate(),
-    });
+    if (dbUser?.serverPrefix === REMNAWAVE_PREFIX) {
+      await updateRemnawaveUserByPhone(phone, {
+        expireAt: updatedExpiredDateJs.toDate(),
+      });
+    } else {
+      await updateVlessUser({
+        chatId: dbUser.chatId,
+        phone: phone,
+        expiryTime: updatedExpiredDateJs.toDate(),
+      });
+    }
   } catch (error) {
     // не падаем сценой, просто логируем
     console.error(

@@ -13,13 +13,15 @@ const {
   hideButtons,
   exitButtonScene,
 } = require("../../components/buttons");
-const { getSuccessReply } = require("./constants");
 const {
   getUserPersonalDataFromContext,
   generatePassword,
 } = require("../../utils/common");
 const { usersConnector } = require("../../db");
-const { addRemnawaveUser } = require("../../utils/remnawave");
+const {
+  addRemnawaveUser,
+  getSubscriptionUrlByPhone,
+} = require("../../utils/remnawave");
 
 const exitScene = async (ctx) => {
   await ctx.scene.leave();
@@ -114,9 +116,9 @@ const registrationScene = new Scenes.WizardScene(
     try {
       // Добавление пользователя в панель Remnawave вместо старой VLESS-панели
       await addRemnawaveUser({
+        username: phone,
         chatId,
-        phone,
-        name: ctx.wizard.state.user.name,
+        description: ctx.wizard.state.user.name,
         email: ctx.wizard.state.user.email,
       });
     } catch (error) {
@@ -130,9 +132,11 @@ const registrationScene = new Scenes.WizardScene(
       // добавление в БД
       await usersConnector.addUser(ctx.wizard.state.user);
 
-      await ctx.reply(getSuccessReply(), {
-        parse_mode: "MarkdownV2",
-      });
+      const subscriptionUrl = await getSubscriptionUrlByPhone(phone);
+      await ctx.reply("Вы успешно зарегистрированы!\n\n");
+      await ctx.reply(
+        "Для настройки VPN перейдите по ссылке 👉 " + subscriptionUrl,
+      );
       logger.info(
         `Пользователь успешно добавлен ${ctx.wizard.state.user.phone}`,
       );

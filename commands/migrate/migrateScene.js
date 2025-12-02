@@ -73,9 +73,9 @@ const migrateScene = new Scenes.WizardScene(
         // если ошибка (например, нет такого пользователя) – пробуем создать
         try {
           await addRemnawaveUser({
-            phone: dbUser.phone,
+            username: dbUser.phone,
             chatId: dbUser.chatId,
-            name: dbUser.name,
+            description: dbUser.name,
             email: "",
             expiryTime: new Date(expiryTime),
           });

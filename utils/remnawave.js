@@ -59,9 +59,9 @@ async function getFirstInternalSquadUuid() {
  * обязательные поля: username, expireAt
  */
 async function addRemnawaveUser({
-  phone,
+  username,
   chatId,
-  name,
+  description,
   email = "",
   expiryTime,
 }) {
@@ -75,7 +75,7 @@ async function addRemnawaveUser({
   const internalSquadUuid = await getFirstInternalSquadUuid();
 
   const payload = {
-    description: name,
+    description,
     email,
     expireAt: expiredAt.toISOString(),
     hwidDeviceLimit: 0,
@@ -83,7 +83,7 @@ async function addRemnawaveUser({
     telegramId: Number(chatId),
     trafficLimitBytes: 0,
     trafficLimitStrategy: "NO_RESET",
-    username: String(phone), // телефон подходит под паттерн username
+    username: String(username), // телефон подходит под паттерн username
   };
 
   if (internalSquadUuid) {
@@ -100,12 +100,12 @@ async function addRemnawaveUser({
     );
 
     logger.info(
-      `Remnawave: пользователь успешно создан (${phone}, chatId=${chatId})`,
+      `Remnawave: пользователь успешно создан (${username}, chatId=${chatId})`,
     );
     return data;
   } catch (error) {
     logger.error(
-      `Remnawave: ошибка при создании пользователя (${phone}, chatId=${chatId})`,
+      `Remnawave: ошибка при создании пользователя (${username}, chatId=${chatId})`,
       error.response || error,
     );
     throw error;

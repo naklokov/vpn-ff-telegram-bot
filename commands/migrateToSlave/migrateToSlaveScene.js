@@ -81,9 +81,9 @@ const migrateToSlaveScene = new Scenes.WizardScene(
       // Добавляем/обновляем пользователя в Remnawave
       try {
         await addRemnawaveUser({
-          phone: dbUser.phone,
+          username: dbUser.phone,
           chatId: dbUser.chatId,
-          name: dbUser.name,
+          description: dbUser.name,
           email: dbUser?.email ?? "",
           expiryTime,
         });
