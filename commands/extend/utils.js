@@ -101,6 +101,7 @@ const updateUser = async (phone, months, ctx) => {
       await updateVlessUser({
         chatId: dbUser.chatId,
         phone: phone,
+        serverPrefix: dbUser.serverPrefix,
         expiryTime: updatedExpiredDateJs.toDate(),
       });
     }
