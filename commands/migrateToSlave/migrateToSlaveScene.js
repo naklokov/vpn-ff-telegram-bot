@@ -14,7 +14,10 @@ const {
 } = require("../../components/buttons");
 const { usersConnector } = require("../../db");
 const logger = require("../../utils/logger");
-const { getUserPersonalDataFromContext } = require("../../utils/common");
+const {
+  getUserPersonalDataFromContext,
+  getExpiredDateIso,
+} = require("../../utils/common");
 const dayjs = require("dayjs");
 const {
   addRemnawaveUser,
@@ -71,7 +74,7 @@ const migrateToSlaveScene = new Scenes.WizardScene(
         serverPrefix: process?.env?.NEW_USER_SERVER_PREFIX,
       });
 
-      const expiryTime = dayjs(dbUser.expiredDate).toDate();
+      const expiredAtIso = getExpiredDateIso(dbUser.expiredDate);
 
       if (dbUser?.serverPrefix === REMNAWAVE_PREFIX) {
         await ctx.reply("Пользователь уже добавлен в REMNAWAVE");
@@ -85,7 +88,7 @@ const migrateToSlaveScene = new Scenes.WizardScene(
           chatId: dbUser.chatId,
           description: dbUser.name,
           email: dbUser?.email ?? "",
-          expiryTime,
+          expiredAt: expiredAtIso,
         });
       } catch (createError) {
         logger.error(

@@ -151,6 +151,7 @@ const payScene = new Scenes.WizardScene(
       await sendAdminPaymentInfo(isPayCorrect, ctx);
     } catch (error) {
       await handlePaymentError(ctx, error);
+      throw Error(error);
     } finally {
       await exitScene(ctx);
     }

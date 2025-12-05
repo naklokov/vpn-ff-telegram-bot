@@ -23,11 +23,12 @@ const updateReferralUser = async (phone, ctx) => {
         extendedUser?.referralUserLogin,
       );
 
+      console.log(referralUser);
+
       const bonusExpiredDate = dayjs(referralUser?.expiredDate).add(
         1,
         "months",
       );
-      const expiryTime = convertToUnixDate(new Date(bonusExpiredDate));
 
       await usersConnector.updateUserByPhone(referralUser?.phone, {
         expiredDate: bonusExpiredDate.toISOString(),
@@ -35,14 +36,14 @@ const updateReferralUser = async (phone, ctx) => {
 
       if (referralUser?.serverPrefix === REMNAWAVE_PREFIX) {
         await updateRemnawaveUserByPhone(referralUser.phone, {
-          expireAt: expiryTime,
+          expireAt: bonusExpiredDate.toISOString(),
         });
       } else {
         await updateVlessUser({
           chatId: referralUser.chatId,
           phone: referralUser.phone,
           serverPrefix: referralUser?.serverPrefix,
-          expiryTime,
+          expireAt: convertToUnixDate(new Date(bonusExpiredDate)),
         });
       }
 
@@ -69,47 +70,54 @@ const updateUser = async (phone, months, ctx) => {
     throw Error("Не указано количество месяцев для продления");
   }
 
-  const updatedExpiredDateJs = dayjs(
-    dbUser?.isActive ? dbUser?.expiredDate : undefined,
-  ).add(+months, "months");
-  await usersConnector.updateUserByPhone(phone, {
-    expiredDate: updatedExpiredDateJs.toISOString(),
-    serverPrefix: REMNAWAVE_PREFIX,
-  });
+  const updateExpiredAt = dayjs(dbUser?.expiredDate).add(+months, "months");
 
+  // Переносим пользователя на сервер при оплате
   if (dbUser?.serverPrefix !== REMNAWAVE_PREFIX) {
-    await addRemnawaveUser({
-      username: phone,
-      chatId: dbUser.chatId,
-      description: dbUser.name,
-      email: dbUser.email,
-      expiryTime: updatedExpiredDateJs.toISOString(),
-    });
+    try {
+      console.log("test1", updateExpiredAt);
+      await addRemnawaveUser({
+        username: phone,
+        chatId: dbUser.chatId,
+        description: dbUser.name,
+        email: dbUser.email,
+        expireAt: updateExpiredAt.toISOString(),
+      });
 
-    const subscriptionUrl = await getSubscriptionUrlByPhone(dbUser.phone);
-    await ctx.telegram.sendMessage(
-      dbUser.chatId,
-      "❗️ Перенёс вас на новый сервер ❗️",
-    );
-    await ctx.telegram.sendMessage(
-      dbUser.chatId,
-      "Для настройки VPN перейдите по ссылке ниже 👇👇👇\n" +
-        `${subscriptionUrl}`,
-    );
-    ctx.telegram.sendMessage(
-      dbUser.chatId,
-      `Если возникнут вопросы, пишите 👉 ${DEVELOPER_CONTACT}`,
-    );
+      const subscriptionUrl = await getSubscriptionUrlByPhone(dbUser.phone);
+      await ctx.telegram.sendMessage(
+        dbUser.chatId,
+        "❗️ Перенёс вас на новый сервер ❗️",
+      );
+      await ctx.telegram.sendMessage(
+        dbUser.chatId,
+        "Для настройки VPN перейдите по ссылке ниже 👇👇👇\n" +
+          `${subscriptionUrl}`,
+      );
+      ctx.telegram.sendMessage(
+        dbUser.chatId,
+        `Если возникнут вопросы, пишите 👉 ${DEVELOPER_CONTACT}`,
+      );
+    } catch (error) {
+      throw Error(error);
+    }
   } else {
+    console.log("test2", updateExpiredAt);
     await updateRemnawaveUserByPhone(phone, {
-      expireAt: updatedExpiredDateJs.toDate(),
+      expireAt: updateExpiredAt.toISOString(),
     });
   }
+
+  console.log("test3", updateExpiredAt);
+  await usersConnector.updateUserByPhone(phone, {
+    expiredDate: updateExpiredAt.toISOString(),
+    serverPrefix: REMNAWAVE_PREFIX,
+  });
 
   await ctx.reply(
     `Пользователь ${phone} успешно продлён на ${
       months
-    } мес до ${updatedExpiredDateJs.format("DD.MM.YYYY")}`,
+    } мес до ${updateExpiredAt.format("DD.MM.YYYY")}`,
   );
 
   if (dbUser?.chatId) {
@@ -117,7 +125,7 @@ const updateUser = async (phone, months, ctx) => {
       dbUser.chatId,
       `Ваш доступ успешно продлён на ${
         months
-      } мес до ${updatedExpiredDateJs.format("DD.MM.YYYY")}
+      } мес до ${updateExpiredAt.format("DD.MM.YYYY")}
 Приятного пользования!`,
     );
   }

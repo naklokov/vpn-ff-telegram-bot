@@ -36,8 +36,8 @@ const getUserPersonalDataFromContext = (ctx) => {
 const getRegistrationDateIso = () => new Date().toISOString();
 const getExpiredDateIso = () => getExpiredDate().toISOString();
 
-const getExpiredDate = () => {
-  const curDate = new Date();
+const getExpiredDate = (date) => {
+  const curDate = date ? date : new Date();
   return dayjs(curDate).add(FREE_PERIOD_DAYS, "days").endOf("day").toDate();
 };
 

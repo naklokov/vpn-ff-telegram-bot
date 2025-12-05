@@ -1,6 +1,6 @@
 const axios = require("axios");
 const logger = require("./logger");
-const { getExpiredDate } = require("./common");
+const { getExpiredDateIso } = require("./common");
 
 const { REMNAWAVE_API_URL, REMNAWAVE_API_TOKEN } = process.env;
 
@@ -63,13 +63,11 @@ async function addRemnawaveUser({
   chatId,
   description,
   email = "",
-  expiryTime,
+  expireAt,
 }) {
   if (!REMNAWAVE_API_URL) {
     throw new Error("REMNAWAVE_API_URL не задан в .env");
   }
-
-  const expiredAt = expiryTime instanceof Date ? expiryTime : getExpiredDate();
 
   // Пытаемся получить первый internal squad.
   const internalSquadUuid = await getFirstInternalSquadUuid();
@@ -77,7 +75,7 @@ async function addRemnawaveUser({
   const payload = {
     description,
     email,
-    expireAt: expiredAt.toISOString(),
+    expireAt: expireAt ? expireAt : getExpiredDateIso(),
     hwidDeviceLimit: 0,
     status: "ACTIVE",
     telegramId: Number(chatId),
@@ -160,19 +158,15 @@ async function getSubscriptionUrlByPhone(phone) {
  *
  * Uses PATCH /api/users with UpdateUserRequestDto.
  */
-async function updateRemnawaveUserByPhone(phone, { expireAt } = {}) {
+async function updateRemnawaveUserByPhone(phone, { expireAt }) {
   if (!REMNAWAVE_API_URL) {
     throw new Error("REMNAWAVE_API_URL не задан в .env");
   }
 
   const payload = {
     username: String(phone),
+    expireAt,
   };
-
-  if (expireAt) {
-    payload.expireAt =
-      expireAt instanceof Date ? expireAt.toISOString() : expireAt;
-  }
 
   try {
     const { data } = await axios.patch(
