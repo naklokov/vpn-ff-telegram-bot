@@ -1,7 +1,7 @@
 const { usersConnector } = require("../../db");
 const dayjs = require("dayjs");
 const { updateVlessUser } = require("../../utils/vless");
-const { convertToUnixDate } = require("../../utils/common");
+const { convertToUnixDate, getExpiredDate } = require("../../utils/common");
 const {
   updateRemnawaveUserByPhone,
   addRemnawaveUser,
@@ -22,34 +22,29 @@ const updateReferralUser = async (phone, ctx) => {
       const referralUser = await usersConnector.getUserByPhone(
         extendedUser?.referralUserLogin,
       );
-
-      console.log(referralUser);
-
-      const bonusExpiredDate = dayjs(referralUser?.expiredDate).add(
-        1,
-        "months",
-      );
+      const expiredDate = getExpiredDate(referralUser?.expiredDate);
+      const expiredDateWithBonus = dayjs(expiredDate).add(1, "months");
 
       await usersConnector.updateUserByPhone(referralUser?.phone, {
-        expiredDate: bonusExpiredDate.toISOString(),
+        expiredDate: expiredDateWithBonus.toISOString(),
       });
 
       if (referralUser?.serverPrefix === REMNAWAVE_PREFIX) {
         await updateRemnawaveUserByPhone(referralUser.phone, {
-          expireAt: bonusExpiredDate.toISOString(),
+          expireAt: expiredDateWithBonus.toISOString(),
         });
       } else {
         await updateVlessUser({
           chatId: referralUser.chatId,
           phone: referralUser.phone,
           serverPrefix: referralUser?.serverPrefix,
-          expireAt: convertToUnixDate(new Date(bonusExpiredDate)),
+          expireAt: convertToUnixDate(new Date(expiredDateWithBonus)),
         });
       }
 
       await ctx.telegram.sendMessage(
         referralUser?.chatId,
-        `Ваш период использования продлён за счёт реферальной программы до ${bonusExpiredDate.format("DD.MM.YYYY")}
+        `Ваш период использования продлён за счёт реферальной программы до ${expiredDateWithBonus.format("DD.MM.YYYY")}
   
 Спасибо, что рекомендуете наш ВПН ❤️`,
       );
@@ -70,18 +65,18 @@ const updateUser = async (phone, months, ctx) => {
     throw Error("Не указано количество месяцев для продления");
   }
 
-  const updateExpiredAt = dayjs(dbUser?.expiredDate).add(+months, "months");
+  const expiredDate = getExpiredDate(dbUser?.expiredDate);
+  const expiredDateNew = dayjs(expiredDate).add(+months, "months");
 
   // Переносим пользователя на сервер при оплате
   if (dbUser?.serverPrefix !== REMNAWAVE_PREFIX) {
     try {
-      console.log("test1", updateExpiredAt);
       await addRemnawaveUser({
         username: phone,
         chatId: dbUser.chatId,
         description: dbUser.name,
         email: dbUser.email,
-        expireAt: updateExpiredAt.toISOString(),
+        expireAt: expiredDateNew.toISOString(),
       });
 
       const subscriptionUrl = await getSubscriptionUrlByPhone(dbUser.phone);
@@ -102,22 +97,20 @@ const updateUser = async (phone, months, ctx) => {
       throw Error(error);
     }
   } else {
-    console.log("test2", updateExpiredAt);
     await updateRemnawaveUserByPhone(phone, {
-      expireAt: updateExpiredAt.toISOString(),
+      expireAt: expiredDateNew.toISOString(),
     });
   }
 
-  console.log("test3", updateExpiredAt);
   await usersConnector.updateUserByPhone(phone, {
-    expiredDate: updateExpiredAt.toISOString(),
+    expiredDate: expiredDateNew.toISOString(),
     serverPrefix: REMNAWAVE_PREFIX,
   });
 
   await ctx.reply(
     `Пользователь ${phone} успешно продлён на ${
       months
-    } мес до ${updateExpiredAt.format("DD.MM.YYYY")}`,
+    } мес до ${expiredDateNew.format("DD.MM.YYYY")}`,
   );
 
   if (dbUser?.chatId) {
@@ -125,7 +118,7 @@ const updateUser = async (phone, months, ctx) => {
       dbUser.chatId,
       `Ваш доступ успешно продлён на ${
         months
-      } мес до ${updateExpiredAt.format("DD.MM.YYYY")}
+      } мес до ${expiredDateNew.format("DD.MM.YYYY")}
 Приятного пользования!`,
     );
   }

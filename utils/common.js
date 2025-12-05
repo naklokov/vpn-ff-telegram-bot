@@ -37,8 +37,18 @@ const getRegistrationDateIso = () => new Date().toISOString();
 const getExpiredDateIso = () => getExpiredDate().toISOString();
 
 const getExpiredDate = (date) => {
-  const curDate = date ? date : new Date();
-  return dayjs(curDate).add(FREE_PERIOD_DAYS, "days").endOf("day").toDate();
+  const currentDate = new Date();
+  // для тех случаев когда пользователь новый
+  if (!date) {
+    return dayjs(currentDate)
+      .add(FREE_PERIOD_DAYS, "days")
+      .endOf("day")
+      .toDate();
+  }
+
+  // проверяем дата в БД меньше чем текущая, если меньше, то берём текущую
+  const fromDate = dayjs(date).isBefore(currentDate) ? currentDate : date;
+  return dayjs(fromDate).endOf("day").toDate();
 };
 
 const convertToUnixDate = (date) => Math.floor(date.getTime());

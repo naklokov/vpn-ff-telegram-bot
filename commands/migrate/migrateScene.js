@@ -13,7 +13,7 @@ const {
 const { usersConnector } = require("../../db");
 const {
   getUserPersonalDataFromContext,
-  getExpiredDateIso,
+  getExpiredDate,
 } = require("../../utils/common");
 const {
   addRemnawaveUser,
@@ -61,12 +61,12 @@ const migrateScene = new Scenes.WizardScene(
       await usersConnector.updateUserByPhone(phone, { isVless: true });
 
       // добавление/обновление пользователя в Remnawave
-      const expireAtIso = getExpiredDateIso(dbUser?.expiredDate);
+      const expiredDate = getExpiredDate(dbUser?.expiredDate);
 
       try {
         // сначала пробуем обновить пользователя по username (phone)
         await updateRemnawaveUserByPhone(dbUser.phone, {
-          expireAt: expireAtIso,
+          expireAt: expiredDate.toISOString(),
         });
         ctx.reply("Пользователь успешно обновлён в Remnawave");
       } catch {
@@ -77,7 +77,7 @@ const migrateScene = new Scenes.WizardScene(
             chatId: dbUser.chatId,
             description: dbUser.name,
             email: dbUser.email,
-            expireAt: expireAtIso,
+            expireAt: expiredDate.toISOString(),
           });
           ctx.reply("Пользователь успешно добавлен в Remnawave");
         } catch (createError) {

@@ -1,6 +1,6 @@
 const axios = require("axios");
 const logger = require("./logger");
-const { getExpiredDateIso } = require("./common");
+const { getExpiredDate } = require("./common");
 
 const { REMNAWAVE_API_URL, REMNAWAVE_API_TOKEN } = process.env;
 
@@ -75,7 +75,7 @@ async function addRemnawaveUser({
   const payload = {
     description,
     email,
-    expireAt: expireAt ? expireAt : getExpiredDateIso(),
+    expireAt: expireAt ? expireAt : getExpiredDate().toISOString(),
     hwidDeviceLimit: 0,
     status: "ACTIVE",
     telegramId: Number(chatId),
