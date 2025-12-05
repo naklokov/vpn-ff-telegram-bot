@@ -149,7 +149,7 @@ async function getSubscriptionUrlByPhone(phone) {
       `Remnawave: ошибка при получении подписки для пользователя ${username}`,
       error.response || error,
     );
-    throw error;
+    return "";
   }
 }
 
