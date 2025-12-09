@@ -75,11 +75,11 @@ const updateUser = async (phone, months, ctx) => {
         username: phone,
         chatId: dbUser.chatId,
         description: dbUser.name,
-        email: dbUser.email,
         expireAt: expiredDateNew.toISOString(),
+        email: dbUser?.email,
       });
 
-      const subscriptionUrl = await getSubscriptionUrlByPhone(dbUser.phone);
+      const subscriptionUrl = await getSubscriptionUrlByPhone(phone);
       await ctx.telegram.sendMessage(
         dbUser.chatId,
         "❗️ Перенёс вас на новый сервер ❗️",

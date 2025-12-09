@@ -86,8 +86,8 @@ const migrateToSlaveScene = new Scenes.WizardScene(
           username: dbUser.phone,
           chatId: dbUser.chatId,
           description: dbUser.name,
-          email: dbUser?.email ?? "",
           expiredAt: expiredDate.toISOString(),
+          email: dbUser?.email,
         });
       } catch (createError) {
         logger.error(

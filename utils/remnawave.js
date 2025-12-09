@@ -62,7 +62,7 @@ async function addRemnawaveUser({
   username,
   chatId,
   description,
-  email = "",
+  email,
   expireAt,
 }) {
   if (!REMNAWAVE_API_URL) {
@@ -71,6 +71,7 @@ async function addRemnawaveUser({
 
   // Пытаемся получить первый internal squad.
   const internalSquadUuid = await getFirstInternalSquadUuid();
+  const headers = getAuthHeaders();
 
   const payload = {
     description,
@@ -84,6 +85,10 @@ async function addRemnawaveUser({
     username: String(username), // телефон подходит под паттерн username
   };
 
+  if (email) {
+    payload.email = email;
+  }
+
   if (internalSquadUuid) {
     payload.activeInternalSquads = [internalSquadUuid];
   }
@@ -93,7 +98,7 @@ async function addRemnawaveUser({
       `${REMNAWAVE_API_URL}/api/users`,
       payload,
       {
-        headers: getAuthHeaders(),
+        headers,
       },
     );
 
@@ -102,9 +107,10 @@ async function addRemnawaveUser({
     );
     return data;
   } catch (error) {
+    logger.error("Payload = ", JSON.stringify(payload));
     logger.error(
       `Remnawave: ошибка при создании пользователя (${username}, chatId=${chatId})`,
-      error.response || error,
+      JSON.stringify(error?.response?.data?.errors ?? error),
     );
     throw error;
   }

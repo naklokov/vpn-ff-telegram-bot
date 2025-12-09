@@ -76,8 +76,8 @@ const migrateScene = new Scenes.WizardScene(
             username: dbUser.phone,
             chatId: dbUser.chatId,
             description: dbUser.name,
-            email: dbUser.email,
             expireAt: expiredDate.toISOString(),
+            email: dbUser?.email,
           });
           ctx.reply("Пользователь успешно добавлен в Remnawave");
         } catch (createError) {
