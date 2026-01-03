@@ -2,7 +2,8 @@ const axios = require("axios");
 const logger = require("./logger");
 const { getExpiredDate } = require("./common");
 
-const { REMNAWAVE_API_URL, REMNAWAVE_API_TOKEN } = process.env;
+const { REMNAWAVE_API_URL, REMNAWAVE_API_TOKEN, REMNAWAVE_NEW_USER_TAG } =
+  process.env;
 
 const getAuthHeaders = () => {
   if (!REMNAWAVE_API_URL || !REMNAWAVE_API_TOKEN) {
@@ -69,6 +70,10 @@ async function addRemnawaveUser({
     throw new Error("REMNAWAVE_API_URL не задан в .env");
   }
 
+  if (!REMNAWAVE_NEW_USER_TAG) {
+    throw new Error("REMNAWAVE_NEW_USER_TAG не задан в .env");
+  }
+
   // Пытаемся получить первый internal squad.
   const internalSquadUuid = await getFirstInternalSquadUuid();
   const headers = getAuthHeaders();
@@ -81,6 +86,7 @@ async function addRemnawaveUser({
     status: "ACTIVE",
     telegramId: Number(chatId),
     trafficLimitBytes: 0,
+    tag: REMNAWAVE_NEW_USER_TAG,
     trafficLimitStrategy: "NO_RESET",
     username: String(username), // телефон подходит под паттерн username
   };
