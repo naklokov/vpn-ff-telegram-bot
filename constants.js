@@ -80,6 +80,12 @@ const CALLBACK_QUERY_DATA_DELIMETER = ":";
 
 const REMNAWAVE_PREFIX = "REMNAWAVE";
 
+const SUBSRIBE_COST = {
+  1: 300,
+  3: 750,
+  6: 1300,
+};
+
 module.exports = {
   CMD,
   USERS_TEXT,
@@ -89,6 +95,7 @@ module.exports = {
   SCENE_IDS,
   EMAIL_REGEXP,
   PHONE_REGEXP,
+  SUBSRIBE_COST,
   FREE_PERIOD_DAYS,
   VPN_DB_CONNECTION,
   SECRET_ROW_REGEXP,
