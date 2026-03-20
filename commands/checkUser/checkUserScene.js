@@ -46,7 +46,10 @@ const checkUserScene = new Scenes.WizardScene(
 
     try {
       const dbUser = await usersConnector.getUserByPhone(phone);
+      console.log("user", dbUser);
       const subscriptionUrl = await getSubscriptionUrlByPhone(phone);
+
+      console.log("subscriptionUrl", subscriptionUrl);
 
       if (!dbUser) {
         ctx.reply(`Пользователь с номером ${phone} отсутствует в БД`);
