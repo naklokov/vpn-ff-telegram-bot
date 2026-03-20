@@ -74,7 +74,7 @@ const SECRET_ROW_REGEXP = /^(.+) : EAP "(.+)"$/i;
 
 const VPN_DB_CONNECTION = process.env.MONGO_URL + "vpn";
 
-const DEVELOPER_CONTACT = "@naklokov";
+const DEVELOPER_CONTACT = "@naklokov, https://vk.ru/naklokov";
 
 const CALLBACK_QUERY_DATA_DELIMETER = ":";
 
