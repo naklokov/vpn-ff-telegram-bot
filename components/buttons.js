@@ -39,6 +39,9 @@ const getMainMenu = async (ctx) => {
 
   if (isAdmin) {
     keyboardButtons.unshift([
+      Markup.button.callback(USERS_TEXT.registration, CMD.registration),
+    ]);
+    keyboardButtons.unshift([
       Markup.button.callback(USERS_TEXT.migrateToSlave, CMD.migrateToSlave),
     ]);
     keyboardButtons.unshift([
