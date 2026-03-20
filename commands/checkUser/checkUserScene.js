@@ -14,6 +14,7 @@ const {
 const { usersConnector } = require("../../db");
 const { getUserPersonalDataFromContext } = require("../../utils/common");
 const dayjs = require("dayjs");
+const { getSubscriptionUrlByPhone } = require("../../utils/remnawave");
 
 const exitScene = async (ctx) => {
   ctx.scene.leave();
@@ -45,6 +46,10 @@ const checkUserScene = new Scenes.WizardScene(
 
     try {
       const dbUser = await usersConnector.getUserByPhone(phone);
+      console.log("user", dbUser);
+      const subscriptionUrl = await getSubscriptionUrlByPhone(phone);
+
+      console.log("subscriptionUrl", subscriptionUrl);
 
       if (!dbUser) {
         ctx.reply(`Пользователь с номером ${phone} отсутствует в БД`);
@@ -69,6 +74,10 @@ const checkUserScene = new Scenes.WizardScene(
 `,
         exitButton,
       );
+
+      if (subscriptionUrl) {
+        await ctx.reply(subscriptionUrl);
+      }
     } catch (error) {
       ctx.reply("Произошла ошибка при миграции пользователя");
       console.error(error);

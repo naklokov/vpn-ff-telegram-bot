@@ -75,10 +75,10 @@ const addVlessUser = async ({
   serverPrefix,
   expiryTime: inputExpiryTime,
 }) => {
-  const expiryTime = inputExpiryTime
+  const expiredDate = inputExpiryTime
     ? new Date(inputExpiryTime)
     : getExpiredDate();
-  const expiryTimeUnix = convertToUnixDate(new Date(expiryTime));
+  const expiryTimeUnix = convertToUnixDate(new Date(expiredDate));
   const inbounds = await getInbounds(serverPrefix);
   const { id } = inbounds?.[0] ?? {};
 

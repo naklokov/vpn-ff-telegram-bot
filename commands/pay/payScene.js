@@ -1,5 +1,10 @@
 const { Scenes, Markup } = require("telegraf");
-const { SCENE_IDS, USERS_TEXT, DEVELOPER_CONTACT } = require("../../constants");
+const {
+  SCENE_IDS,
+  USERS_TEXT,
+  DEVELOPER_CONTACT,
+  SUBSRIBE_COST,
+} = require("../../constants");
 const { usersConnector, paymentConnector } = require("../../db");
 const {
   getUserPersonalDataFromContext,
@@ -16,9 +21,9 @@ const {
 } = require("../../components/buttons");
 
 const PAYMENT_CALLBACK_QUERY = {
-  ONE: "1_200",
-  THREE: "3_500",
-  SIX: "6_900",
+  ONE: `1_${SUBSRIBE_COST[1]}`,
+  THREE: `3_${SUBSRIBE_COST[3]}`,
+  SIX: `6_${SUBSRIBE_COST[6]}`,
 };
 
 const exitScene = async (ctx) => {
@@ -58,10 +63,21 @@ const payScene = new Scenes.WizardScene(
       `🗓 Выберите количество месяцев для оплаты`,
       Markup.inlineKeyboard([
         [
-          Markup.button.callback("1 мес / 200₽", PAYMENT_CALLBACK_QUERY.ONE),
-          Markup.button.callback("3 мес / 500₽", PAYMENT_CALLBACK_QUERY.THREE),
+          Markup.button.callback(
+            `1 мес / ${SUBSRIBE_COST[1]}₽`,
+            PAYMENT_CALLBACK_QUERY.ONE,
+          ),
+          Markup.button.callback(
+            `3 мес / ${SUBSRIBE_COST[3]}₽`,
+            PAYMENT_CALLBACK_QUERY.THREE,
+          ),
         ],
-        [Markup.button.callback("6 мес / 900₽", PAYMENT_CALLBACK_QUERY.SIX)],
+        [
+          Markup.button.callback(
+            `6 мес / ${SUBSRIBE_COST[6]}₽`,
+            PAYMENT_CALLBACK_QUERY.SIX,
+          ),
+        ],
       ]),
     );
 
@@ -151,6 +167,7 @@ const payScene = new Scenes.WizardScene(
       await sendAdminPaymentInfo(isPayCorrect, ctx);
     } catch (error) {
       await handlePaymentError(ctx, error);
+      throw Error(error);
     } finally {
       await exitScene(ctx);
     }

@@ -7,19 +7,22 @@ const {
   PHONE_REGEXP,
   ADMIN_CHAT_ID,
   USERS_TEXT,
+  DEVELOPER_CONTACT,
 } = require("../../constants");
 const {
   getMainMenu,
   hideButtons,
   exitButtonScene,
 } = require("../../components/buttons");
-const { getSuccessReply } = require("./constants");
 const {
   getUserPersonalDataFromContext,
   generatePassword,
 } = require("../../utils/common");
-const { addVlessUser } = require("../../utils/vless");
 const { usersConnector } = require("../../db");
+const {
+  addRemnawaveUser,
+  getSubscriptionUrlByPhone,
+} = require("../../utils/remnawave");
 
 const exitScene = async (ctx) => {
   await ctx.scene.leave();
@@ -60,10 +63,29 @@ const registrationScene = new Scenes.WizardScene(
     }
 
     ctx.wizard.state.user.phone = ctx.message?.text;
-    const { chatId, phone } = ctx.wizard.state.user;
 
-    // Миграция на новый ВПН
-    ctx.wizard.state.user.isVless = true;
+    ctx.reply(
+      "Введите вашу электронную почту в формате: test@mail.ru",
+      exitButtonScene,
+    );
+    return ctx.wizard.next();
+  },
+  async (ctx) => {
+    if (!EMAIL_REGEXP.test(ctx?.message?.text)) {
+      ctx.reply(
+        "Введите корректную почту в формате: test@mail.ru",
+        exitButtonScene,
+      );
+      return;
+    }
+
+    if (!ctx.wizard.state?.user) {
+      await exitScene(ctx);
+      return;
+    }
+
+    ctx.wizard.state.user.email = ctx.message?.text;
+    const { chatId, phone } = ctx.wizard.state.user;
 
     const existedUserByPhone = await usersConnector.getUserByPhone(phone);
     const existedUserByChatId = await usersConnector.getUserByChatId(chatId);
@@ -93,22 +115,31 @@ const registrationScene = new Scenes.WizardScene(
     ctx.wizard.state.user.serverPrefix = serverPrefix;
 
     try {
-      await addVlessUser({
+      // Добавление пользователя в панель Remnawave вместо старой VLESS-панели
+      await addRemnawaveUser({
+        username: phone,
         chatId,
-        phone,
-        serverPrefix,
+        description: ctx.wizard.state.user.name,
+        email: ctx.wizard.state.user.email,
       });
     } catch (error) {
-      logger.error("Произошла ошибка при добавление на vless сервер", error);
+      logger.error(
+        "Произошла ошибка при добавлении пользователя в панель Remnawave",
+        error,
+      );
     }
 
     try {
       // добавление в БД
       await usersConnector.addUser(ctx.wizard.state.user);
 
-      await ctx.reply(getSuccessReply(), {
-        parse_mode: "MarkdownV2",
-      });
+      const subscriptionUrl = await getSubscriptionUrlByPhone(phone);
+      await ctx.reply("Вы успешно зарегистрированы!\n\n");
+      await ctx.reply(
+        "Для настройки VPN перейдите по ссылке ниже 👇👇👇\n" +
+          `${subscriptionUrl}`,
+      );
+      await ctx.reply(`Если возникнут вопросы, пишите 👉 ${DEVELOPER_CONTACT}`);
       logger.info(
         `Пользователь успешно добавлен ${ctx.wizard.state.user.phone}`,
       );

@@ -10,16 +10,15 @@ const {
   hideButtons,
   exitButtonScene,
 } = require("../../components/buttons");
-const {
-  addVlessUser,
-  updateVlessUser,
-  getVlessClient,
-} = require("../../utils/vless");
 const { usersConnector } = require("../../db");
 const {
-  convertToUnixDate,
   getUserPersonalDataFromContext,
+  getExpiredDate,
 } = require("../../utils/common");
+const {
+  addRemnawaveUser,
+  updateRemnawaveUserByPhone,
+} = require("../../utils/remnawave");
 
 const exitScene = async (ctx) => {
   ctx.scene.leave();
@@ -58,35 +57,33 @@ const migrateScene = new Scenes.WizardScene(
         return;
       }
 
-      // изменение типа пользователя в БД (мигрирован / не мигрирован)
+      // изменение типа пользователя в БД (мигрирован на Remnawave)
       await usersConnector.updateUserByPhone(phone, { isVless: true });
-      // добавление пользователя в консоль VPN
-      const expiryTime = convertToUnixDate(new Date(dbUser?.expiredDate));
-      const isVlessExist = await getVlessClient(
-        dbUser.phone,
-        dbUser.serverPrefix,
-      );
 
-      if (isVlessExist) {
-        await updateVlessUser({
-          chatId: dbUser.chatId,
-          phone: dbUser.phone,
-          serverPrefix: dbUser.serverPrefix,
-          expiryTime,
-        });
-      } else {
-        await addVlessUser({
-          chatId: dbUser.chatId,
-          phone: dbUser.phone,
-          serverPrefix: dbUser.serverPrefix,
-          expiryTime,
-        });
-      }
+      // добавление/обновление пользователя в Remnawave
+      const expiredDate = getExpiredDate(dbUser?.expiredDate);
 
-      if (isVlessExist) {
-        ctx.reply("Пользователь успешно изменён в x-ui");
-      } else {
-        ctx.reply("Пользователь успешно добавлен в x-ui");
+      try {
+        // сначала пробуем обновить пользователя по username (phone)
+        await updateRemnawaveUserByPhone(dbUser.phone, {
+          expireAt: expiredDate.toISOString(),
+        });
+        ctx.reply("Пользователь успешно обновлён в Remnawave");
+      } catch {
+        // если ошибка (например, нет такого пользователя) – пробуем создать
+        try {
+          await addRemnawaveUser({
+            username: dbUser.phone,
+            chatId: dbUser.chatId,
+            description: dbUser.name,
+            expireAt: expiredDate.toISOString(),
+            email: dbUser?.email,
+          });
+          ctx.reply("Пользователь успешно добавлен в Remnawave");
+        } catch (createError) {
+          ctx.reply("Произошла ошибка при миграции пользователя в Remnawave");
+          console.error("Remnawave migrate error:", createError);
+        }
       }
     } catch (error) {
       ctx.reply("Произошла ошибка при миграции пользователя");

@@ -5,6 +5,7 @@ const {
   ADMIN_CHAT_ID,
   USERS_TEXT,
   DEVELOPER_CONTACT,
+  REMNAWAVE_PREFIX,
 } = require("../../constants");
 const {
   getMainMenu,
@@ -12,10 +13,15 @@ const {
   exitButtonScene,
 } = require("../../components/buttons");
 const { usersConnector } = require("../../db");
-const { addVlessUser } = require("../../utils/vless");
 const logger = require("../../utils/logger");
-const { getUserPersonalDataFromContext } = require("../../utils/common");
-const dayjs = require("dayjs");
+const {
+  getUserPersonalDataFromContext,
+  getExpiredDate,
+} = require("../../utils/common");
+const {
+  addRemnawaveUser,
+  getSubscriptionUrlByPhone,
+} = require("../../utils/remnawave");
 
 const exitScene = async (ctx) => {
   await ctx.scene.leave();
@@ -67,22 +73,38 @@ const migrateToSlaveScene = new Scenes.WizardScene(
         serverPrefix: process?.env?.NEW_USER_SERVER_PREFIX,
       });
 
-      // Добавляем пользователя на новый сервер
-      const expiryTime = dayjs(dbUser.expiredDate).toDate();
-      await addVlessUser({
-        phone: dbUser.phone,
-        chatId: dbUser.chatId,
-        expiryTime: expiryTime,
-        serverPrefix: process?.env?.NEW_USER_SERVER_PREFIX,
-      });
+      const expiredDate = getExpiredDate(dbUser.expiredDate);
+
+      if (dbUser?.serverPrefix === REMNAWAVE_PREFIX) {
+        await ctx.reply("Пользователь уже добавлен в REMNAWAVE");
+        return;
+      }
+
+      // Добавляем/обновляем пользователя в Remnawave
+      try {
+        await addRemnawaveUser({
+          username: dbUser.phone,
+          chatId: dbUser.chatId,
+          description: dbUser.name,
+          expiredAt: expiredDate.toISOString(),
+          email: dbUser?.email,
+        });
+      } catch (createError) {
+        logger.error(
+          "Ошибка при миграции пользователя в Remnawave (migrateToSlave):",
+          createError,
+        );
+      }
 
       // Отправляем уведомление пользователю
       if (dbUser.chatId) {
+        const subscriptionUrl = await getSubscriptionUrlByPhone(dbUser.phone);
         await ctx.telegram.sendMessage(
           dbUser.chatId,
-          "🔄 Вы мигрированы на новый сервер!\n\n" +
-            "Просьба перейти на него в течение трёх дней.\n" +
-            "Для настройки выберите пункт '📖 Настройка VPN' в главном меню.\n\n" +
+          "Доброго времени суток!\n\n" +
+            "Перенёс вас на новый сервер, вам необходимо обновить настройки\n" +
+            "Как это сделать описано по ссылке ниже 👇👇👇\n" +
+            `${subscriptionUrl}\n\n` +
             "Если у вас возникли вопросы, пишите 👉 " +
             DEVELOPER_CONTACT,
         );
