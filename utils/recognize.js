@@ -49,7 +49,6 @@ const checkPaymentPdf = async (amount, ctx) => {
 const checkPayment = async (amount, ctx) => {
   // проверяем если приложен документ
   if (ctx?.message?.document) {
-    console.log(amount);
     const { document } = ctx?.message ?? {};
     if (document?.mime_type === MIME_TYPES.PDF) {
       const isPayPdfCorrect = await checkPaymentPdf(amount, ctx);
