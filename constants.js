@@ -68,7 +68,7 @@ const EMAIL_REGEXP =
 
 const PHONE_REGEXP = /^7[0-9]{10}$/i;
 
-const FREE_PERIOD_DAYS = 7;
+const FREE_PERIOD_DAYS = 3;
 
 const SECRET_ROW_REGEXP = /^(.+) : EAP "(.+)"$/i;
 
