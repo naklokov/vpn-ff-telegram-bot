@@ -1,15 +1,17 @@
 const axios = require("axios");
 const logger = require("../utils/logger");
-const { VPN_SERVER_URL, VPN_SERVER_API_TOKEN } = process.env;
+const { VPN_SERVER_URL, API_TOKEN } = process.env;
 
-if (!VPN_SERVER_URL || !VPN_SERVER_API_TOKEN) {
-  throw new Error("VPN_SERVER_URL и VPN_SERVER_API_TOKEN должны быть заданы в .env");
+if (!VPN_SERVER_URL || !API_TOKEN) {
+  throw new Error(
+    "VPN_SERVER_URL и API_TOKEN (или VPN_SERVER_API_TOKEN) должны быть заданы в .env",
+  );
 }
 
 const serverClient = axios.create({
   baseURL: VPN_SERVER_URL,
   headers: {
-    "x-api-token": VPN_SERVER_API_TOKEN,
+    "x-api-token": API_TOKEN,
     Accept: "application/json",
   },
   timeout: 20000,
