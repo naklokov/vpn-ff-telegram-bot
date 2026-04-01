@@ -1,6 +1,6 @@
 require("dotenv").config();
 const { getInbounds } = require("../api/vless");
-const { usersConnector } = require("../db");
+const { usersConnector } = require("../server");
 const { generatePassword } = require("../utils/common");
 // const { secretsFileToUsers } = require("../utils/secrets");
 

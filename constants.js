@@ -6,9 +6,9 @@ const USERS_TEXT = {
   selectActions: "Выберите действиe: ",
   pay: "💰 Оплата",
   info: "ℹ️ Тарифы и условия",
-  instructions: "📖 Настройка VPN",
+  instructions: "❔ Как подключиться к VPN",
   referral: "🎁 Бонусная программа",
-  status: "❔ Статус подключения",
+  status: "Статус подключения",
   help: "🆘 Помощь",
   registration: "📝 Регистрация",
 

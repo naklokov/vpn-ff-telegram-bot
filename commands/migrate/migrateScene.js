@@ -10,7 +10,7 @@ const {
   hideButtons,
   exitButtonScene,
 } = require("../../components/buttons");
-const { usersConnector } = require("../../db");
+const { usersConnector } = require("../../server");
 const {
   getUserPersonalDataFromContext,
   getExpiredDate,

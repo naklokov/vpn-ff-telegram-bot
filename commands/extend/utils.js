@@ -1,4 +1,4 @@
-const { usersConnector } = require("../../db");
+const { usersConnector } = require("../../server");
 const dayjs = require("dayjs");
 const { updateVlessUser } = require("../../utils/vless");
 const { convertToUnixDate, getExpiredDate } = require("../../utils/common");

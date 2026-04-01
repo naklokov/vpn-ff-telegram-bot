@@ -1,5 +1,5 @@
 const cron = require("node-cron");
-const { usersConnector } = require("../../db");
+const { usersConnector } = require("../../server");
 const { usersToSecretsFile } = require("../secrets");
 const { restartService } = require("../../scripts/restart-service");
 const logger = require("../logger");

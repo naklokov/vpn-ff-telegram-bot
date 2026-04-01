@@ -3,7 +3,7 @@ const {
   IOS_INSTRUCTIONS_LINK,
   ANDROID_INSTRUCTIONS_LINK,
 } = require("../../../constants");
-const { usersConnector } = require("../../../db");
+const { usersConnector } = require("../../../server");
 const { getUserPersonalDataFromContext } = require("../../../utils/common");
 const { getVlessConnectionString } = require("../../../utils/vless");
 

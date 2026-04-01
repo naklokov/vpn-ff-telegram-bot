@@ -1,6 +1,6 @@
-var Tesseract = require("tesseract.js");
+const axios = require("axios");
 const logger = require("./logger");
-const { getTextFromPDF } = require("./common");
+const { paymentConnector } = require("../server");
 
 const MIME_TYPES = {
   PDF: "application/pdf",
@@ -11,14 +11,9 @@ const getFilePath = async (fileId, ctx) => {
   return href;
 };
 
-const checkRegexpAmount = (text, amount) => {
-  const amountRegExp = new RegExp(`(${amount})[\\s|.|,]{1}`);
-  return amountRegExp.test(text);
-};
-
-const checkRecognizedImage = async (amount, filePath) => {
-  const recognizedRus = await Tesseract.recognize(filePath, "rus");
-  return checkRegexpAmount(recognizedRus?.data?.text ?? "", amount);
+const getFileBase64ByUrl = async (url) => {
+  const { data } = await axios.get(url, { responseType: "arraybuffer" });
+  return Buffer.from(data).toString("base64");
 };
 
 const checkPaymentPhoto = async (amount, ctx) => {
@@ -26,7 +21,12 @@ const checkPaymentPhoto = async (amount, ctx) => {
     const fileId =
       ctx?.message?.photo?.[ctx?.message?.photo.length - 1]?.file_id;
     const filePath = await getFilePath(fileId, ctx);
-    const isPayCorrect = await checkRecognizedImage(amount, filePath);
+    const fileBase64 = await getFileBase64ByUrl(filePath);
+    const isPayCorrect = await paymentConnector.checkPayment({
+      amount,
+      fileBase64,
+      mimeType: "image/jpeg",
+    });
     return isPayCorrect;
   } catch (error) {
     logger.error("Произошла ошибка при обработке изображения", error);
@@ -38,8 +38,12 @@ const checkPaymentPdf = async (amount, ctx) => {
   const { document } = ctx?.message ?? {};
   try {
     const filePath = await getFilePath(document?.file_id, ctx);
-    const stringParts = await getTextFromPDF(filePath);
-    return checkRegexpAmount(stringParts.join(" "), amount);
+    const fileBase64 = await getFileBase64ByUrl(filePath);
+    return await paymentConnector.checkPayment({
+      amount,
+      fileBase64,
+      mimeType: MIME_TYPES.PDF,
+    });
   } catch (error) {
     logger.error("Произошла ошибка при обработке PDF", error);
     return false;

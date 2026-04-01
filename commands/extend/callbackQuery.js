@@ -2,7 +2,7 @@ const {
   CALLBACK_QUERY_DATA_DELIMETER,
   CALLBACK_QUERY_DATA,
 } = require("../../constants");
-const { getUserByChatId } = require("../../db/users");
+const { getUserByChatId } = require("../../server/users");
 const { extendUser } = require("./utils");
 const logger = require("../../utils/logger");
 

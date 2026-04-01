@@ -11,7 +11,7 @@ const {
   exitButtonScene,
   exitButton,
 } = require("../../components/buttons");
-const { usersConnector } = require("../../db");
+const { usersConnector } = require("../../server");
 const { getUserPersonalDataFromContext } = require("../../utils/common");
 const dayjs = require("dayjs");
 const { getSubscriptionUrlByPhone } = require("../../utils/remnawave");

@@ -1,6 +1,6 @@
 // const { exitButton } = require("../../components/buttons");
 // const { CALLBACK_QUERY_DATA } = require("../../constants");
-const { usersConnector } = require("../../db");
+const { usersConnector } = require("../../server");
 const { getUserPersonalDataFromContext } = require("../../utils/common");
 const vless = require("./vless");
 const remnawave = require("./remnawave");

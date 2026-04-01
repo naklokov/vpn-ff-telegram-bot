@@ -1,5 +1,5 @@
 const cron = require("node-cron");
-const { usersConnector } = require("../../db");
+const { usersConnector } = require("../../server");
 const dayjs = require("dayjs");
 
 const logger = require("../logger");

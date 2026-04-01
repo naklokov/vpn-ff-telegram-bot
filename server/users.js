@@ -1,41 +1,28 @@
-const mongoose = require("mongoose");
-const {
-  getExpiredDateIso,
-  getRegistrationDateIso,
-} = require("../utils/common");
-const { VPN_DB_CONNECTION } = require("../constants");
-
+const axios = require("axios");
 const logger = require("../utils/logger");
+const { VPN_SERVER_URL, VPN_SERVER_API_TOKEN } = process.env;
 
-const userScheme = new mongoose.Schema({
-  chatId: { type: Number },
-  name: String,
-  email: String,
-  phone: { type: String, required: true },
-  registrationDate: {
-    type: String,
-    default: getRegistrationDateIso,
-    required: true,
+if (!VPN_SERVER_URL || !VPN_SERVER_API_TOKEN) {
+  throw new Error(
+    "VPN_SERVER_URL и VPN_SERVER_API_TOKEN должны быть заданы в .env",
+  );
+}
+
+const serverClient = axios.create({
+  baseURL: VPN_SERVER_URL,
+  headers: {
+    "x-api-token": VPN_SERVER_API_TOKEN,
+    Accept: "application/json",
   },
-  expiredDate: {
-    type: String,
-    default: getExpiredDateIso,
-  },
-  password: { type: String, required: true },
-  isActive: { type: Boolean, default: true },
-  isVless: { type: Boolean, default: true },
-  referralUserLogin: { type: String },
-  serverPrefix: { type: String, default: "" },
+  timeout: 15000,
 });
 
-const User = mongoose.model("User", userScheme);
-
 const addUser = async (user) => {
-  const newUser = new User(user);
   try {
-    await mongoose.connect(VPN_DB_CONNECTION);
-    await newUser.save();
+    console.log("user", user);
+    const { data } = await serverClient.post("/api/users", user);
     logger.info(`Пользователь добавлен в БД ${user.phone}`);
+    return data;
   } catch (error) {
     logger.info(
       `Произошла ошибка при добавлении пользователя в БД ${user.phone}: ${error}`,
@@ -46,9 +33,8 @@ const addUser = async (user) => {
 
 const getUsers = async () => {
   try {
-    await mongoose.connect(VPN_DB_CONNECTION);
-    const users = User.find({});
-    return users;
+    const { data } = await serverClient.get("/api/users");
+    return data;
   } catch (error) {
     logger.error(`Произошла ошибка при получении пользователей из БД`);
     throw Error(error);
@@ -57,10 +43,14 @@ const getUsers = async () => {
 
 const getUserByChatId = async (chatId) => {
   try {
-    await mongoose.connect(VPN_DB_CONNECTION);
-    const user = User.findOne({ chatId });
-    return user;
+    const { data } = await serverClient.get(
+      `/api/users/chat/${encodeURIComponent(chatId)}`,
+    );
+    return data;
   } catch (error) {
+    if (axios.isAxiosError(error) && error.response?.status === 404) {
+      return null;
+    }
     logger.error(
       `Произошла ошибка при получении пользователя по chatId ${chatId}`,
     );
@@ -70,10 +60,14 @@ const getUserByChatId = async (chatId) => {
 
 const getUserByPhone = async (phone) => {
   try {
-    await mongoose.connect(VPN_DB_CONNECTION);
-    const user = User.findOne({ phone });
-    return user;
+    const { data } = await serverClient.get(
+      `/api/users/phone/${encodeURIComponent(phone)}`,
+    );
+    return data;
   } catch (error) {
+    if (axios.isAxiosError(error) && error.response?.status === 404) {
+      return null;
+    }
     logger.error(
       `Произошла ошибка при получении пользователя по телефону ${phone}`,
     );
@@ -83,8 +77,13 @@ const getUserByPhone = async (phone) => {
 
 const deleteUser = async (userId) => {
   try {
-    await mongoose.connect(VPN_DB_CONNECTION);
-    await User.deleteOne({ id: userId });
+    const user = await getUserByChatId(userId);
+    if (!user?.phone) {
+      return;
+    }
+    await serverClient.patch(`/api/users/${encodeURIComponent(user.phone)}`, {
+      isActive: false,
+    });
   } catch (error) {
     logger.error(
       `Произошла ошибка при удалении пользователя по телефону ${userId}`,
@@ -95,8 +94,15 @@ const deleteUser = async (userId) => {
 
 const updateUserById = async (userId, user) => {
   try {
-    await mongoose.connect(VPN_DB_CONNECTION);
-    await User.updateOne({ id: userId }, { ...user });
+    const dbUser = await getUserByChatId(userId);
+    if (!dbUser?.phone) {
+      return null;
+    }
+    const { data } = await serverClient.patch(
+      `/api/users/${encodeURIComponent(dbUser.phone)}`,
+      { ...user },
+    );
+    return data;
   } catch (error) {
     logger.error(
       `Произошла ошибка при обновлении пользователя по id ${userId}`,
@@ -107,8 +113,11 @@ const updateUserById = async (userId, user) => {
 
 const updateUserByPhone = async (phone, user) => {
   try {
-    await mongoose.connect(VPN_DB_CONNECTION);
-    await User.updateOne({ phone }, { ...user });
+    const { data } = await serverClient.patch(
+      `/api/users/${encodeURIComponent(phone)}`,
+      { ...user },
+    );
+    return data;
   } catch (error) {
     logger.error(
       `Произошла ошибка при обновлении пользователя по телефону ${phone}`,
