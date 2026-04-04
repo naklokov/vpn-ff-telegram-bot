@@ -1,7 +1,7 @@
 const { Markup } = require("telegraf");
 const { CMD, USERS_TEXT, ADMIN_CHAT_ID } = require("../constants");
 const { getUserPersonalDataFromContext } = require("../utils/common");
-const { usersConnector } = require("../db");
+const { usersConnector } = require("../server");
 
 const exitButtonScene = Markup.keyboard([[USERS_TEXT.exitScene]]).resize();
 

@@ -1,6 +1,6 @@
 const { exitButton } = require("../../components/buttons");
 const { DEVELOPER_CONTACT } = require("../../constants");
-const { usersConnector } = require("../../db");
+const { usersConnector } = require("../../server");
 const { getUserPersonalDataFromContext } = require("../../utils/common");
 
 module.exports = async (ctx) => {

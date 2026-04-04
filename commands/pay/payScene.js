@@ -5,7 +5,7 @@ const {
   DEVELOPER_CONTACT,
   SUBSRIBE_COST,
 } = require("../../constants");
-const { usersConnector, paymentConnector } = require("../../db");
+const { usersConnector, paymentConnector } = require("../../server");
 const {
   getUserPersonalDataFromContext,
   isMenuCommand,
@@ -14,6 +14,7 @@ const { sendAdminPaymentInfo } = require("./utils");
 const { extendUser } = require("../extend/utils");
 const { checkPayment } = require("../../utils/recognize");
 const logger = require("../../utils/logger");
+const { withClientWaiting } = require("../../utils/client-waiting");
 const {
   exitButtonScene,
   getMainMenu,
@@ -140,6 +141,14 @@ const payScene = new Scenes.WizardScene(
     const { id: chatId } = getUserPersonalDataFromContext(ctx);
     const dbUser = await usersConnector.getUserByChatId(chatId);
 
+    if (!dbUser) {
+      await ctx.reply(
+        "Пользователь не найден. Попробуйте зарегистрироваться заново.",
+      );
+      await exitScene(ctx);
+      return;
+    }
+
     ctx.wizard.state.extend.login = dbUser.phone;
 
     const period = ctx.wizard.state?.extend?.months ?? 0;
@@ -155,14 +164,20 @@ const payScene = new Scenes.WizardScene(
     }
 
     try {
-      await extendUser(dbUser.phone, period, ctx);
-      await paymentConnector.savePayment({
-        chatId,
-        period,
-        amount,
-        phone: dbUser.phone,
-        date: new Date().toISOString(),
-      });
+      await withClientWaiting(
+        ctx,
+        "⏳ Подтверждаю оплату и продлеваю подписку...",
+        async () => {
+          await extendUser(dbUser.phone, period, ctx);
+          await paymentConnector.savePayment({
+            chatId,
+            period,
+            amount,
+            phone: dbUser.phone,
+            date: new Date().toISOString(),
+          });
+        },
+      );
       // дублирование сообщения админу об оплате
       await sendAdminPaymentInfo(isPayCorrect, ctx);
     } catch (error) {

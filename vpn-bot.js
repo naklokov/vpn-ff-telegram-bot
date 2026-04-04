@@ -1,4 +1,4 @@
-const { Telegraf, Scenes, session } = require("telegraf");
+const { Telegraf, Scenes, session, Markup } = require("telegraf");
 const logger = require("./utils/logger");
 
 const startCommand = require("./commands/start");
@@ -40,6 +40,25 @@ const {
 } = require("./commands/extend/callbackQuery");
 const { hideButtons, getMainMenu } = require("./components/buttons");
 const { getUserPersonalDataFromContext } = require("./utils/common");
+
+const MAIN_MENU_HINT_TEXT =
+  "Для оплаты VPN выберите «Оплату», а для технической поддержки — «Помощь».";
+
+const mainMenuHintKeyboard = Markup.inlineKeyboard([
+  [
+    Markup.button.callback(USERS_TEXT.pay, CMD.pay),
+    Markup.button.callback(USERS_TEXT.help, CMD.help),
+  ],
+]).resize();
+
+const isOutsideScene = (ctx) => !ctx.scene?.current;
+
+const replyMainMenuHintIfIdle = async (ctx) => {
+  if (!isOutsideScene(ctx)) {
+    return;
+  }
+  await ctx.reply(MAIN_MENU_HINT_TEXT, mainMenuHintKeyboard);
+};
 
 const bot = new Telegraf(process.env.BOT_TOKEN, { handlerTimeout: 20000 });
 
@@ -91,6 +110,33 @@ const setupBot = () => {
     instructionsCallbackQuery(ctx, queryData);
     extendOnErrorCallbackQuery(ctx, queryData);
   });
+
+  bot.on("text", async (ctx) => {
+    if (!isOutsideScene(ctx)) {
+      return;
+    }
+
+    const text = ctx.message?.text ?? "";
+    if (text.startsWith("/")) {
+      return;
+    }
+
+    const isBotCommand = ctx.message?.entities?.some(
+      (entity) => entity.type === "bot_command",
+    );
+    if (isBotCommand) {
+      return;
+    }
+
+    await replyMainMenuHintIfIdle(ctx);
+  });
+
+  bot.on(
+    ["document", "photo", "video", "audio", "voice", "animation"],
+    async (ctx) => {
+      await replyMainMenuHintIfIdle(ctx);
+    },
+  );
 
   return bot;
 };

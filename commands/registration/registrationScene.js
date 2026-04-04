@@ -18,11 +18,9 @@ const {
   getUserPersonalDataFromContext,
   generatePassword,
 } = require("../../utils/common");
-const { usersConnector } = require("../../db");
-const {
-  addRemnawaveUser,
-  getSubscriptionUrlByPhone,
-} = require("../../utils/remnawave");
+const { usersConnector } = require("../../server");
+const { getSubscriptionUrlByPhone } = require("../../utils/remnawave");
+const { withClientWaiting } = require("../../utils/client-waiting");
 
 const exitScene = async (ctx) => {
   await ctx.scene.leave();
@@ -115,25 +113,14 @@ const registrationScene = new Scenes.WizardScene(
     ctx.wizard.state.user.serverPrefix = serverPrefix;
 
     try {
-      // Добавление пользователя в панель Remnawave вместо старой VLESS-панели
-      await addRemnawaveUser({
-        username: phone,
-        chatId,
-        description: ctx.wizard.state.user.name,
-        email: ctx.wizard.state.user.email,
-      });
-    } catch (error) {
-      logger.error(
-        "Произошла ошибка при добавлении пользователя в панель Remnawave",
-        error,
+      const subscriptionUrl = await withClientWaiting(
+        ctx,
+        "⏳ Регистрирую вас в системе и подготавливаю доступ...",
+        async () => {
+          await usersConnector.addUser(ctx.wizard.state.user);
+          return getSubscriptionUrlByPhone(phone);
+        },
       );
-    }
-
-    try {
-      // добавление в БД
-      await usersConnector.addUser(ctx.wizard.state.user);
-
-      const subscriptionUrl = await getSubscriptionUrlByPhone(phone);
       await ctx.reply("Вы успешно зарегистрированы!\n\n");
       await ctx.reply(
         "Для настройки VPN перейдите по ссылке ниже 👇👇👇\n" +

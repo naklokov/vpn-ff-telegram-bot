@@ -3,14 +3,16 @@
 1. clone this repo
 2. run `npm install`
 3. Create your bot in http://t.me/BotFather
-4. Install mongodb on your server
+4. Run `vpn-ff-server` and get API token
 5. Create .env file in main directory
 
 ```
 # your personal telegrambot token
 BOT_TOKEN=[TELEGRAM_BOT_TOKEN]
-# mongodb connection string
-MONGO_URL="mongodb://127.0.0.1:27017/"
+# vpn-ff-server URL
+VPN_SERVER_URL="http://127.0.0.1:3000"
+# vpn-ff-server x-api-token
+VPN_SERVER_API_TOKEN="your-api-token"
 # your contact
 DEVELOPER_CONTACT="@your"
 # file path to secrets file

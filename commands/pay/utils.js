@@ -4,7 +4,7 @@ const {
   CALLBACK_QUERY_DATA,
 } = require("../../constants");
 const { getUserPersonalDataFromContext } = require("../../utils/common");
-const { usersConnector } = require("../../db");
+const { usersConnector } = require("../../server");
 
 const sendAdminPaymentInfo = async (isPayCorrect, ctx) => {
   const { id: chatId } = getUserPersonalDataFromContext(ctx);

@@ -1,6 +1,6 @@
 const cron = require("node-cron");
 const dayjs = require("dayjs");
-const { usersConnector } = require("../../db");
+const { usersConnector } = require("../../server");
 const { ADMIN_CHAT_ID } = require("../../constants");
 
 const logger = require("../logger");
