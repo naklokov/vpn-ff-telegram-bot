@@ -9,11 +9,11 @@ module.exports = async (ctx) => {
 
   if (dbUser) {
     await ctx.reply(
-      `Если у вас возникли проблемы с подключением VPN, то посмотрите информацию из статьи ниже:\nhttps://naklokov.yonote.ru/doc/ne-rabotaet-vpn-lgXCDKbWlQ`,
+      `Если у вас возникли проблемы с подключением VPN, то посмотрите информацию из статьи ниже:\nhttps://naklokov.yonote.ru/share/95d8eb4c-7478-40a4-a674-d69429c7eb6a`,
     );
 
     await ctx.reply(
-      `\nЕсли вы оплатили подписку, но не можете подключиться, то посмотрите информацию из статьи ниже:\nhttps://naklokov.yonote.ru/doc/podpiska-okonchilas-zneDyM5lGo#b_91853_4cfea05a6980`,
+      `\nЕсли вы оплатили подписку, но не можете подключиться, то посмотрите информацию из статьи ниже:\nhttps://naklokov.yonote.ru/share/39f0bc0e-481f-4fe4-8485-51fb51b6e00e`,
     );
 
     await ctx.reply(
