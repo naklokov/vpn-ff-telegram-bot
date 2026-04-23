@@ -145,8 +145,6 @@ async function getSubscriptionUrlByPhone(phone) {
       },
     );
 
-    console.log(data);
-
     const isFound = data?.response?.isFound;
     const subscriptionUrl = data?.response?.subscriptionUrl || null;
 

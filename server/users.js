@@ -19,7 +19,6 @@ const serverClient = axios.create({
 
 const addUser = async (user) => {
   try {
-    console.log("user", user);
     const { data } = await serverClient.post("/api/users", user);
     logger.info(`Пользователь добавлен в БД ${user.phone}`);
     return data;
