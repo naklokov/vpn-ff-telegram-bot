@@ -1,6 +1,7 @@
 const { usersConnector } = require("../../server");
 const { getUserPersonalDataFromContext } = require("../../utils/common");
 const { exitButton } = require("../../components/buttons");
+const { buildRegistrationUrl } = require("../../utils/registration-link");
 
 module.exports = async (ctx) => {
   const { id: chatId } = getUserPersonalDataFromContext(ctx);
@@ -23,8 +24,8 @@ module.exports = async (ctx) => {
   );
 
   await ctx.reply(
-    `Держи крутой ВПН 😉
-https://t.me/friendly_vpn_ff_bot?start=${user.phone}`,
+    `Держи ссылку на регистрацию 😉
+${buildRegistrationUrl(String(user.phone).replace(/\D/g, ""))}`,
     exitButton,
   );
 };

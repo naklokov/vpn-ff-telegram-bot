@@ -1,3 +1,10 @@
-const { SCENE_IDS } = require("../../constants");
+const { exitButton } = require("../../components/buttons");
+const { buildRegistrationUrl } = require("../../utils/registration-link");
 
-module.exports = (ctx) => ctx.scene.enter(SCENE_IDS.REGISTRATION);
+module.exports = async (ctx) => {
+  const registrationUrl = buildRegistrationUrl();
+  await ctx.reply(
+    `Для регистрации откройте страницу:\n${registrationUrl}`,
+    exitButton,
+  );
+};
