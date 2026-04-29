@@ -13,7 +13,7 @@ const {
   getMainMenu,
 } = require("../../components/buttons");
 
-const FAIL_MESSAGE = `Вы уже заведены в системе, проверьте правильность введённых данных или обратитесь в поддержку ${DEVELOPER_CONTACT}`;
+const FAIL_MESSAGE = `Проверьте что вы правильно ввели свой email, если у вас есть проблемы, обратитесь в поддержку ${DEVELOPER_CONTACT}`;
 
 const bindEmailScene = new Scenes.WizardScene(
   SCENE_IDS.BIND_EMAIL,
