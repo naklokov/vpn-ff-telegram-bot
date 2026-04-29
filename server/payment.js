@@ -32,7 +32,8 @@ const savePayment = async ({ chatId, period, amount, phone, date }) => {
     logger.info(
       `Произошла ошибка при добавлении платежа в БД ${phone}: ${error}`,
     );
-    throw error;
+    const serverMessage = error?.response?.data?.message;
+    throw new Error(serverMessage || "Ошибка при добавлении платежа");
   }
 };
 
@@ -44,13 +45,19 @@ const checkPayment = async ({ amount, fileBase64, mimeType }) => {
       mimeType,
     });
 
-    if (typeof data === "boolean") {
-      return data;
-    }
-
-    return Boolean(data?.isPayCorrect);
+    return Boolean(data?.result);
   } catch (error) {
     logger.info(`Произошла ошибка при проверке платежа: ${error}`);
+    throw error;
+  }
+};
+
+const getPayments = async () => {
+  try {
+    const { data } = await serverClient.get("/api/payments");
+    return Array.isArray(data) ? data : [];
+  } catch (error) {
+    logger.info(`Произошла ошибка при получении платежей: ${error}`);
     throw error;
   }
 };
@@ -58,4 +65,5 @@ const checkPayment = async ({ amount, fileBase64, mimeType }) => {
 module.exports = {
   savePayment,
   checkPayment,
+  getPayments,
 };

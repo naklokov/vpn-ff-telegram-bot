@@ -10,9 +10,10 @@ const {
   hideButtons,
   exitButtonScene,
 } = require("../../components/buttons");
-const { extendUser } = require("./utils");
 const logger = require("../../utils/logger");
 const { getUserPersonalDataFromContext } = require("../../utils/common");
+const { normalizeRuPhoneToMsisdn } = require("../../utils/phone");
+const { usersConnector } = require("../../server");
 
 const exitScene = async (ctx) => {
   await ctx.scene.leave();
@@ -36,8 +37,8 @@ const extendScene = new Scenes.WizardScene(
   async (ctx) => {
     // инициализация формы пользователя
     ctx.wizard.state.extend = {};
-    const userPhone = ctx.message.text;
-    if (!PHONE_REGEXP.test(userPhone)) {
+    const userPhone = normalizeRuPhoneToMsisdn(ctx.message?.text);
+    if (!userPhone || !PHONE_REGEXP.test(userPhone)) {
       ctx.reply("Логин введён некорректно", exitButtonScene);
       return;
     }
@@ -61,12 +62,15 @@ const extendScene = new Scenes.WizardScene(
         throw Error("Некорректные данные для продления периода");
       }
 
-      // продление пользователя в БД и ВПН сервере
-      await extendUser(phone, months, ctx);
-
-      // проверяем рефералку (если пользователь зарегистрирован менее месяца назад) и продлеваем
+      // Продление полностью выполняется на сервере.
+      await usersConnector.extendUserByPhone(phone, months);
+      await ctx.reply(`Пользователь ${phone} успешно продлён на ${months} мес`);
     } catch (error) {
-      ctx.reply("Произошла ошибка при продлении периода");
+      const message =
+        error instanceof Error && error.message
+          ? error.message
+          : "Произошла ошибка при продлении периода";
+      ctx.reply(message);
       logger.error("Произошла ошибка при продлении периода");
       throw Error(error);
     } finally {

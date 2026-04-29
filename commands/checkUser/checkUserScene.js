@@ -15,6 +15,7 @@ const { usersConnector } = require("../../server");
 const { getUserPersonalDataFromContext } = require("../../utils/common");
 const dayjs = require("dayjs");
 const { getSubscriptionUrlByPhone } = require("../../utils/remnawave");
+const { normalizeRuPhoneToMsisdn } = require("../../utils/phone");
 
 const exitScene = async (ctx) => {
   ctx.scene.leave();
@@ -38,18 +39,18 @@ const checkUserScene = new Scenes.WizardScene(
     return ctx.wizard.next();
   },
   async (ctx) => {
-    const phone = ctx.message?.text;
-    if (!PHONE_REGEXP.test(phone)) {
+    const normalizedPhone = normalizeRuPhoneToMsisdn(ctx.message?.text);
+    if (!normalizedPhone || !PHONE_REGEXP.test(normalizedPhone)) {
       ctx.reply("Логин введён некорректно", exitButtonScene);
       return;
     }
 
     try {
-      const dbUser = await usersConnector.getUserByPhone(phone);
-      const subscriptionUrl = await getSubscriptionUrlByPhone(phone);
+      const dbUser = await usersConnector.getUserByPhone(normalizedPhone);
+      const subscriptionUrl = await getSubscriptionUrlByPhone(normalizedPhone);
 
       if (!dbUser) {
-        ctx.reply(`Пользователь с номером ${phone} отсутствует в БД`);
+        ctx.reply(`Пользователь с номером ${normalizedPhone} отсутствует в БД`);
         await exitScene(ctx);
         return;
       }

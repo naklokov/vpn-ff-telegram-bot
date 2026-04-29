@@ -2,8 +2,7 @@ const {
   CALLBACK_QUERY_DATA_DELIMETER,
   CALLBACK_QUERY_DATA,
 } = require("../../constants");
-const { getUserByChatId } = require("../../server/users");
-const { extendUser } = require("./utils");
+const { getUserByChatId, extendUserByPhone } = require("../../server/users");
 const logger = require("../../utils/logger");
 
 const extendOnErrorCallbackQuery = async (ctx, queryData) => {
@@ -14,9 +13,14 @@ const extendOnErrorCallbackQuery = async (ctx, queryData) => {
     if (chatId) {
       const dbUser = await getUserByChatId(chatId);
       try {
-        await extendUser(dbUser.phone, months, ctx);
+        await extendUserByPhone(dbUser.phone, Number(months));
+        await ctx.reply(`Пользователь ${dbUser.phone} успешно продлён на ${months} мес`);
       } catch (error) {
-        ctx.reply("Произошла ошибка при продлении периода");
+        const message =
+          error instanceof Error && error.message
+            ? error.message
+            : "Произошла ошибка при продлении периода";
+        ctx.reply(message);
         logger.error("Произошла ошибка при продлении периода");
         throw Error(error);
       }

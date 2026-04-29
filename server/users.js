@@ -142,6 +142,21 @@ const updateUserByPhone = async (phone, user) => {
   }
 };
 
+const extendUserByPhone = async (phone, months) => {
+  try {
+    const { data } = await serverClient.post(
+      `/api/users/${encodeURIComponent(phone)}/extend`,
+      { months },
+    );
+    return data;
+  } catch (error) {
+    logger.error(
+      `Произошла ошибка при продлении пользователя по телефону ${phone}`,
+    );
+    throw Error(error?.response?.data?.message || error);
+  }
+};
+
 module.exports = {
   addUser,
   deleteUser,
@@ -151,4 +166,5 @@ module.exports = {
   getUserByChatId,
   getUserByPhone,
   getUserByEmail,
+  extendUserByPhone,
 };

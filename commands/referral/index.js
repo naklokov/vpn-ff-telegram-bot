@@ -15,19 +15,20 @@ module.exports = async (ctx) => {
   }
 
   await ctx.replyWithMarkdown(
-    `Перешли ссылку ниже другу и получи месяц ВПН бесплатно!
+    `Перешли ссылку ниже другому человеку и получи месяц ВПН бесплатно!
 
 Если зарегистрированный по ссылке пользователь продолжит использование ВПН после бесплатного периода, то ты автоматически получишь продление на месяц *бесплатно*!
 
-Сообщение ниже можно переслать 👇
+Отправь ссылку ниже другому человеку 👇👇👇
 `,
   );
 
-  await ctx.reply(
-    `Держи ссылку на регистрацию 😉
-${buildRegistrationUrl({
-  referralUserLogin: String(user.phone).replace(/\D/g, ""),
-})}`,
-    exitButton,
-  );
+  const referralUrl = buildRegistrationUrl({
+    referralUserLogin: String(user.phone).replace(/\D/g, ""),
+  });
+
+  await ctx.replyWithHTML(`<a href="${referralUrl}">${referralUrl}</a>`, {
+    ...exitButton,
+    link_preview_options: { is_disabled: false },
+  });
 };

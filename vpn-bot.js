@@ -35,6 +35,9 @@ const {
   runPaymentNotificationSheduler,
 } = require("./utils/shedulers/paymentNotification");
 const {
+  runDailyPaymentsReportSheduler,
+} = require("./utils/shedulers/dailyPaymentsReport");
+const {
   runToogleUserStatusSheduler,
 } = require("./utils/shedulers/toogleUserStatus");
 const {
@@ -69,6 +72,8 @@ const setupBot = () => {
   runBackupSheduller(bot);
   // ежедневное напоминание об оплате за 2 дня
   runPaymentNotificationSheduler(bot);
+  // ежедневный отчёт по оплатам за прошедшие сутки (админу)
+  runDailyPaymentsReportSheduler(bot);
   // выставление признака активный/неактивный пользователь
   runToogleUserStatusSheduler("0 * * * *");
 

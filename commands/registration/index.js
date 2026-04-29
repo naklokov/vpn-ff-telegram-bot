@@ -5,8 +5,11 @@ const { getUserPersonalDataFromContext } = require("../../utils/common");
 module.exports = async (ctx) => {
   const { id: chatId } = getUserPersonalDataFromContext(ctx);
   const registrationUrl = buildRegistrationUrl({ chatId });
-  await ctx.reply(
-    `Для регистрации откройте страницу:\n${registrationUrl}`,
-    exitButton,
+  await ctx.replyWithHTML(
+    `Для регистрации откройте страницу:\n<a href="${registrationUrl}">${registrationUrl}</a>`,
+    {
+      ...exitButton,
+      link_preview_options: { is_disabled: false },
+    },
   );
 };

@@ -20,6 +20,20 @@ const buildRegistrationUrl = (params = {}) => {
   return url.toString();
 };
 
+const buildPaymentUrl = (params = {}) => {
+  const { phone } = params;
+  const baseUrl = getRegisterPageBaseUrl();
+  const url = new URL(baseUrl);
+  url.pathname = "/payment";
+
+  if (phone) {
+    url.searchParams.set("phone", phone);
+  }
+
+  return url.toString();
+};
+
 module.exports = {
   buildRegistrationUrl,
+  buildPaymentUrl,
 };
