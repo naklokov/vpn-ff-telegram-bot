@@ -25,7 +25,9 @@ module.exports = async (ctx) => {
 
   await ctx.reply(
     `Держи ссылку на регистрацию 😉
-${buildRegistrationUrl(String(user.phone).replace(/\D/g, ""))}`,
+${buildRegistrationUrl({
+  referralUserLogin: String(user.phone).replace(/\D/g, ""),
+})}`,
     exitButton,
   );
 };

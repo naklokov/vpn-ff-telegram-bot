@@ -1,16 +1,22 @@
-const DEFAULT_UI_REGISTER_URL = "http://localhost:3002/register";
+const DEFAULT_UI_REGISTER_URL = "http://localhost/register";
 
 const getRegisterPageBaseUrl = () =>
   (process.env.UI_REGISTER_URL || DEFAULT_UI_REGISTER_URL).trim();
 
-const buildRegistrationUrl = (referralUserLogin) => {
+const buildRegistrationUrl = (params = {}) => {
+  const { referralUserLogin, chatId } = params;
   const baseUrl = getRegisterPageBaseUrl();
-  if (!referralUserLogin) {
+  if (!referralUserLogin && !chatId) {
     return baseUrl;
   }
 
   const url = new URL(baseUrl);
-  url.searchParams.set("referralUserLogin", referralUserLogin);
+  if (referralUserLogin) {
+    url.searchParams.set("referralUserLogin", referralUserLogin);
+  }
+  if (typeof chatId === "number" && Number.isFinite(chatId)) {
+    url.searchParams.set("chatId", String(chatId));
+  }
   return url.toString();
 };
 
