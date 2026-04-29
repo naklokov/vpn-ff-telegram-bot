@@ -3,6 +3,7 @@ const logger = require("./utils/logger");
 
 const startCommand = require("./commands/start");
 const registrationCommand = require("./commands/registration");
+const bindEmailCommand = require("./commands/bindEmail");
 const ruporCommand = require("./commands/rupor");
 const extendCommand = require("./commands/extend");
 const payCommand = require("./commands/pay");
@@ -24,6 +25,7 @@ const {
 } = require("./commands/migrateToSlave/migrateToSlaveScene");
 const { checkUserScene } = require("./commands/checkUser/checkUserScene");
 const { payScene } = require("./commands/pay/payScene");
+const { bindEmailScene } = require("./commands/bindEmail/bindEmailScene");
 
 const {
   instructionsCallbackQuery,
@@ -77,6 +79,7 @@ const setupBot = () => {
     migrateToSlaveScene,
     checkUserScene,
     payScene,
+    bindEmailScene,
   ]);
 
   bot.use(session());
@@ -92,6 +95,7 @@ const setupBot = () => {
   bot.action(CMD.checkUser, checkUserCommand);
   bot.action(CMD.instructions, instructionsCommand);
   bot.action(CMD.registration, registrationCommand);
+  bot.action(CMD.bindEmail, bindEmailCommand);
   bot.action(CMD.rupor, ruporCommand);
   bot.action(CMD.pay, payCommand);
   bot.action(CMD.help, helpCommand);

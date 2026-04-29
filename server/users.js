@@ -74,6 +74,23 @@ const getUserByPhone = async (phone) => {
   }
 };
 
+const getUserByEmail = async (email) => {
+  try {
+    const { data } = await serverClient.get(
+      `/api/users/email/${encodeURIComponent(email)}`,
+    );
+    return data;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response?.status === 404) {
+      return null;
+    }
+    logger.error(
+      `Произошла ошибка при получении пользователя по email ${email}`,
+    );
+    throw Error(error);
+  }
+};
+
 const deleteUser = async (userId) => {
   try {
     const user = await getUserByChatId(userId);
@@ -133,4 +150,5 @@ module.exports = {
   getUsers,
   getUserByChatId,
   getUserByPhone,
+  getUserByEmail,
 };

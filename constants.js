@@ -11,6 +11,7 @@ const USERS_TEXT = {
   status: "Статус подключения",
   help: "🆘 Помощь",
   registration: "📝 Регистрация",
+  bindEmail: "🔗 Привязать email к боту",
 
   // админские действия
   extend: "Продлить",
@@ -22,6 +23,7 @@ const USERS_TEXT = {
 const CMD = {
   start: "start",
   registration: "registration",
+  bindEmail: "bindEmail",
   info: "info",
   referral: "referral",
   status: "status",
@@ -60,6 +62,7 @@ const SCENE_IDS = {
   CHECK_USER: "CHECK_USER",
   RUPOR: "RUPOR",
   PAY: "PAY",
+  BIND_EMAIL: "BIND_EMAIL",
 };
 
 const EMAIL_REGEXP =

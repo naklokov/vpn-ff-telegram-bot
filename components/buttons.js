@@ -35,6 +35,9 @@ const getMainMenu = async (ctx) => {
     keyboardButtons.unshift([
       Markup.button.callback(USERS_TEXT.registration, CMD.registration),
     ]);
+    keyboardButtons.unshift([
+      Markup.button.callback(USERS_TEXT.bindEmail, CMD.bindEmail),
+    ]);
   }
 
   if (isAdmin) {
