@@ -17,27 +17,64 @@ const getNotificationMessage = (expiredDate) => `
   .format("DD.MM.YYYY")}
 `;
 
+/**
+ * Сколько полных календарных дней осталось от сегодня (00:00 локального времени бота)
+ * до даты окончания (берём календарный день из expiredDate).
+ */
+const getDaysLeftUntilExpiry = (expiredDate) => {
+  const expiry = dayjs(expiredDate);
+  if (!expiry.isValid()) {
+    return null;
+  }
+  const today = dayjs().startOf("day");
+  const expiryDay = expiry.startOf("day");
+  return expiryDay.diff(today, "day");
+};
+
+const shouldNotifyAboutPayment = (expiredDate) => {
+  const daysLeft = getDaysLeftUntilExpiry(expiredDate);
+  if (daysLeft === null) {
+    return false;
+  }
+  // Напоминание в последние 3 календарных дня включительно день окончания (0, 1, 2).
+  return daysLeft >= 0 && daysLeft <= 2;
+};
+
 const paymentNotificationSheduler = async (bot) => {
   const users = await usersConnector.getUsers();
-  const currentDate = dayjs();
-
-  users.forEach(({ expiredDate, chatId, phone, isActive }) => {
-    if (isActive) {
-      if (
-        dayjs(expiredDate).subtract(2, "day").isBefore(currentDate.endOf("day"))
-      ) {
-        const sendedChatId = chatId ? chatId : ADMIN_CHAT_ID;
-        logger.info(`Пользователь ${phone} уведомлён об необходимости оплаты`);
-        bot.telegram.sendMessage(
-          sendedChatId,
-          getNotificationMessage(expiredDate, phone, chatId),
-          Markup.inlineKeyboard([
-            Markup.button.callback(USERS_TEXT.pay, CMD.pay),
-          ]).resize(),
-        );
-      }
+  for (const { expiredDate, chatId, phone, isActive } of users) {
+    if (!isActive) {
+      continue;
     }
-  });
+    if (!shouldNotifyAboutPayment(expiredDate)) {
+      continue;
+    }
+    if (!dayjs(expiredDate).isValid()) {
+      logger.warn(
+        `Напоминание об оплате пропущено: некорректная expiredDate у ${phone}`,
+      );
+      continue;
+    }
+    const sendedChatId = chatId ? chatId : ADMIN_CHAT_ID;
+    const daysLeft = getDaysLeftUntilExpiry(expiredDate);
+    try {
+      logger.info(
+        `Пользователь ${phone} уведомлён об необходимости оплаты (daysLeft=${daysLeft})`,
+      );
+      await bot.telegram.sendMessage(
+        sendedChatId,
+        getNotificationMessage(expiredDate),
+        Markup.inlineKeyboard([
+          Markup.button.callback(USERS_TEXT.pay, CMD.pay),
+        ]).resize(),
+      );
+    } catch (error) {
+      logger.error(
+        `Ошибка отправки напоминания об оплате пользователю ${phone}`,
+        error,
+      );
+    }
+  }
 };
 
 const runPaymentNotificationSheduler = (bot, interval = "0 12 * * *") => {
