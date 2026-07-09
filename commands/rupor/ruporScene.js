@@ -85,7 +85,7 @@ const ruporScene = new Scenes.WizardScene(
     try {
       const users = await usersConnector.getUsers();
       const targets = users.filter(
-        ({ chatId, isActive }) => chatId && isActive !== false,
+        ({ chatId, isActive }) => chatId && isActive === false,
       );
 
       await ctx.reply(
