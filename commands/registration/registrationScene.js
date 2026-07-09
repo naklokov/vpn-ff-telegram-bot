@@ -156,8 +156,4 @@ const registrationScene = new Scenes.WizardScene(
   },
 );
 
-registrationScene.hears(USERS_TEXT.exitScene, async (ctx) => {
-  await exitToMenu(ctx);
-});
-
 module.exports = { registrationScene };

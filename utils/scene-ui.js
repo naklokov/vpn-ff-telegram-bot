@@ -1,4 +1,5 @@
-const { getMainMenu, getMainMenuText, hideButtons } = require("../components/buttons");
+const { USERS_TEXT } = require("../constants");
+const { getMainMenu, getMainMenuText, hideButtons, exitButtonScene } = require("../components/buttons");
 const { getUserPersonalDataFromContext, isMenuCommand } = require("./common");
 
 const ensureSession = (ctx) => {
@@ -190,7 +191,18 @@ const consumeSceneEntryCallback = async (ctx) => {
   return true;
 };
 
+const showSceneExitKeyboard = async (ctx, text) => {
+  await ctx.reply(text, exitButtonScene);
+};
+
 const applySceneUi = (scene) => {
+  scene.hears(
+    [USERS_TEXT.exitScene, USERS_TEXT.goToMain],
+    async (ctx) => {
+      await exitToMenu(ctx);
+    },
+  );
+
   scene.use(async (ctx, next) => {
     initSceneTracking(ctx);
     patchReplyMethods(ctx);
@@ -208,4 +220,5 @@ module.exports = {
   applySceneUi,
   exitToMenu,
   showMainMenu,
+  showSceneExitKeyboard,
 };

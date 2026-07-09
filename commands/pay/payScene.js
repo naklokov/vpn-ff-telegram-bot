@@ -2,7 +2,6 @@ const { Scenes, Markup } = require("telegraf");
 const dayjs = require("dayjs");
 const {
   SCENE_IDS,
-  USERS_TEXT,
   DEVELOPER_CONTACT,
   SUBSRIBE_COST,
 } = require("../../constants");
@@ -16,7 +15,7 @@ const { checkPayment } = require("../../utils/recognize");
 const logger = require("../../utils/logger");
 const { withClientWaiting } = require("../../utils/client-waiting");
 const { exitButtonScene } = require("../../components/buttons");
-const { exitToMenu } = require("../../utils/scene-ui");
+const { exitToMenu, showSceneExitKeyboard } = require("../../utils/scene-ui");
 
 const PAYMENT_CALLBACK_QUERY = {
   ONE: `1_${SUBSRIBE_COST[1]}`,
@@ -66,8 +65,9 @@ const payScene = new Scenes.WizardScene(
       return;
     }
 
+    await showSceneExitKeyboard(ctx, "🗓 Выберите количество месяцев для оплаты");
     await ctx.reply(
-      `🗓 Выберите количество месяцев для оплаты`,
+      "Период подписки:",
       Markup.inlineKeyboard([
         [
           Markup.button.callback(
@@ -99,7 +99,10 @@ const payScene = new Scenes.WizardScene(
     const [payedMonthsCount, amount] =
       ctx.callbackQuery?.data?.split("_") ?? [];
     if (!payedMonthsCount || !amount) {
-      await ctx.reply("Некорректно выбран период оплаты. Попробуйте снова.");
+      await ctx.reply(
+        "Некорректно выбран период оплаты. Попробуйте снова.",
+        exitButtonScene,
+      );
       return ctx.wizard.back();
     }
 
@@ -195,9 +198,5 @@ const payScene = new Scenes.WizardScene(
     await exitToMenu(ctx);
   },
 );
-
-payScene.hears(USERS_TEXT.exitScene, async (ctx) => {
-  await exitToMenu(ctx);
-});
 
 module.exports = { payScene };
