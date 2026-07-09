@@ -7,11 +7,7 @@ const {
   DEVELOPER_CONTACT,
   REMNAWAVE_PREFIX,
 } = require("../../constants");
-const {
-  getMainMenu,
-  hideButtons,
-  exitButtonScene,
-} = require("../../components/buttons");
+const { exitButtonScene } = require("../../components/buttons");
 const { usersConnector } = require("../../server");
 const logger = require("../../utils/logger");
 const {
@@ -22,12 +18,7 @@ const {
   addRemnawaveUser,
   getSubscriptionUrlByPhone,
 } = require("../../utils/remnawave");
-
-const exitScene = async (ctx) => {
-  await ctx.scene.leave();
-  await ctx.reply(USERS_TEXT.mainMenu, hideButtons);
-  await ctx.reply(USERS_TEXT.selectActions, await getMainMenu(ctx));
-};
+const { exitToMenu } = require("../../utils/scene-ui");
 
 const migrateToSlaveScene = new Scenes.WizardScene(
   SCENE_IDS.MIGRATE_TO_SLAVE,
@@ -35,7 +26,7 @@ const migrateToSlaveScene = new Scenes.WizardScene(
     const { id: chatId } = getUserPersonalDataFromContext(ctx);
     if (chatId !== ADMIN_CHAT_ID) {
       ctx.reply("Вам сюда нельзя)");
-      await exitScene(ctx);
+      await exitToMenu(ctx, { keepLastBotMessages: 1 });
       return;
     }
 
@@ -46,29 +37,29 @@ const migrateToSlaveScene = new Scenes.WizardScene(
     return ctx.wizard.next();
   },
   async (ctx) => {
+    let keepLastBotMessages = 1;
+
     try {
       const userPhone = ctx.message.text;
 
       if (!PHONE_REGEXP.test(userPhone)) {
-        ctx.reply(
+        await ctx.reply(
           "Номер телефона введён некорректно. Попробуйте снова.",
           exitButtonScene,
         );
         return;
       }
 
-      // Получаем пользователя из базы данных
       const dbUser = await usersConnector.getUserByPhone(userPhone);
 
       if (!dbUser) {
-        ctx.reply(
+        await ctx.reply(
           `Пользователь с номером ${userPhone} не найден в базе данных.`,
         );
-        await exitScene(ctx);
+        await exitToMenu(ctx, { keepLastBotMessages: 1 });
         return;
       }
 
-      // Обновляем serverPrefix пользователя
       await usersConnector.updateUserByPhone(userPhone, {
         serverPrefix: process?.env?.NEW_USER_SERVER_PREFIX,
       });
@@ -77,10 +68,10 @@ const migrateToSlaveScene = new Scenes.WizardScene(
 
       if (dbUser?.serverPrefix === REMNAWAVE_PREFIX) {
         await ctx.reply("Пользователь уже добавлен в REMNAWAVE");
+        await exitToMenu(ctx, { keepLastBotMessages: 1 });
         return;
       }
 
-      // Добавляем/обновляем пользователя в Remnawave
       try {
         await addRemnawaveUser({
           username: dbUser.phone,
@@ -96,7 +87,6 @@ const migrateToSlaveScene = new Scenes.WizardScene(
         );
       }
 
-      // Отправляем уведомление пользователю
       if (dbUser.chatId) {
         const subscriptionUrl = await getSubscriptionUrlByPhone(dbUser.phone);
         await ctx.telegram.sendMessage(
@@ -116,15 +106,15 @@ const migrateToSlaveScene = new Scenes.WizardScene(
       );
     } catch (error) {
       logger.error("Ошибка при миграции пользователя:", error);
-      ctx.reply("Произошла ошибка при миграции пользователя");
-    } finally {
-      await exitScene(ctx);
+      await ctx.reply("Произошла ошибка при миграции пользователя");
     }
+
+    await exitToMenu(ctx, { keepLastBotMessages });
   },
 );
 
 migrateToSlaveScene.hears(USERS_TEXT.exitScene, async (ctx) => {
-  await exitScene(ctx);
+  await exitToMenu(ctx);
 });
 
 module.exports = { migrateToSlaveScene };

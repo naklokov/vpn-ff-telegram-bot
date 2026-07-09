@@ -1,4 +1,4 @@
-const { Telegraf, Scenes, session, Markup } = require("telegraf");
+const { Telegraf, Scenes, session } = require("telegraf");
 const logger = require("./utils/logger");
 
 const startCommand = require("./commands/start");
@@ -43,18 +43,9 @@ const {
 const {
   extendOnErrorCallbackQuery,
 } = require("./commands/extend/callbackQuery");
-const { hideButtons, getMainMenu } = require("./components/buttons");
+const { applySceneUi, exitToMenu, showMainMenu } = require("./utils/scene-ui");
+const { ADMIN_MENU_SEPARATOR_CALLBACK } = require("./components/buttons");
 const { getUserPersonalDataFromContext } = require("./utils/common");
-
-const MAIN_MENU_HINT_TEXT =
-  "Для оплаты VPN выберите «Оплату», а для технической поддержки — «Помощь».";
-
-const mainMenuHintKeyboard = Markup.inlineKeyboard([
-  [
-    Markup.button.callback(USERS_TEXT.pay, CMD.pay),
-    Markup.button.callback(USERS_TEXT.help, CMD.help),
-  ],
-]).resize();
 
 const isOutsideScene = (ctx) => !ctx.scene?.current;
 
@@ -62,7 +53,7 @@ const replyMainMenuHintIfIdle = async (ctx) => {
   if (!isOutsideScene(ctx)) {
     return;
   }
-  await ctx.reply(MAIN_MENU_HINT_TEXT, mainMenuHintKeyboard);
+  await showMainMenu(ctx);
 };
 
 const bot = new Telegraf(process.env.BOT_TOKEN, { handlerTimeout: 20000 });
@@ -77,7 +68,7 @@ const setupBot = () => {
   // выставление признака активный/неактивный пользователь
   runToogleUserStatusSheduler("0 * * * *");
 
-  const stage = new Scenes.Stage([
+  const scenes = [
     registrationScene,
     extendScene,
     ruporScene,
@@ -85,7 +76,10 @@ const setupBot = () => {
     checkUserScene,
     payScene,
     bindEmailScene,
-  ]);
+  ];
+  scenes.forEach(applySceneUi);
+
+  const stage = new Scenes.Stage(scenes);
 
   bot.use(session());
   bot.use(stage.middleware());
@@ -105,12 +99,19 @@ const setupBot = () => {
   bot.action(CMD.pay, payCommand);
   bot.action(CMD.help, helpCommand);
 
+  bot.action(ADMIN_MENU_SEPARATOR_CALLBACK, async (ctx) => {
+    await ctx.answerCbQuery();
+  });
+
+  bot.hears(USERS_TEXT.goToMain, async (ctx) => {
+    await exitToMenu(ctx);
+  });
+
   bot.catch(async (err, ctx) => {
     const { id: chatId } = getUserPersonalDataFromContext(ctx);
     logger.error(err, chatId);
     await ctx.sendMessage("Произошла ошибка, мы разберёмся и поправим 👌");
-    await ctx.reply(USERS_TEXT.mainMenu, hideButtons);
-    await ctx.reply(USERS_TEXT.selectActions, await getMainMenu(ctx));
+    await exitToMenu(ctx);
   });
 
   bot.on("callback_query", (ctx) => {
@@ -149,12 +150,6 @@ const setupBot = () => {
 
   return bot;
 };
-
-// слушаем переход на главную,чтобы скрыть кнопку внизу
-bot.hears(USERS_TEXT.goToMain, async (ctx) => {
-  await ctx.reply(USERS_TEXT.mainMenu, hideButtons);
-  await ctx.reply(USERS_TEXT.selectActions, await getMainMenu(ctx));
-});
 
 // Enable graceful stop
 process.once("SIGINT", () => bot.stop("SIGINT"));

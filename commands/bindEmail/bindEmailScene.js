@@ -7,11 +7,8 @@ const {
 } = require("../../constants");
 const { usersConnector } = require("../../server");
 const { getUserPersonalDataFromContext } = require("../../utils/common");
-const {
-  exitButtonScene,
-  hideButtons,
-  getMainMenu,
-} = require("../../components/buttons");
+const { exitButtonScene } = require("../../components/buttons");
+const { exitToMenu } = require("../../utils/scene-ui");
 
 const FAIL_MESSAGE = `Проверьте что вы правильно ввели свой email, если у вас есть проблемы, обратитесь в поддержку ${DEVELOPER_CONTACT}`;
 
@@ -36,24 +33,18 @@ const bindEmailScene = new Scenes.WizardScene(
 
     if (!user?.phone || user.chatId) {
       await ctx.reply(FAIL_MESSAGE);
-      await ctx.scene.leave();
-      await ctx.reply(USERS_TEXT.mainMenu, hideButtons);
-      await ctx.reply(USERS_TEXT.selectActions, await getMainMenu(ctx));
+      await exitToMenu(ctx, { keepLastBotMessages: 1 });
       return;
     }
 
     await usersConnector.updateUserByPhone(user.phone, { chatId });
     await ctx.reply("Email успешно привязан к вашему Telegram аккаунту.");
-    await ctx.scene.leave();
-    await ctx.reply(USERS_TEXT.mainMenu, hideButtons);
-    await ctx.reply(USERS_TEXT.selectActions, await getMainMenu(ctx));
+    await exitToMenu(ctx, { keepLastBotMessages: 1 });
   },
 );
 
 bindEmailScene.hears(USERS_TEXT.exitScene, async (ctx) => {
-  await ctx.scene.leave();
-  await ctx.reply(USERS_TEXT.mainMenu, hideButtons);
-  await ctx.reply(USERS_TEXT.selectActions, await getMainMenu(ctx));
+  await exitToMenu(ctx);
 });
 
 module.exports = { bindEmailScene };

@@ -6,8 +6,6 @@ const {
   USERS_TEXT,
 } = require("../../constants");
 const {
-  getMainMenu,
-  hideButtons,
   exitButtonScene,
   exitButton,
 } = require("../../components/buttons");
@@ -16,12 +14,7 @@ const { getUserPersonalDataFromContext } = require("../../utils/common");
 const dayjs = require("dayjs");
 const { getSubscriptionUrlByPhone } = require("../../utils/remnawave");
 const { normalizeRuPhoneToMsisdn } = require("../../utils/phone");
-
-const exitScene = async (ctx) => {
-  ctx.scene.leave();
-  ctx.reply(USERS_TEXT.mainMenu, hideButtons);
-  ctx.reply(USERS_TEXT.selectActions, await getMainMenu(ctx));
-};
+const { exitToMenu } = require("../../utils/scene-ui");
 
 const checkUserScene = new Scenes.WizardScene(
   SCENE_IDS.CHECK_USER,
@@ -29,7 +22,7 @@ const checkUserScene = new Scenes.WizardScene(
     const { id: chatId } = getUserPersonalDataFromContext(ctx);
     if (chatId !== ADMIN_CHAT_ID) {
       ctx.reply("Вам сюда нельзя)");
-      await exitScene(ctx);
+      await exitToMenu(ctx, { keepLastBotMessages: 1 });
       return;
     }
     // инициализация формы пользователя
@@ -45,13 +38,15 @@ const checkUserScene = new Scenes.WizardScene(
       return;
     }
 
+    let keepLastBotMessages = 1;
+
     try {
       const dbUser = await usersConnector.getUserByPhone(normalizedPhone);
       const subscriptionUrl = await getSubscriptionUrlByPhone(normalizedPhone);
 
       if (!dbUser) {
-        ctx.reply(`Пользователь с номером ${normalizedPhone} отсутствует в БД`);
-        await exitScene(ctx);
+        await ctx.reply(`Пользователь с номером ${normalizedPhone} отсутствует в БД`);
+        await exitToMenu(ctx, { keepLastBotMessages: 1 });
         return;
       }
 
@@ -63,7 +58,7 @@ const checkUserScene = new Scenes.WizardScene(
         dbUser.expiredDate,
       ).format("DD.MM.YYYY")}`;
 
-      ctx.replyWithMarkdown(
+      await ctx.replyWithMarkdown(
         `
 *Состояние подключения*
 - ${statusText}
@@ -75,18 +70,19 @@ const checkUserScene = new Scenes.WizardScene(
 
       if (subscriptionUrl) {
         await ctx.reply(subscriptionUrl);
+        keepLastBotMessages = 2;
       }
     } catch (error) {
-      ctx.reply("Произошла ошибка при миграции пользователя");
+      await ctx.reply("Произошла ошибка при миграции пользователя");
       console.error(error);
-    } finally {
-      await exitScene(ctx);
     }
+
+    await exitToMenu(ctx, { keepLastBotMessages });
   },
 );
 
 checkUserScene.hears(USERS_TEXT.exitScene, async (ctx) => {
-  await exitScene(ctx);
+  await exitToMenu(ctx);
 });
 
 module.exports = { checkUserScene };

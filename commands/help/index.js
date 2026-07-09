@@ -13,10 +13,6 @@ module.exports = async (ctx) => {
     );
 
     await ctx.reply(
-      `\nЕсли вы оплатили подписку, но не можете подключиться, то посмотрите информацию из статьи ниже:\nhttps://naklokov.yonote.ru/share/39f0bc0e-481f-4fe4-8485-51fb51b6e00e`,
-    );
-
-    await ctx.reply(
       `\nЕсли ваша проблема не решена, напишите нам 👉 ${DEVELOPER_CONTACT}`,
       exitButton,
     );

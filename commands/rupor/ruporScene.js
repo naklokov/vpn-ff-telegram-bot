@@ -1,18 +1,9 @@
 const { Scenes } = require("telegraf");
 const { SCENE_IDS, ADMIN_CHAT_ID, USERS_TEXT } = require("../../constants");
-const {
-  hideButtons,
-  getMainMenu,
-  exitButtonScene,
-} = require("../../components/buttons");
+const { exitButtonScene } = require("../../components/buttons");
 const { usersConnector } = require("../../server");
 const { getUserPersonalDataFromContext } = require("../../utils/common");
-
-const exitScene = async (ctx) => {
-  ctx.scene.leave();
-  ctx.reply(USERS_TEXT.mainMenu, hideButtons);
-  ctx.reply(USERS_TEXT.selectActions, await getMainMenu(ctx));
-};
+const { exitToMenu } = require("../../utils/scene-ui");
 
 const ruporScene = new Scenes.WizardScene(
   SCENE_IDS.RUPOR,
@@ -20,7 +11,7 @@ const ruporScene = new Scenes.WizardScene(
     const { id: chatId } = getUserPersonalDataFromContext(ctx);
     if (chatId !== ADMIN_CHAT_ID) {
       await ctx.reply("Вам сюда нельзя)");
-      await exitScene(ctx);
+      await exitToMenu(ctx, { keepLastBotMessages: 1 });
       return;
     }
 
@@ -43,13 +34,13 @@ const ruporScene = new Scenes.WizardScene(
       ctx.reply("Произошла ошибка при отправке сообщения");
       console.error(error);
     } finally {
-      await exitScene(ctx);
+      await exitToMenu(ctx, { keepLastBotMessages: 1 });
     }
   },
 );
 
 ruporScene.hears(USERS_TEXT.exitScene, async (ctx) => {
-  await exitScene(ctx);
+  await exitToMenu(ctx);
 });
 
 module.exports = { ruporScene };

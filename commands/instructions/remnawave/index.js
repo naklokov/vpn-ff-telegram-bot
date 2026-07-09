@@ -15,7 +15,8 @@ module.exports = async (ctx) => {
 
   const subscriptionUrl = await getSubscriptionUrlByPhone(user.phone);
   await ctx.reply(
-    "Для настройки VPN перейдите по ссылке ниже 👇👇👇\n" +
+    "В рамках вашей подписки вы можете подключить до 3х устройств включительно.\n\n" +
+      "Для подключения устройства перейдите по ссылке ниже и следуйте пошаговой инструкции 👇👇👇\n" +
       `${subscriptionUrl}`,
   );
 };

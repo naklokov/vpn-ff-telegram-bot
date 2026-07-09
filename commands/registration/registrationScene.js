@@ -9,11 +9,8 @@ const {
   USERS_TEXT,
   DEVELOPER_CONTACT,
 } = require("../../constants");
-const {
-  getMainMenu,
-  hideButtons,
-  exitButtonScene,
-} = require("../../components/buttons");
+const { exitButtonScene } = require("../../components/buttons");
+const { exitToMenu } = require("../../utils/scene-ui");
 const {
   getUserPersonalDataFromContext,
   generatePassword,
@@ -21,12 +18,7 @@ const {
 const { usersConnector } = require("../../server");
 const { getSubscriptionUrlByPhone } = require("../../utils/remnawave");
 const { withClientWaiting } = require("../../utils/client-waiting");
-
-const exitScene = async (ctx) => {
-  await ctx.scene.leave();
-  await ctx.reply(USERS_TEXT.mainMenu, hideButtons);
-  await ctx.reply(USERS_TEXT.selectActions, await getMainMenu(ctx));
-};
+const { normalizeRuPhoneToMsisdn } = require("../../utils/phone");
 
 const registrationScene = new Scenes.WizardScene(
   SCENE_IDS.REGISTRATION,
@@ -47,20 +39,21 @@ const registrationScene = new Scenes.WizardScene(
     return ctx.wizard.next();
   },
   async (ctx) => {
-    if (!PHONE_REGEXP.test(ctx?.message?.text)) {
+    const userPhone = normalizeRuPhoneToMsisdn(ctx.message?.text);
+    if (!userPhone || !PHONE_REGEXP.test(userPhone)) {
       ctx.reply(
-        "Номер введён некорректно. Введите номер в формате 79998887766",
+        "Номер введён некорректно. Введите мобильный номер РФ в формате 79998887766",
         exitButtonScene,
       );
       return;
     }
 
     if (!ctx.wizard.state?.user) {
-      await exitScene(ctx);
+      await exitToMenu(ctx);
       return;
     }
 
-    ctx.wizard.state.user.phone = ctx.message?.text;
+    ctx.wizard.state.user.phone = userPhone;
 
     ctx.reply(
       "Введите вашу электронную почту в формате: test@mail.ru",
@@ -78,26 +71,38 @@ const registrationScene = new Scenes.WizardScene(
     }
 
     if (!ctx.wizard.state?.user) {
-      await exitScene(ctx);
+      await exitToMenu(ctx);
       return;
     }
 
     ctx.wizard.state.user.email = ctx.message?.text;
     const { chatId, phone } = ctx.wizard.state.user;
 
-    const existedUserByPhone = await usersConnector.getUserByPhone(phone);
-    const existedUserByChatId = await usersConnector.getUserByChatId(chatId);
+    let existedUserByPhone = null;
+    let existedUserByChatId = null;
+
+    try {
+      existedUserByPhone = await usersConnector.getUserByPhone(phone);
+      existedUserByChatId = await usersConnector.getUserByChatId(chatId);
+    } catch (error) {
+      logger.error("Ошибка проверки пользователя при регистрации", error);
+      await ctx.reply(
+        `Не удалось проверить данные. Попробуйте позже или напишите ${DEVELOPER_CONTACT}`,
+      );
+      await exitToMenu(ctx, { keepLastBotMessages: 1 });
+      return;
+    }
 
     // валидация наличия пользователя в БД
-    if (existedUserByChatId && !chatId === ADMIN_CHAT_ID) {
+    if (existedUserByChatId && chatId !== ADMIN_CHAT_ID) {
       await ctx.reply("Данный пользователь уже зарегистрирован");
-      await exitScene(ctx);
+      await exitToMenu(ctx, { keepLastBotMessages: 1 });
       return;
     }
 
     if (existedUserByPhone) {
       await ctx.reply(`Пользователь с номером ${phone} уже зарегистрирован`);
-      await exitScene(ctx);
+      await exitToMenu(ctx, { keepLastBotMessages: 1 });
       return;
     }
 
@@ -112,6 +117,8 @@ const registrationScene = new Scenes.WizardScene(
     ctx.wizard.state.user.password = password;
     ctx.wizard.state.user.serverPrefix = serverPrefix;
 
+    let keepLastBotMessages = 0;
+
     try {
       const subscriptionUrl = await withClientWaiting(
         ctx,
@@ -123,25 +130,34 @@ const registrationScene = new Scenes.WizardScene(
       );
       await ctx.reply("Вы успешно зарегистрированы!\n\n");
       await ctx.reply(
-        "Для настройки VPN перейдите по ссылке ниже 👇👇👇\n" +
+        "Настройте ВПН по инструкции внутри вашей ссылки с подпиской 👇👇👇\n" +
           `${subscriptionUrl}`,
       );
-      await ctx.reply(`Если возникнут вопросы, пишите 👉 ${DEVELOPER_CONTACT}`);
+      keepLastBotMessages = 3;
       logger.info(
         `Пользователь успешно добавлен ${ctx.wizard.state.user.phone}`,
       );
     } catch (error) {
-      await usersConnector.deleteUser(ctx.wizard.state.user.chatId);
+      await usersConnector
+        .deleteUser(ctx.wizard.state.user.chatId)
+        .catch(() => {});
+      const message =
+        error instanceof Error && error.message
+          ? error.message
+          : "Не удалось завершить регистрацию. Попробуйте позже.";
+      await ctx.reply(
+        `${message}\n\nЕсли проблема повторится, пишите ${DEVELOPER_CONTACT}`,
+      );
+      keepLastBotMessages = 1;
       logger.error(error);
-      throw Error(error);
     } finally {
-      await exitScene(ctx);
+      await exitToMenu(ctx, { keepLastBotMessages });
     }
   },
 );
 
 registrationScene.hears(USERS_TEXT.exitScene, async (ctx) => {
-  await exitScene(ctx);
+  await exitToMenu(ctx);
 });
 
 module.exports = { registrationScene };

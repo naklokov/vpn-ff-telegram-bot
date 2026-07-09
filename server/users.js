@@ -26,7 +26,8 @@ const addUser = async (user) => {
     logger.info(
       `Произошла ошибка при добавлении пользователя в БД ${user.phone}: ${error}`,
     );
-    throw error;
+    const serverMessage = error?.response?.data?.message;
+    throw new Error(serverMessage || error?.message || "Ошибка при добавлении пользователя");
   }
 };
 

@@ -5,21 +5,12 @@ const {
   ADMIN_CHAT_ID,
   USERS_TEXT,
 } = require("../../constants");
-const {
-  getMainMenu,
-  hideButtons,
-  exitButtonScene,
-} = require("../../components/buttons");
+const { exitButtonScene } = require("../../components/buttons");
 const logger = require("../../utils/logger");
 const { getUserPersonalDataFromContext } = require("../../utils/common");
 const { normalizeRuPhoneToMsisdn } = require("../../utils/phone");
 const { usersConnector } = require("../../server");
-
-const exitScene = async (ctx) => {
-  await ctx.scene.leave();
-  await ctx.reply(USERS_TEXT.mainMenu, hideButtons);
-  await ctx.reply(USERS_TEXT.selectActions, await getMainMenu(ctx));
-};
+const { exitToMenu } = require("../../utils/scene-ui");
 
 const extendScene = new Scenes.WizardScene(
   SCENE_IDS.EXTEND,
@@ -27,7 +18,7 @@ const extendScene = new Scenes.WizardScene(
     const { id: chatId } = getUserPersonalDataFromContext(ctx);
     if (chatId !== ADMIN_CHAT_ID) {
       ctx.reply("Вам сюда нельзя)");
-      await exitScene(ctx);
+      await exitToMenu(ctx, { keepLastBotMessages: 1 });
       return;
     }
 
@@ -51,7 +42,7 @@ const extendScene = new Scenes.WizardScene(
     try {
       const payedMonths = parseInt(ctx.message.text, 10);
       if (isNaN(payedMonths)) {
-        ctx.reply("Количество месяцев введено некорректно", exitButtonScene);
+        await ctx.reply("Количество месяцев введено некорректно", exitButtonScene);
         return;
       }
       ctx.wizard.state.extend.months = payedMonths;
@@ -62,25 +53,24 @@ const extendScene = new Scenes.WizardScene(
         throw Error("Некорректные данные для продления периода");
       }
 
-      // Продление полностью выполняется на сервере.
       await usersConnector.extendUserByPhone(phone, months);
       await ctx.reply(`Пользователь ${phone} успешно продлён на ${months} мес`);
+      await exitToMenu(ctx, { keepLastBotMessages: 1 });
     } catch (error) {
       const message =
         error instanceof Error && error.message
           ? error.message
           : "Произошла ошибка при продлении периода";
-      ctx.reply(message);
+      await ctx.reply(message);
       logger.error("Произошла ошибка при продлении периода");
+      await exitToMenu(ctx, { keepLastBotMessages: 1 });
       throw Error(error);
-    } finally {
-      await exitScene(ctx);
     }
   },
 );
 
 extendScene.hears(USERS_TEXT.exitScene, async (ctx) => {
-  await exitScene(ctx);
+  await exitToMenu(ctx);
 });
 
 module.exports = { extendScene };

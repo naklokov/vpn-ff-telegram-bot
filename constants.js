@@ -6,7 +6,7 @@ const USERS_TEXT = {
   selectActions: "Выберите действиe: ",
   pay: "💰 Оплата",
   info: "ℹ️ Тарифы и условия",
-  instructions: "❔ Как настроить VPN",
+  instructions: "🌎 Подключить устройство",
   referral: "🎁 Пригласить друга",
   status: "Статус подключения",
   help: "🆘 Помощь",
@@ -18,6 +18,7 @@ const USERS_TEXT = {
   migrateToSlave: "Миграция на новый сервер",
   checkUser: "Информация о пользователе",
   rupor: "Сообщение всем",
+  adminMenuSeparator: "━━━━━━━━━━━━━━━━━━━━━━",
 };
 
 const CMD = {
@@ -69,7 +70,7 @@ const EMAIL_REGEXP =
   // eslint-disable-next-line no-useless-escape
   /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
 
-const PHONE_REGEXP = /^7[0-9]{10}$/i;
+const PHONE_REGEXP = /^79[0-9]{9}$/i;
 
 const FREE_PERIOD_DAYS = 3;
 
