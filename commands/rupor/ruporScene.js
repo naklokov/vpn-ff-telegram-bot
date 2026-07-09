@@ -84,9 +84,7 @@ const ruporScene = new Scenes.WizardScene(
 
     try {
       const users = await usersConnector.getUsers();
-      const targets = users.filter(
-        ({ chatId, isActive }) => chatId && isActive === false,
-      );
+      const targets = users.filter(({ chatId }) => chatId);
 
       await ctx.reply(
         `Запускаю рассылку для ${targets.length} пользователей. Отчёт пришлю по завершении.`,
