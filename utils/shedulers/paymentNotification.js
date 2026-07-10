@@ -1,7 +1,7 @@
 const cron = require("node-cron");
 const dayjs = require("dayjs");
 const { usersConnector } = require("../../server");
-const { ADMIN_CHAT_ID, USERS_TEXT, CMD } = require("../../constants");
+const { USERS_TEXT, CMD } = require("../../constants");
 
 const logger = require("../logger");
 const { Markup } = require("telegraf");
@@ -43,7 +43,7 @@ const shouldNotifyAboutPayment = (expiredDate) => {
 const paymentNotificationSheduler = async (bot) => {
   const users = await usersConnector.getUsers();
   for (const { expiredDate, chatId, phone, isActive } of users) {
-    if (!isActive) {
+    if (!isActive || !chatId) {
       continue;
     }
     if (!shouldNotifyAboutPayment(expiredDate)) {
@@ -55,14 +55,13 @@ const paymentNotificationSheduler = async (bot) => {
       );
       continue;
     }
-    const sendedChatId = chatId ? chatId : ADMIN_CHAT_ID;
     const daysLeft = getDaysLeftUntilExpiry(expiredDate);
     try {
       logger.info(
         `Пользователь ${phone} уведомлён об необходимости оплаты (daysLeft=${daysLeft})`,
       );
       await bot.telegram.sendMessage(
-        sendedChatId,
+        chatId,
         getNotificationMessage(expiredDate),
         Markup.inlineKeyboard([
           Markup.button.callback(USERS_TEXT.pay, CMD.pay),
