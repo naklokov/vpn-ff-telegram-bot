@@ -5,9 +5,9 @@ const USERS_TEXT = {
   exitScene: "Выйти в меню",
   selectActions: "Выберите действиe: ",
   pay: "💰 Оплата",
-  info: "ℹ️ Тарифы и условия",
+  info: "ℹ️ Условия",
   instructions: "🌎 Подключить устройство",
-  referral: "🎁 Пригласить друга",
+  referral: "🎁 Бонус",
   status: "Статус подключения",
   help: "🆘 Помощь",
   registration: "📝 Регистрация",
@@ -18,6 +18,7 @@ const USERS_TEXT = {
   migrateToSlave: "Миграция на новый сервер",
   checkUser: "Информация о пользователе",
   rupor: "Сообщение всем",
+  emailRupor: "Сообщение всем на почту",
   adminMenuSeparator: "━━━━━━━━━━━━━━━━━━━━━━",
 };
 
@@ -35,6 +36,7 @@ const CMD = {
   migrateToSlave: "migrateToSlave",
   checkUser: "checkUser",
   rupor: "rupor",
+  emailRupor: "emailRupor",
   exit: "exit",
 };
 
@@ -62,6 +64,7 @@ const SCENE_IDS = {
   MIGRATE_TO_SLAVE: "MIGRATE_TO_SLAVE",
   CHECK_USER: "CHECK_USER",
   RUPOR: "RUPOR",
+  EMAIL_RUPOR: "EMAIL_RUPOR",
   PAY: "PAY",
   BIND_EMAIL: "BIND_EMAIL",
 };

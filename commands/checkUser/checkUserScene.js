@@ -5,10 +5,7 @@ const {
   ADMIN_CHAT_ID,
   USERS_TEXT,
 } = require("../../constants");
-const {
-  exitButtonScene,
-  exitButton,
-} = require("../../components/buttons");
+const { exitButtonScene, exitButton } = require("../../components/buttons");
 const { usersConnector } = require("../../server");
 const { getUserPersonalDataFromContext } = require("../../utils/common");
 const dayjs = require("dayjs");
@@ -38,14 +35,16 @@ const checkUserScene = new Scenes.WizardScene(
       return;
     }
 
-    let keepLastBotMessages = 1;
+    let keepLastBotMessages = 2;
 
     try {
       const dbUser = await usersConnector.getUserByPhone(normalizedPhone);
       const subscriptionUrl = await getSubscriptionUrlByPhone(normalizedPhone);
 
       if (!dbUser) {
-        await ctx.reply(`Пользователь с номером ${normalizedPhone} отсутствует в БД`);
+        await ctx.reply(
+          `Пользователь с номером ${normalizedPhone} отсутствует в БД`,
+        );
         await exitToMenu(ctx, { keepLastBotMessages: 1 });
         return;
       }

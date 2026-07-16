@@ -4,6 +4,7 @@ const { CMD, USERS_TEXT, ADMIN_CHAT_ID } = require("../constants");
 const { getUserPersonalDataFromContext } = require("../utils/common");
 const { usersConnector } = require("../server");
 const { getSubscriptionUrlByPhone } = require("../utils/remnawave");
+const { buildRegistrationUrl } = require("../utils/registration-link");
 
 const ADMIN_MENU_SEPARATOR_CALLBACK = "admin_menu_separator";
 
@@ -46,10 +47,16 @@ const getMainMenuText = async (ctx) => {
     ? `<a href="${subscriptionUrl}">${subscriptionUrl}</a>`
     : "временно недоступна";
 
+  const referralUrl = buildRegistrationUrl({
+    referralUserLogin: String(dbUser.phone).replace(/\D/g, ""),
+  });
+  const referralLine = `<a href="${referralUrl}">${referralUrl}</a>`;
+
   return (
     "👋 Приветствую Вас!\n\n" +
     `Ваша подписка доступна по ссылке:\n${linkLine}\n\n` +
-    `Окончание срока действия подписки: <b>${expiredDate}</b>`
+    `Окончание срока действия подписки: <b>${expiredDate}</b>\n\n` +
+    `🎁 Отправь ссылку другу, получи бонус:\n${referralLine}`
   );
 };
 
@@ -66,6 +73,7 @@ const getMainMenu = async (ctx) => {
       ...toTwoColumns([
         Markup.button.callback(USERS_TEXT.extend, CMD.extend),
         Markup.button.callback(USERS_TEXT.rupor, CMD.rupor),
+        Markup.button.callback(USERS_TEXT.emailRupor, CMD.emailRupor),
         Markup.button.callback(USERS_TEXT.checkUser, CMD.checkUser),
         Markup.button.callback(USERS_TEXT.migrateToSlave, CMD.migrateToSlave),
       ]),

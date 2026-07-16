@@ -5,6 +5,7 @@ const startCommand = require("./commands/start");
 const registrationCommand = require("./commands/registration");
 const bindEmailCommand = require("./commands/bindEmail");
 const ruporCommand = require("./commands/rupor");
+const emailRuporCommand = require("./commands/emailRupor");
 const extendCommand = require("./commands/extend");
 const payCommand = require("./commands/pay");
 const migrateToSlaveCommand = require("./commands/migrateToSlave");
@@ -20,6 +21,7 @@ const {
 } = require("./commands/registration/registrationScene");
 const { extendScene } = require("./commands/extend/extendScene");
 const { ruporScene } = require("./commands/rupor/ruporScene");
+const { emailRuporScene } = require("./commands/emailRupor/emailRuporScene");
 const {
   migrateToSlaveScene,
 } = require("./commands/migrateToSlave/migrateToSlaveScene");
@@ -72,6 +74,7 @@ const setupBot = () => {
     registrationScene,
     extendScene,
     ruporScene,
+    emailRuporScene,
     migrateToSlaveScene,
     checkUserScene,
     payScene,
@@ -96,6 +99,7 @@ const setupBot = () => {
   bot.action(CMD.registration, registrationCommand);
   bot.action(CMD.bindEmail, bindEmailCommand);
   bot.action(CMD.rupor, ruporCommand);
+  bot.action(CMD.emailRupor, emailRuporCommand);
   bot.action(CMD.pay, payCommand);
   bot.action(CMD.help, helpCommand);
 

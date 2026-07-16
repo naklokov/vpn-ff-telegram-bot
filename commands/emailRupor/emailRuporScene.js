@@ -1,45 +1,36 @@
 const { Scenes } = require("telegraf");
 const { SCENE_IDS, ADMIN_CHAT_ID, USERS_TEXT } = require("../../constants");
 const { exitButtonScene } = require("../../components/buttons");
-const { usersConnector } = require("../../server");
+const { usersConnector, mailConnector } = require("../../server");
 const { getUserPersonalDataFromContext } = require("../../utils/common");
 const { exitToMenu } = require("../../utils/scene-ui");
 const logger = require("../../utils/logger");
 
-const BROADCAST_DELAY_MS = 50;
-const BROADCAST_MAX_RETRIES = 3;
+const BROADCAST_DELAY_MS = 100;
+const EMAIL_SUBJECT = "Сообщение от VPN FF";
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-const sendMessageWithRetry = async (telegram, chatId, text) => {
-  for (let attempt = 0; attempt < BROADCAST_MAX_RETRIES; attempt++) {
-    try {
-      await telegram.sendMessage(chatId, text);
-      return;
-    } catch (error) {
-      const retryAfter = Number(error?.response?.parameters?.retry_after);
-      if (retryAfter > 0 && attempt < BROADCAST_MAX_RETRIES - 1) {
-        await sleep(retryAfter * 1000);
-        continue;
-      }
-      throw error;
-    }
-  }
-};
+const hasValidEmail = (email) =>
+  typeof email === "string" && email.includes("@");
 
-const runBroadcast = async (telegram, adminChatId, targets, messageText) => {
+const runEmailBroadcast = async (telegram, adminChatId, targets, messageText) => {
   let sent = 0;
   let failed = 0;
 
   try {
-    for (const { chatId, phone } of targets) {
+    for (const { email, phone } of targets) {
       try {
-        await sendMessageWithRetry(telegram, chatId, messageText);
+        await mailConnector.sendEmail({
+          to: email,
+          subject: EMAIL_SUBJECT,
+          text: messageText,
+        });
         sent++;
       } catch (error) {
         failed++;
         logger.warn(
-          `rupor: не удалось отправить сообщение пользователю ${phone} (${chatId}): ${error?.message || error}`,
+          `emailRupor: не удалось отправить письмо пользователю ${phone} (${email}): ${error?.message || error}`,
         );
       }
 
@@ -49,7 +40,7 @@ const runBroadcast = async (telegram, adminChatId, targets, messageText) => {
     try {
       await telegram.sendMessage(
         adminChatId || ADMIN_CHAT_ID,
-        `Рассылка завершена.\n\nОтправлено: ${sent}\nОшибок: ${failed}\nВсего: ${targets.length}`,
+        `Email-рассылка завершена.\n\nОтправлено: ${sent}\nОшибок: ${failed}\nВсего: ${targets.length}`,
       );
     } catch (error) {
       logger.error(error, adminChatId || ADMIN_CHAT_ID);
@@ -57,8 +48,8 @@ const runBroadcast = async (telegram, adminChatId, targets, messageText) => {
   }
 };
 
-const ruporScene = new Scenes.WizardScene(
-  SCENE_IDS.RUPOR,
+const emailRuporScene = new Scenes.WizardScene(
+  SCENE_IDS.EMAIL_RUPOR,
   async (ctx) => {
     const { id: chatId } = getUserPersonalDataFromContext(ctx);
     if (chatId !== ADMIN_CHAT_ID) {
@@ -68,7 +59,7 @@ const ruporScene = new Scenes.WizardScene(
     }
 
     await ctx.reply(
-      "Введите текст сообщения всем пользователям",
+      "Введите текст сообщения для рассылки на email всем пользователям с почтой",
       exitButtonScene,
     );
     return ctx.wizard.next();
@@ -85,26 +76,37 @@ const ruporScene = new Scenes.WizardScene(
 
     try {
       const users = await usersConnector.getUsers();
-      const targets = users.filter(({ chatId }) => chatId);
+      const targets = users
+        .filter(({ email }) => hasValidEmail(email))
+        .map(({ email, phone }) => ({
+          email: String(email).trim().toLowerCase(),
+          phone,
+        }));
+
+      if (targets.length === 0) {
+        await ctx.reply("Нет пользователей с указанным email");
+        await exitToMenu(ctx, { keepLastBotMessages: 1 });
+        return;
+      }
 
       await ctx.reply(
-        `Запускаю рассылку для ${targets.length} пользователей. Отчёт пришлю по завершении.`,
+        `Запускаю email-рассылку для ${targets.length} пользователей. Отчёт пришлю по завершении.`,
       );
 
       const telegram = ctx.telegram;
       await exitToMenu(ctx, { keepLastBotMessages: 1 });
 
-      void runBroadcast(telegram, adminChatId, targets, messageText);
+      void runEmailBroadcast(telegram, adminChatId, targets, messageText);
     } catch (error) {
-      logger.error("rupor: ошибка при запуске рассылки", error);
+      logger.error("emailRupor: ошибка при запуске рассылки", error);
       await ctx.reply("Произошла ошибка при отправке сообщения");
       await exitToMenu(ctx, { keepLastBotMessages: 1 });
     }
   },
 );
 
-ruporScene.hears(USERS_TEXT.exitScene, async (ctx) => {
+emailRuporScene.hears(USERS_TEXT.exitScene, async (ctx) => {
   await exitToMenu(ctx);
 });
 
-module.exports = { ruporScene };
+module.exports = { emailRuporScene };
