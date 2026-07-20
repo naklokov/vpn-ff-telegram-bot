@@ -5,6 +5,7 @@ const { USERS_TEXT, CMD } = require("../../constants");
 
 const logger = require("../logger");
 const { Markup } = require("telegraf");
+const { isBotBlockedError } = require("../telegram-errors");
 
 const getNotificationMessage = (expiredDate) => `
 Доброго времени суток! 👋  
@@ -68,6 +69,19 @@ const paymentNotificationSheduler = async (bot) => {
         ]).resize(),
       );
     } catch (error) {
+      if (isBotBlockedError(error)) {
+        logger.warn(`Пользователь ${phone} заблокировал бота`);
+        try {
+          await usersConnector.updateUserByPhone(phone, { isActive: false });
+        } catch (updateError) {
+          logger.error(
+            `Не удалось деактивировать пользователя ${phone} после блокировки бота`,
+            updateError,
+          );
+        }
+        continue;
+      }
+
       logger.error(
         `Ошибка отправки напоминания об оплате пользователю ${phone}`,
         error,

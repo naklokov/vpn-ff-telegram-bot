@@ -48,6 +48,25 @@ const {
 const { applySceneUi, exitToMenu, showMainMenu } = require("./utils/scene-ui");
 const { ADMIN_MENU_SEPARATOR_CALLBACK } = require("./components/buttons");
 const { getUserPersonalDataFromContext } = require("./utils/common");
+const { isBotBlockedError } = require("./utils/telegram-errors");
+const { usersConnector } = require("./server");
+
+const markUserAsBlocked = async (chatId) => {
+  if (!chatId) {
+    return;
+  }
+
+  try {
+    await usersConnector.updateUserById(chatId, { isActive: false });
+  } catch (updateError) {
+    logger.error(updateError, chatId);
+  }
+};
+
+const handleBlockedUser = async (chatId) => {
+  logger.warn(`Пользователь ${chatId} заблокировал бота`);
+  await markUserAsBlocked(chatId);
+};
 
 const isOutsideScene = (ctx) => !ctx.scene?.current;
 
@@ -113,9 +132,25 @@ const setupBot = () => {
 
   bot.catch(async (err, ctx) => {
     const { id: chatId } = getUserPersonalDataFromContext(ctx);
+
+    if (isBotBlockedError(err)) {
+      await handleBlockedUser(chatId);
+      return;
+    }
+
     logger.error(err, chatId);
-    await ctx.sendMessage("Произошла ошибка, мы разберёмся и поправим 👌");
-    await exitToMenu(ctx);
+
+    try {
+      await ctx.sendMessage("Произошла ошибка, мы разберёмся и поправим 👌");
+      await exitToMenu(ctx);
+    } catch (sendError) {
+      if (isBotBlockedError(sendError)) {
+        await handleBlockedUser(chatId);
+        return;
+      }
+
+      logger.error(sendError, chatId);
+    }
   });
 
   bot.on("callback_query", (ctx) => {
